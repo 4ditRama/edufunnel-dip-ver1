@@ -1,29 +1,48 @@
-/* Custom styles to complement Tailwind CSS */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Custom Styling inspired by jasaanimasi.id aesthetic */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,600&family=Lexend:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --ja-orange: #ff6210;
+  --ja-orange-hover: #e55509;
+  --ja-orange-light: #fff2ea;
+  --ja-orange-border: #fbe0c1;
+  --ja-dark: #140b06;
+  --ja-dark-card: #1c0d0a;
+  --ja-charcoal: #2a1c17;
+}
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  background-color: #faf9f6;
+  color: #1c1917;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle transitions */
-button, a {
-  transition: all 0.2s ease-in-out;
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Lexend', sans-serif;
 }
 
-/* Custom scrollbar for table */
+/* Card hover animation with subtle lift */
+.ja-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.ja-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(255, 98, 16, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f5f5f4;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #d6d3d1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #ff6210;
 }
-

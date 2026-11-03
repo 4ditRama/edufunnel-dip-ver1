@@ -34,13 +34,13 @@ function switchPersona(persona) {
   currentPersona = persona;
   
   if (persona === 'edufunnel') {
-    btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-indigo-600 text-white shadow";
-    btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white transition-all duration-200";
+    btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md";
+    btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200";
     headerTitle.textContent = "EduFunnel PMB Decision Support";
-    headerSubtitle.textContent = "Desain Interaksi Pengguna • Model UCD ISO 9241-210";
+    headerSubtitle.textContent = "Desain Interaksi Pengguna • Standar ISO 9241-210 UCD";
   } else {
-    btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-emerald-600 text-white shadow";
-    btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white transition-all duration-200";
+    btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md";
+    btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200";
     headerTitle.textContent = "B2B Gadget Wholesale Funnel";
     headerSubtitle.textContent = "Operasional Usaha Pak Ujang & Mas Iqbal (Supply Toko Mall)";
   }
@@ -48,10 +48,9 @@ function switchPersona(persona) {
   loadFunnelData(persona);
 }
 
-// Fetch Funnel Data (via API with fallback to static JSON)
+// Fetch Funnel Data (via backend API with fallback to static JSON)
 async function loadFunnelData(persona) {
   try {
-    // Try backend API first, fallback to static file if running in static mode
     let response;
     try {
       response = await fetch(`/api/funnel-data?persona=${persona}`);
@@ -71,7 +70,7 @@ async function loadFunnelData(persona) {
 // Render Dashboard Elements
 function renderDashboard(data) {
   // 1. Info Banner
-  infoTargetAudience.textContent = `${data.system_title} — Target: ${data.target_audience}`;
+  infoTargetAudience.textContent = `${data.system_title} — ${data.target_audience}`;
   infoPeriod.textContent = `Periode Evaluasi: ${data.period}`;
 
   // 2. Layer 1: KPI Cards
@@ -84,14 +83,14 @@ function renderDashboard(data) {
   // 3. Layer 2: Render Funnel Stage Chart
   renderFunnelChart(data.funnel_stages);
 
-  // Render Funnel Stage Cards
+  // Render Funnel Stage Pills
   funnelStagesList.innerHTML = data.funnel_stages.map((stage, idx) => `
-    <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50/70">
+    <div class="p-2.5 rounded-xl border border-stone-200/70 bg-[#faf9f6] hover:border-[#fbe0c1] transition">
       <div class="flex items-center justify-between text-xs">
-        <span class="font-bold text-slate-800">${idx + 1}. ${stage.stage}</span>
-        <span class="font-mono font-semibold text-indigo-600">${stage.count.toLocaleString('id-ID')} (${stage.percentage}%)</span>
+        <span class="font-heading font-bold text-stone-800">${idx + 1}. ${stage.stage}</span>
+        <span class="font-mono font-semibold text-[#ff6210]">${stage.count.toLocaleString('id-ID')} (${stage.percentage}%)</span>
       </div>
-      <p class="text-[11px] text-slate-500 mt-1 line-clamp-1">${stage.description}</p>
+      <p class="text-[11px] text-stone-500 mt-1 line-clamp-1">${stage.description}</p>
     </div>
   `).join('');
 
@@ -99,29 +98,29 @@ function renderDashboard(data) {
   renderChannelChart(data.channel_performance);
 
   tableChannelBody.innerHTML = data.channel_performance.map(ch => `
-    <tr class="hover:bg-slate-50/80 transition">
-      <td class="py-2 font-medium text-slate-800">${ch.channel}</td>
-      <td class="py-2 text-right font-mono">${ch.leads.toLocaleString('id-ID')}</td>
-      <td class="py-2 text-right font-mono font-semibold text-emerald-600">${ch.converted.toLocaleString('id-ID')}</td>
-      <td class="py-2 text-right font-mono text-indigo-600 font-bold">${ch.cvr}</td>
+    <tr class="hover:bg-[#fff2ea]/50 transition">
+      <td class="py-2.5 font-medium text-stone-800">${ch.channel}</td>
+      <td class="py-2.5 text-right font-mono text-stone-600">${ch.leads.toLocaleString('id-ID')}</td>
+      <td class="py-2.5 text-right font-mono font-bold text-[#ff6210]">${ch.converted.toLocaleString('id-ID')}</td>
+      <td class="py-2.5 text-right font-mono font-semibold text-emerald-600">${ch.cvr}</td>
     </tr>
   `).join('');
 
   // 5. Layer 3: Recommendations
   recommendationsList.innerHTML = data.recommendations.map(rec => `
-    <div class="p-3.5 rounded-xl border ${rec.priority === 'Tinggi' ? 'border-rose-200 bg-rose-50/40' : 'border-indigo-100 bg-indigo-50/30'} flex items-start space-x-3">
-      <div class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${rec.priority === 'Tinggi' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700'}">
+    <div class="p-4 rounded-xl border ${rec.priority === 'Tinggi' ? 'border-rose-200 bg-rose-50/40' : 'border-[#fbe0c1] bg-[#fff2ea]/40'} flex items-start space-x-3.5">
+      <div class="px-2.5 py-1 rounded-md text-[10px] font-heading font-bold uppercase tracking-wider ${rec.priority === 'Tinggi' ? 'bg-rose-100 text-rose-700' : 'bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1]'}">
         Prioritas ${rec.priority}
       </div>
       <div class="space-y-0.5">
-        <h5 class="text-xs font-bold text-slate-900">${rec.title}</h5>
-        <p class="text-xs text-slate-600 leading-relaxed">${rec.action}</p>
+        <h5 class="text-xs font-heading font-bold text-[#140b06]">${rec.title}</h5>
+        <p class="text-xs text-stone-600 leading-relaxed">${rec.action}</p>
       </div>
     </div>
   `).join('');
 }
 
-// Chart.js: Funnel Stages
+// Chart.js: Funnel Stages with vibrant jasaanimasi palette
 function renderFunnelChart(stages) {
   const ctx = document.getElementById('chartFunnelStages').getContext('2d');
   
@@ -133,23 +132,25 @@ function renderFunnelChart(stages) {
   const counts = stages.map(s => s.count);
   const percentages = stages.map(s => s.percentage);
 
+  // Gradient sunset orange to espresso
+  const colors = [
+    '#ff6210', // vibrant orange
+    '#ff7934',
+    '#ff9359',
+    '#ffb288',
+    '#221915'  // final stage accent
+  ];
+
   funnelChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
       datasets: [{
-        label: 'Jumlah Prospek',
+        label: 'Volume Prospek',
         data: counts,
-        backgroundColor: [
-          'rgba(79, 70, 229, 0.85)',
-          'rgba(99, 102, 241, 0.75)',
-          'rgba(129, 140, 248, 0.70)',
-          'rgba(16, 185, 129, 0.80)',
-          'rgba(5, 150, 105, 0.90)'
-        ],
+        backgroundColor: colors,
         borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#ffffff'
+        borderWidth: 0
       }]
     },
     options: {
@@ -159,23 +160,28 @@ function renderFunnelChart(stages) {
       plugins: {
         legend: { display: false },
         tooltip: {
+          backgroundColor: '#140b06',
+          titleFont: { family: 'Lexend', size: 12 },
+          bodyFont: { family: 'DM Sans', size: 11 },
+          padding: 10,
+          cornerRadius: 8,
           callbacks: {
             label: function(context) {
               const val = context.raw;
               const pct = percentages[context.dataIndex];
-              return ` Volume: ${val.toLocaleString('id-ID')} (${pct}% dari awal)`;
+              return ` Volume: ${val.toLocaleString('id-ID')} (${pct}% dari tahap 1)`;
             }
           }
         }
       },
       scales: {
         x: {
-          grid: { color: '#f1f5f9' },
-          ticks: { font: { size: 10 } }
+          grid: { color: '#f5f5f4' },
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#78716c' }
         },
         y: {
           grid: { display: false },
-          ticks: { font: { size: 11, weight: 'bold' } }
+          ticks: { font: { family: 'Lexend', size: 11, weight: '600' }, color: '#1c1917' }
         }
       }
     }
@@ -198,13 +204,15 @@ function renderChannelChart(channels) {
         {
           label: 'Total Prospek Masuk',
           data: channels.map(c => c.leads),
-          backgroundColor: 'rgba(148, 163, 184, 0.5)',
+          backgroundColor: '#e7e5e4', // soft warm stone
+          hoverBackgroundColor: '#d6d3d1',
           borderRadius: 6
         },
         {
           label: 'Berhasil Konversi',
           data: channels.map(c => c.converted),
-          backgroundColor: 'rgba(16, 185, 129, 0.85)',
+          backgroundColor: '#ff6210', // jasaanimasi vibrant orange
+          hoverBackgroundColor: '#e55509',
           borderRadius: 6
         }
       ]
@@ -215,17 +223,23 @@ function renderChannelChart(channels) {
       plugins: {
         legend: {
           position: 'top',
-          labels: { font: { size: 10 } }
+          labels: { font: { family: 'DM Sans', size: 10 }, boxWidth: 12 }
+        },
+        tooltip: {
+          backgroundColor: '#140b06',
+          titleFont: { family: 'Lexend' },
+          bodyFont: { family: 'DM Sans' },
+          cornerRadius: 8
         }
       },
       scales: {
         x: {
           grid: { display: false },
-          ticks: { font: { size: 10 } }
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#78716c' }
         },
         y: {
-          grid: { color: '#f1f5f9' },
-          ticks: { font: { size: 10 } }
+          grid: { color: '#f5f5f4' },
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#78716c' }
         }
       }
     }
@@ -253,7 +267,7 @@ formSimulateLead.addEventListener('submit', async (e) => {
   };
 
   simLogBox.classList.remove('hidden');
-  simLogBox.innerHTML = `Mengirim webhook ke server & n8n...<br><span class="text-slate-400 font-mono text-[10px]">${JSON.stringify(payload)}</span>`;
+  simLogBox.innerHTML = `Mengirimkan data ke backend & pipeline...<br><span class="text-stone-400 font-mono text-[10px]">${JSON.stringify(payload)}</span>`;
 
   try {
     const res = await fetch('/api/webhook/simulate', {
@@ -264,27 +278,26 @@ formSimulateLead.addEventListener('submit', async (e) => {
 
     const result = await res.json();
     simLogBox.innerHTML = `
-      <span class="text-emerald-400 font-bold">✓ Webhook Berhasil Diproses!</span><br>
-      Status: ${result.status} | Respon n8n: ${result.message}<br>
-      <span class="text-slate-400 text-[10px]">Payload tercatat pada execution log.</span>
+      <span class="text-emerald-400 font-bold">✓ Webhook Berhasil Dikirim!</span><br>
+      Status: ${result.status} | Respon Pipeline: ${result.message}<br>
+      <span class="text-stone-400 text-[10px]">Tercatat pada execution pipeline.</span>
     `;
   } catch (err) {
-    // Client-side simulation fallback if backend isn't active
     simLogBox.innerHTML = `
-      <span class="text-emerald-400 font-bold">✓ Simulasi Payload Siap Dikirim!</span><br>
+      <span class="text-emerald-400 font-bold">✓ Simulasi Payload Siap!</span><br>
       Payload: ${JSON.stringify(payload, null, 2)}<br>
-      <span class="text-amber-300 text-[10px]">Catatan: Hubungkan n8n Webhook URL pada server.js untuk integrasi live real-time.</span>
+      <span class="text-[#ff8544] text-[10px]">Pipeline webhook siap diteruskan ke n8n.</span>
     `;
   }
 });
 
-// Sync Webhook Button
+// Trigger Webhook Button helper
 btnSyncWebhook.addEventListener('click', () => {
   formSimulateLead.scrollIntoView({ behavior: 'smooth' });
   simLogBox.classList.remove('hidden');
   simLogBox.innerHTML = `
-    <span class="text-indigo-300 font-semibold">ℹ️ Siap Menjalankan Trigger:</span><br>
-    Webhook siap mengirim event pembaruan berkala data funnel ke n8n sesuai alur di modul TUTOR D-1-1 & D-1-3.
+    <span class="text-[#ff8544] font-semibold">ℹ️ Status Integrasi n8n:</span><br>
+    Pipeline webhook disiapkan untuk memproses update otomatis data funnel ke Telegram/Email.
   `;
 });
 
@@ -292,4 +305,3 @@ btnSyncWebhook.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
   loadFunnelData('edufunnel');
 });
-
