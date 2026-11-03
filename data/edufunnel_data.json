@@ -1,0 +1,88 @@
+{
+  "system_title": "EduFunnel Analytics - PMB Kampus",
+  "persona_type": "edufunnel",
+  "target_audience": "Tim Marketing & Admisi Penerimaan Mahasiswa Baru (PMB)",
+  "period": "Tahun Akademik 2026/2027 (Gelombang 1)",
+  "summary": {
+    "total_prospects": 12500,
+    "total_converted": 920,
+    "overall_conversion_rate": "7.36%",
+    "primary_bottleneck": "Consideration -> Conversion",
+    "top_channel": "Instagram Ads"
+  },
+  "funnel_stages": [
+    {
+      "stage": "Awareness",
+      "count": 12500,
+      "percentage": 100.0,
+      "description": "Pengunjung website promosi & penerima impresi iklan digital"
+    },
+    {
+      "stage": "Consideration",
+      "count": 4800,
+      "percentage": 38.4,
+      "description": "Mengunduh brosur prodi & berkonsultasi via WhatsApp Center"
+    },
+    {
+      "stage": "Conversion",
+      "count": 1150,
+      "percentage": 9.2,
+      "description": "Membeli voucher formulir & mengunggah berkas seleksi"
+    },
+    {
+      "stage": "Retention",
+      "count": 920,
+      "percentage": 7.36,
+      "description": "Lolos seleksi dan melakukan registrasi ulang (bayar UKT)"
+    },
+    {
+      "stage": "Advocacy",
+      "count": 310,
+      "percentage": 2.48,
+      "description": "Mengunggah twibbon maba dan merekomendasikan ke teman sekolah"
+    }
+  ],
+  "channel_performance": [
+    {
+      "channel": "Instagram Ads",
+      "leads": 5200,
+      "converted": 410,
+      "cvr": "7.88%",
+      "cost_per_acquisition": "Rp 145.000"
+    },
+    {
+      "channel": "TikTok Campaign",
+      "leads": 3800,
+      "converted": 240,
+      "cvr": "6.31%",
+      "cost_per_acquisition": "Rp 160.000"
+    },
+    {
+      "channel": "Edu Expo & Sekolah",
+      "leads": 2100,
+      "converted": 215,
+      "cvr": "10.23%",
+      "cost_per_acquisition": "Rp 98.000"
+    },
+    {
+      "channel": "Referral / Alumni",
+      "leads": 1400,
+      "converted": 55,
+      "cvr": "3.92%",
+      "cost_per_acquisition": "Rp 40.000"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "Tinggi",
+      "title": "Optimasi Drop-off Formulir (Consideration -> Conversion)",
+      "action": "Sederhanakan formulir pendaftaran online dan tambahkan pengingat WhatsApp otomatis bagi pendaftar yang belum menyelesaikan pembayaran voucher."
+    },
+    {
+      "priority": "Sedang",
+      "title": "Alokasi Budget ke Edu Expo & Kunjungan Sekolah",
+      "action": "Tingkat konversi (10.23%) paling tinggi berasal dari kunjungan fisik ke sekolah, tingkatkan jadwal roadshow pada bulan depan."
+    }
+  ]
+}
+

@@ -1,0 +1,86 @@
+{
+  "name": "EduFunnel - Webhook & Notifikasi Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "funnel-update",
+        "options": {}
+      },
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Webhook Trigger (EduFunnel)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "edufunnel-webhook-trigger"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "notification_message",
+              "value": "=🔔 *Laporan Baru EduFunnel Dashboard* 🔔\n\n📌 *Persona:* {{ $json.body.persona || 'PMB Kampus' }}\n👤 *Nama:* {{ $json.body.lead.name || 'Prospek Baru' }}\n📡 *Saluran:* {{ $json.body.lead.channel || '-' }}\n🎯 *Tahapan:* {{ $json.body.lead.stage || '-' }}\n⏰ *Waktu:* {{ $json.body.timestamp || $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": "Format Pesan (Set Node)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.notification_message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "Kirim Notifikasi Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        720,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger (EduFunnel)": {
+      "main": [
+        [
+          {
+            "node": "Format Pesan (Set Node)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Pesan (Set Node)": {
+      "main": [
+        [
+          {
+            "node": "Kirim Notifikasi Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}
+

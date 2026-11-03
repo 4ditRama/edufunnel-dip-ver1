@@ -1,0 +1,27 @@
+{
+  "name": "edufunnel-dip",
+  "version": "1.0.0",
+  "description": "Decision Support Funnel Dashboard for Higher Education PMB and B2B Gadget Wholesale - UCD ISO 9241-210 with n8n Webhook",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "edufunnel",
+    "decision-support",
+    "dashboard",
+    "n8n",
+    "webhook",
+    "ucd",
+    "iso-9241-210",
+    "marketing-funnel"
+  ],
+  "author": "4ditRama",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
+

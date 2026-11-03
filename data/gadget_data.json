@@ -1,0 +1,88 @@
+{
+  "system_title": "B2B Gadget Wholesale Funnel - Pak Ujang & Mas Iqbal",
+  "persona_type": "gadget",
+  "target_audience": "Pak Ujang Rahmat (Owner) & Mas Iqbal (Operations & Logistics)",
+  "period": "Periode Operasional Oktober - November 2026",
+  "summary": {
+    "total_prospects": 240,
+    "total_converted": 58,
+    "overall_conversion_rate": "24.17%",
+    "primary_bottleneck": "Penawaran -> Nego Margin",
+    "top_channel": "Toko Retail Mall (Agres & Mitra)"
+  },
+  "funnel_stages": [
+    {
+      "stage": "Penawaran Stok (Awareness)",
+      "count": 240,
+      "percentage": 100.0,
+      "description": "Toko ritel & konter mall yang dikirimi list stok HP/Laptop via WA"
+    },
+    {
+      "stage": "Respon & Nego (Consideration)",
+      "count": 110,
+      "percentage": 45.83,
+      "description": "Pemilik toko menanyakan spek, cek garansi, dan tawar menawar harga"
+    },
+    {
+      "stage": "Deal & Pengiriman (Conversion)",
+      "count": 58,
+      "percentage": 24.17,
+      "description": "Toko sepakat ambil unit, barang dikirim Mas Iqbal secara COD/lunas"
+    },
+    {
+      "stage": "Repeat Order (Retention)",
+      "count": 32,
+      "percentage": 13.33,
+      "description": "Toko rutin memesan stok kembali dalam siklus 1-2 minggu"
+    },
+    {
+      "stage": "Rujukan Rekanan (Advocacy)",
+      "count": 12,
+      "percentage": 5.0,
+      "description": "Toko merekomendasikan Pak Ujang ke cabang baru atau toko konter lain"
+    }
+  ],
+  "channel_performance": [
+    {
+      "channel": "Toko Retail Mall (Agres & Mitra)",
+      "leads": 95,
+      "converted": 28,
+      "cvr": "29.47%",
+      "cost_per_acquisition": "Rp 25.000 (Transport Om Iqbal)"
+    },
+    {
+      "channel": "Konter HP Sentra Mall",
+      "leads": 75,
+      "converted": 18,
+      "cvr": "24.00%",
+      "cost_per_acquisition": "Rp 15.000 (Transport Om Iqbal)"
+    },
+    {
+      "channel": "Grup WhatsApp Reseller",
+      "leads": 50,
+      "converted": 9,
+      "cvr": "18.00%",
+      "cost_per_acquisition": "Rp 0 (Broadcast WA)"
+    },
+    {
+      "channel": "Buyer Perorangan / COD Marketplace",
+      "leads": 20,
+      "converted": 3,
+      "cvr": "15.00%",
+      "cost_per_acquisition": "Rp 10.000"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "Tinggi",
+      "title": "Follow-up Khusus Toko Agres & Rekanan Mall",
+      "action": "Tingkat konversi tertinggi ada di toko retail mall (29.47%). Jadwalkan Mas Iqbal untuk kunjungan rutin tiap Selasa & Jumat saat mereka restock etalase."
+    },
+    {
+      "priority": "Sedang",
+      "title": "Optimasi Nego Margin Laptop",
+      "action": "Unit laptop memiliki margin lebih tebal dibanding HP; siapkan paket bundling (tas/mouse) dari sisa bonus COD agar toko lebih cepat deal."
+    }
+  ]
+}
+

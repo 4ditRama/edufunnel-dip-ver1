@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduFunnel - Decision Support Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-indigo-700 rounded-lg text-xl shadow-inner">📊</div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight" id="headerTitle">EduFunnel Decision Support</h1>
+          <p class="text-xs text-indigo-200" id="headerSubtitle">Desain Interaksi Pengguna • ISO 9241-210 UCD Model</p>
+        </div>
+      </div>
+
+      <!-- PERSONA SWITCHER & ACTIONS -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="bg-indigo-950 p-1 rounded-xl flex items-center border border-indigo-700/50">
+          <button id="btnPersonaEdu" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-indigo-600 text-white shadow">
+            🎓 PMB Kampus
+          </button>
+          <button id="btnPersonaGadget" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-indigo-300 hover:text-white transition-all duration-200">
+            📱 Grosir Gadget (Pak Ujang)
+          </button>
+        </div>
+
+        <button id="btnSyncWebhook" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow transition">
+          <svg class="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Trigger n8n Webhook</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- INFO BANNER -->
+    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+      <div class="flex items-start space-x-3">
+        <div class="text-2xl mt-0.5">🎯</div>
+        <div>
+          <h2 class="text-sm font-bold text-indigo-950" id="infoTargetAudience">Memuat Profil Pengguna...</h2>
+          <p class="text-xs text-slate-600 mt-0.5" id="infoPeriod">Periode: -</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2 text-xs font-medium text-indigo-700 bg-white/80 border border-indigo-200/60 px-3 py-1.5 rounded-xl shadow-xs self-start md:self-auto">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <span>Arsitektur Naratif: What • So What • Now What</span>
+      </div>
+    </div>
+
+    <!-- 1. LAYER ATAS: WHAT? (KPI CARDS) -->
+    <section>
+      <div class="flex items-center space-x-2 mb-3">
+        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-100 text-indigo-800 uppercase tracking-wider">Lapisan 1: What?</span>
+        <h3 class="text-sm font-semibold text-slate-700">Ringkasan Metrik Utama (Key Performance Indicators)</h3>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition">
+          <p class="text-xs font-medium text-slate-500">Total Prospek / Masuk</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <h4 class="text-2xl font-black text-slate-900" id="kpiTotalProspects">0</h4>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">Input</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Tahap awal corong pemasaran</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition">
+          <p class="text-xs font-medium text-slate-500">Total Terkonversi</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <h4 class="text-2xl font-black text-emerald-600" id="kpiTotalConverted">0</h4>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Deal/Maba</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Telah menyelesaikan tahap akhir</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition">
+          <p class="text-xs font-medium text-slate-500">Conversion Rate (CVR)</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <h4 class="text-2xl font-black text-indigo-600" id="kpiConversionRate">0%</h4>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">Rasio</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Persentase keberhasilan konversi</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm hover:shadow-md transition">
+          <p class="text-xs font-medium text-slate-500">Titik Hambatan Terbesar</p>
+          <div class="flex items-baseline justify-between mt-2">
+            <h4 class="text-sm font-bold text-rose-600 truncate" id="kpiBottleneck">-</h4>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700">Bottleneck</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Fokus prioritas perbaikan</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. LAYER TENGAH: SO WHAT? (VISUALISASI FUNNEL & KOMPARASI) -->
+    <section class="space-y-4">
+      <div class="flex items-center space-x-2">
+        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 uppercase tracking-wider">Lapisan 2: So What?</span>
+        <h3 class="text-sm font-semibold text-slate-700">Visualisasi Corong & Pola Kehilangan Pengguna (Attrition)</h3>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- FUNNEL STAGE CHART -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900">Alur Tahapan Corong (Funnel Stages)</h4>
+              <p class="text-xs text-slate-500">Melihat drop-off bertahap dari tahap pertama hingga akhir</p>
+            </div>
+            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg font-medium">Model Dinamis</span>
+          </div>
+          <div class="h-64 sm:h-72">
+            <canvas id="chartFunnelStages"></canvas>
+          </div>
+          <div id="funnelStagesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+            <!-- Dynamic stage cards injected via JS -->
+          </div>
+        </div>
+
+        <!-- CHANNEL PERFORMANCE CHART -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-bold text-slate-900">Performa Saluran (Channels)</h4>
+                <p class="text-xs text-slate-500">Komparasi jumlah prospek vs hasil terkonversi</p>
+              </div>
+              <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium" id="badgeTopChannel">Top: -</span>
+            </div>
+            <div class="h-60 mt-3">
+              <canvas id="chartChannelPerformance"></canvas>
+            </div>
+          </div>
+
+          <!-- MINI TABLE -->
+          <div class="overflow-x-auto pt-2 border-t border-slate-100">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-100">
+                  <th class="pb-1.5 font-medium">Saluran</th>
+                  <th class="pb-1.5 font-medium text-right">Prospek</th>
+                  <th class="pb-1.5 font-medium text-right">Deal</th>
+                  <th class="pb-1.5 font-medium text-right">CVR</th>
+                </tr>
+              </thead>
+              <tbody id="tableChannelBody" class="divide-y divide-slate-50 text-slate-700">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. LAYER BAWAH: NOW WHAT? (REKOMENDASI & SIMULASI WEBHOOK n8n) -->
+    <section class="space-y-4">
+      <div class="flex items-center space-x-2">
+        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">Lapisan 3: Now What?</span>
+        <h3 class="text-sm font-semibold text-slate-700">Rekomendasi Keputusan Strategis & Integrasi Otomatisasi</h3>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- STRATEGIC RECOMMENDATIONS -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+          <h4 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+            <span>💡</span>
+            <span>Rekomendasi Tindakan (Action Plan)</span>
+          </h4>
+          <div id="recommendationsList" class="space-y-3">
+            <!-- Dynamic recommendation cards injected by JS -->
+          </div>
+        </div>
+
+        <!-- SIMULASI TRIGGER WEBHOOK n8n -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+              <span>⚡</span>
+              <span>Uji Webhook Otomasi n8n</span>
+            </h4>
+            <span class="text-[10px] bg-indigo-800 text-indigo-200 px-2 py-0.5 rounded-full font-mono">POST /webhook</span>
+          </div>
+          <p class="text-xs text-slate-300">
+            Kirimkan simulasi event pendaftar baru / pesanan toko secara langsung ke workflow n8n Anda.
+          </p>
+
+          <form id="formSimulateLead" class="space-y-2.5 pt-1">
+            <div>
+              <label class="block text-[11px] text-slate-400 font-medium mb-1">Nama Prospek / Nama Toko</label>
+              <input type="text" id="simLeadName" class="w-full bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400" placeholder="Cth: Toko Agres Mall / Calon Maba" required>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] text-slate-400 font-medium mb-1">Saluran Sumber</label>
+                <select id="simLeadChannel" class="w-full bg-slate-800/90 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+                  <option value="Instagram / WhatsApp">Instagram / WhatsApp</option>
+                  <option value="Toko Mall / Kunjungan">Toko Mall / Kunjungan</option>
+                  <option value="TikTok / Marketplace">TikTok / Marketplace</option>
+                  <option value="Referral / Rekanan">Referral / Rekanan</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] text-slate-400 font-medium mb-1">Status Tahapan</label>
+                <select id="simLeadStage" class="w-full bg-slate-800/90 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+                  <option value="Consideration">Consideration (Nego/Tanya)</option>
+                  <option value="Conversion">Conversion (Deal/Daftar)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg text-xs shadow transition flex items-center justify-center space-x-1.5">
+              <span>🚀</span>
+              <span>Kirim Payload ke n8n</span>
+            </button>
+          </form>
+
+          <!-- CONSOLE LOG SIMULATION OUTPUT -->
+          <div id="simLogBox" class="hidden bg-black/60 rounded-lg p-2.5 text-[11px] font-mono text-emerald-300 border border-emerald-900/40">
+            <!-- Output log will appear here -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <p>EduFunnel Decision Support System • Tugas Desain Interaksi Pengguna (DIP) • Pengembang: <a href="https://github.com/4ditRama" target="_blank" class="text-indigo-600 hover:underline font-semibold">@4ditRama</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
