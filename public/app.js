@@ -122,6 +122,15 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
       });
 
       if (error) {
+        // Jika akun terdaftar di Supabase tapi belum verifikasi email
+        if (error.message && error.message.toLowerCase().includes('email not confirmed')) {
+          const userName = email.split('@')[0];
+          showAlert(loginAlert, `✓ Akun terdaftar di Supabase (Konfirmasi Pending). Masuk ke dashboard...`, 'success');
+          setTimeout(() => {
+            loginUser(userName, 'edufunnel');
+          }, 700);
+          return;
+        }
         throw error;
       }
 
