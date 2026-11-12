@@ -94,7 +94,8 @@ ${JSON.stringify(funnelData, null, 2)}
 Jawab pertanyaan dalam Bahasa Indonesia dengan gaya praktis, ramah, solutif, membantu Pak Ujang dan Mas Iqbal mengambil keputusan bisnis cepat (margin, toko langganan, Mas Iqbal lapangan, strategi restock). Gunakan format HTML dasar (strong, em, br, li, ul).`;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    // Model Gemini 3.5 Flash Lite yang terverifikasi aktif
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -121,8 +122,9 @@ Jawab pertanyaan dalam Bahasa Indonesia dengan gaya praktis, ramah, solutif, mem
     const result = await response.json();
     let reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, saya tidak dapat memproses jawaban saat ini.";
     
-    // Format markdown bold/newlines to HTML if needed
+    // Format markdown bold/newlines to HTML
     reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
     reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
 
     res.json({ reply });

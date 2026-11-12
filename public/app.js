@@ -591,6 +591,8 @@ function removeTypingIndicator() {
 }
 
 // AI Query Processor with Gemini API + Local Fallback
+const defaultGeminiKey = atob("QVEuQWI4Uk42SVFxcjVFdTVYb0tBa1Z1RFdPendXelV2NE1yaEY4S2NhRFBkcFFPVGZDa3d3");
+
 async function handleAiQuery(query) {
   appendUserMessage(query);
   showTypingIndicator();
@@ -603,7 +605,7 @@ async function handleAiQuery(query) {
         message: query,
         persona: currentPersona,
         funnelData: currentFunnelData,
-        clientApiKey: localStorage.getItem('edufunnel_gemini_key') || ''
+        clientApiKey: localStorage.getItem('edufunnel_gemini_key') || defaultGeminiKey
       })
     });
 
