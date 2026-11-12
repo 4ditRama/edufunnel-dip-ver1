@@ -599,13 +599,75 @@ function removeTypingIndicator() {
   if (el) el.remove();
 }
 
-// AI Query Processor with Gemini API + Local Fallback
-const defaultGeminiKey = atob("QVEuQWI4Uk42SVFxcjVFdTVYb0tBa1Z1RFdPendXelV2NE1yaEY4S2NhRFBkcFFPVGZDa3d3");
+// AI Query Processor with Direct Gemini API + Backend /api/chat + Local Fallback
+const defaultGeminiKey = atob("QVEuQWI4Uk42SVFxcjVFdTVYb0tBa1Z1RFdPeld6VXY0TXJoRjhLY2FEUGRwUU9UZkNrd3c=");
+
+async function callGeminiDirect(query, apiKey) {
+  const isEdu = currentPersona === 'edufunnel';
+  const funnel = currentFunnelData;
+  const systemContext = isEdu
+    ? `Anda adalah Asisten Keputusan Strategis EduFunnel untuk pendaftaran mahasiswa baru (PMB Kampus).
+Konteks data corong pendaftaran aktif: ${JSON.stringify(funnel)}
+Panduan Menjawab:
+1. Jika pengguna bertanya tentang data pendaftaran PMB, saluran promosi, atau bottleneck, jawab berbasis data di atas secara tajam dan solutif.
+2. Jika pengguna bertanya di luar tema (resep makanan, cemilan, lelucon, obrolan santai, pertanyaan umum), tetap jawab dengan ramah, lezat/lengkap, dan informatif (jangan menolak), lalu ingatkan dengan santai bahwa Anda siap kembali menganalisis corong PMB kapan pun dibutuhkan.
+3. Format teks menggunakan tag HTML: <strong> untuk tebal, <em> untuk miring, <br> untuk baris baru, <li> untuk poin-poin.`
+    : `Anda adalah Konsultan Bisnis dan Penjualan B2B untuk usaha grosir gadget Pak Ujang Rahmat dan Mas Iqbal. Tim menyuplai laptop dan HP ke toko-toko retail mall (Agres, dll).
+Konteks data corong penjualan aktif: ${JSON.stringify(funnel)}
+Panduan Menjawab:
+1. Jika pengguna bertanya seputar penjualan HP/laptop, margin, toko rekanan (Agres), atau tugas COD Mas Iqbal, jawab berbasis data secara solutif dan praktis.
+2. Jika pengguna bertanya di luar tema grosir gadget (seperti resep cemilan mac n cheese, rekomendasi makanan, obrolan santai), jawablah pertanyaannya secara ramah, lengkap, dan lezat (jangan menolak), lalu dengan gaya hangat khas Pak Ujang selipkan humor santai bahwa Anda siap lanjut bantu hitung margin dan stok kapan pun siap!
+3. Format teks menggunakan tag HTML: <strong> untuk tebal, <em> untuk miring, <br> untuk baris baru, <li> untuk poin-poin.`;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: `${systemContext}\n\nPertanyaan Pengguna: "${query}"` }]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 600
+      }
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Gemini direct status ${response.status}`);
+  }
+
+  const result = await response.json();
+  let reply = result.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!reply) throw new Error('Empty response from Gemini');
+
+  reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+  return reply;
+}
 
 async function handleAiQuery(query) {
   appendUserMessage(query);
   showTypingIndicator();
 
+  const apiKey = localStorage.getItem('edufunnel_gemini_key') || defaultGeminiKey;
+
+  // 1. Prioritas Utama: Panggil Gemini langsung dari browser klien (respons 1-2 detik, tanpa batas Vercel)
+  try {
+    const directReply = await callGeminiDirect(query, apiKey);
+    removeTypingIndicator();
+    appendAiMessage(directReply);
+    return;
+  } catch (directErr) {
+    console.warn('Direct Gemini call failed, trying /api/chat backend:', directErr);
+  }
+
+  // 2. Jalur Kedua: Panggil endpoint backend /api/chat
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -614,26 +676,26 @@ async function handleAiQuery(query) {
         message: query,
         persona: currentPersona,
         funnelData: currentFunnelData,
-        clientApiKey: localStorage.getItem('edufunnel_gemini_key') || defaultGeminiKey
+        clientApiKey: apiKey
       })
     });
 
-    const data = await res.json();
-    removeTypingIndicator();
-
-    if (data && data.reply) {
-      appendAiMessage(data.reply);
-      return;
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.reply) {
+        removeTypingIndicator();
+        appendAiMessage(data.reply);
+        return;
+      }
     }
-    
-    // Fallback if no server key
-    const fallbackAns = generateAiAnswer(query.toLowerCase());
-    appendAiMessage(fallbackAns);
-  } catch (err) {
-    removeTypingIndicator();
-    const fallbackAns = generateAiAnswer(query.toLowerCase());
-    appendAiMessage(fallbackAns);
+  } catch (serverErr) {
+    console.warn('Server endpoint failed, falling back to local rule engine:', serverErr);
   }
+
+  // 3. Fallback Terakhir: Mesin Aturan Lokal Cerdas (jika koneksi benar-benar terputus)
+  removeTypingIndicator();
+  const fallbackAns = generateAiAnswer(query.toLowerCase());
+  appendAiMessage(fallbackAns);
 }
 
 if (aiChatForm) {
@@ -714,7 +776,16 @@ function generateAiAnswer(q) {
     return `📚 <strong>Edukasi Konsep Desain Interaksi Pengguna (DIP):</strong><br><br>• <strong>UCD (ISO 9241-210):</strong> Pendekatan desain yang menempatkan kebutuhan nyata pengguna (Pak Ujang / Tim PMB) sebagai pusat pengembangan, dievaluasi lewat metrik kepuasan dan efisiensi.<br>• <strong>Model ACCRA:</strong> Alur corong 5 tahap dari <em>Awareness</em> (tahu), <em>Consideration</em> (tanya/menimbang), <em>Conversion</em> (beli/deal), <em>Retention</em> (repeat order/kuliah), hingga <em>Advocacy</em> (rekomendasi).`;
   }
 
-  // 8. Default Answer
+  // 8. Cemilan, Resep, Makanan Santai
+  if (q.includes('resep') || q.includes('mac') || q.includes('cheese') || q.includes('makan') || q.includes('cemilan') || q.includes('masak') || q.includes('laper') || q.includes('lapar')) {
+    if (isEdu) {
+      return `🧀 <strong>Resep Praktis Mac and Cheese ala Mahasiswa PMB:</strong><br><br>1. <strong>Bahan:</strong> 150g makaroni rebus, 2 sdm mentega, 1 gelas susu cair, parutan keju cheddar & mozzarella secukupnya.<br>2. <strong>Cara Cepat:</strong> Lelehkan mentega di teflon, masukkan susu dan keju sampai saus mengental gurih. Masukkan makaroni, aduk rata dengan sejumput garam dan merica hitam.<br><br>Nikmati cemilannya selagi hangat sambil kita lanjut evaluasi saluran promosi kampus ya! 🎓✨`;
+    } else {
+      return `🧀 <strong>Resep Spesial Mac and Cheese Rekomendasi Pak Ujang & Mas Iqbal:</strong><br><br>Biar stamina tetap prima saat muter COD kirim laptop ke toko mall, ini resep simpelnya:<br>• <strong>Bahan:</strong> 200g macaroni rebus, 2 sdm margarin, 1 kotak susu UHT (200ml), keju cheddar parut + sedikit keju quick melt.<br>• <strong>Cara Buat:</strong> Lelehkan margarin di wajan, tuang susu dan masukkan keju sampai meleleh jadi saus creamy kental. Masukkan macaroni, bumbui merica & kaldu jamur secukupnya.<br><br>Mantap disantap hangat sebelum Mas Iqbal berangkat kunjungan ke gerai Agres! Mau lanjut hitung margin stok laptop? 📱👍`;
+    }
+  }
+
+  // 9. Default Answer
   return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Titik hambatan utama saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas atau bertanya tentang stok, saluran, dan strategi closing! 😊`;
 }
 

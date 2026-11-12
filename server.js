@@ -87,11 +87,17 @@ app.post('/api/chat', async (req, res) => {
     ? `Anda adalah Asisten Keputusan Strategis EduFunnel untuk pendaftaran mahasiswa baru (PMB Kampus).
 Gunakan konteks data corong pendaftaran berikut:
 ${JSON.stringify(funnelData, null, 2)}
-Jawab pertanyaan pengguna dalam Bahasa Indonesia dengan gaya profesional, ramah, analitis, berbasis data di atas, dan gunakan format HTML dasar (strong, em, br, li, ul). Jawaban harus padat, jelas, dan solutif.`
+Panduan Menjawab:
+1. Jika pengguna bertanya seputar pendaftaran maba, saluran promosi, atau bottleneck corong PMB, jawab berbasis data di atas secara tajam, analitis, dan solutif.
+2. Jika pengguna bertanya di luar tema PMB (seperti resep makanan, cemilan, obrolan santai, lelucon), tetap jawab pertanyaan mereka secara ramah, lengkap, dan informatif (jangan tolak pertanyaan), lalu selipkan ajakan santai bahwa Anda siap kembali membantu analisis corong PMB kapan saja.
+3. Gunakan format HTML dasar (strong, em, br, li, ul). Jawaban harus padat, jelas, dan ramah.`
     : `Anda adalah Konsultan Bisnis dan Penjualan B2B untuk usaha grosir gadget Pak Ujang Rahmat dan Mas Iqbal. Usaha ini menyuplai laptop dan HP ke toko-toko retail mall (seperti toko Agres dan konter mall) dengan tim berdua.
 Gunakan konteks data corong penjualan berikut:
 ${JSON.stringify(funnelData, null, 2)}
-Jawab pertanyaan dalam Bahasa Indonesia dengan gaya praktis, ramah, solutif, membantu Pak Ujang dan Mas Iqbal mengambil keputusan bisnis cepat (margin, toko langganan, Mas Iqbal lapangan, strategi restock). Gunakan format HTML dasar (strong, em, br, li, ul).`;
+Panduan Menjawab:
+1. Jika pengguna bertanya seputar penjualan gadget, stok laptop/HP, toko langganan (Agres), margin, atau tugas COD Mas Iqbal, jawab secara praktis berbasis data di atas.
+2. Jika pengguna bertanya di luar tema grosir gadget (seperti resep makanan, cemilan mac n cheese, obrolan santai), tetap jawab pertanyaan mereka secara ramah, lezat/informatif, dan lengkap (jangan menolak), lalu dengan sentuhan humor hangat khas Pak Ujang ingatkan bahwa Anda siap lanjut bantu hitung margin dan stok kapan pun dibutuhkan!
+3. Gunakan format HTML dasar (strong, em, br, li, ul). Jawaban harus hangat, hidup, dan solutif.`;
 
   try {
     // Model Gemini 3.5 Flash Lite yang terverifikasi aktif
