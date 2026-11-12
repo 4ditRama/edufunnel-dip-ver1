@@ -590,16 +590,39 @@ function removeTypingIndicator() {
   if (el) el.remove();
 }
 
-// AI Query Processor
-function handleAiQuery(query) {
+// AI Query Processor with Gemini API + Local Fallback
+async function handleAiQuery(query) {
   appendUserMessage(query);
   showTypingIndicator();
 
-  setTimeout(() => {
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: query,
+        persona: currentPersona,
+        funnelData: currentFunnelData,
+        clientApiKey: localStorage.getItem('edufunnel_gemini_key') || ''
+      })
+    });
+
+    const data = await res.json();
     removeTypingIndicator();
-    const response = generateAiAnswer(query.toLowerCase());
-    appendAiMessage(response);
-  }, 350);
+
+    if (data && data.reply) {
+      appendAiMessage(data.reply);
+      return;
+    }
+    
+    // Fallback if no server key
+    const fallbackAns = generateAiAnswer(query.toLowerCase());
+    appendAiMessage(fallbackAns);
+  } catch (err) {
+    removeTypingIndicator();
+    const fallbackAns = generateAiAnswer(query.toLowerCase());
+    appendAiMessage(fallbackAns);
+  }
 }
 
 if (aiChatForm) {
@@ -618,6 +641,15 @@ function generateAiAnswer(q) {
 
   if (!data) {
     return "Data funnel belum dimuat dengan sempurna. Silakan muat ulang halaman.";
+  }
+
+  // 0. Pertanyaan Meta / Perkenalan & Kemampuan
+  if (q.includes('kamu siapa') || q.includes('siapa kamu') || q.includes('bisa apa') || q.includes('bantu apa') || q.includes('fungsi') || q.includes('peran') || q.includes('halo') || q.includes('hai')) {
+    if (isEdu) {
+      return `Halo! Saya adalah <strong>Asisten Keputusan EduFunnel</strong> 🎓.<br><br>Di sistem ini, peran utama saya adalah membantu pimpinan & tim marketing PMB untuk:<br>1. <strong>Mendeteksi Bottleneck:</strong> Mengetahui di tahap mana calon mahasiswa paling banyak gugur (drop-off).<br>2. <strong>Evaluasi Saluran Iklan:</strong> Membandingkan performa Instagram, TikTok, dan Edu Expo.<br>3. <strong>Saran Strategis (Now What):</strong> Memberikan langkah konkret untuk mendongkrak pendaftaran.<br><br>Silakan tanyakan apa saja seputar data atau klik pertanyaan cepat di atas! 😊`;
+    } else {
+      return `Halo! Saya adalah <strong>Konsultan Bisnis B2B untuk Pak Ujang & Mas Iqbal</strong> 📱.<br><br>Tugas utama saya di aplikasi ini adalah:<br>1. <strong>Menganalisis Penjualan Toko:</strong> Memantau penawaran stok HP/laptop ke toko retail mall (seperti Agres).<br>2. <strong>Mengevaluasi Nego & Closing:</strong> Mencari tahu kenapa penawaran batal deal dan cara memaksimalkan margin.<br>3. <strong>Arahan Lapangan:</strong> Memberi rekomendasi rute dan taktik negosiasi untuk Mas Iqbal saat COD/kunjungan toko.<br><br>Ada hal spesifik tentang stok atau toko langganan yang ingin dibahas? 😊`;
+    }
   }
 
   // 1. Bottleneck / Hambatan / Drop-off
@@ -646,19 +678,33 @@ function generateAiAnswer(q) {
     return `🛵 <strong>Arahan Operasional Khusus Mas Iqbal:</strong><br><br>1. <strong>Jadwal Kunjungan Prioritas:</strong> Kunjungi toko rekanan mall (terutama gerai Agres) setiap hari <strong>Selasa dan Jumat</strong> saat etalase mereka sedang kosong.<br>2. <strong>Bawa Sampel Unit:</strong> Selalu bawa unit laptop siap jual yang sudah dicek fisiknya.<br>3. <strong>Siapkan Paket Bundling:</strong> Bawa bonus tas laptop atau mouse saat negosiasi di toko agar pemilik toko langsung deal di tempat!`;
   }
 
-  // 4. Rekomendasi / Saran / Tindakan
+  // 4. Draft Chat WA / Pesan Promosi
+  if (q.includes('draft') || q.includes('wa') || q.includes('chat') || q.includes('pesan') || q.includes('teks')) {
+    if (isEdu) {
+      return `📱 <strong>Draf Pesan WhatsApp Follow-up (PMB Kampus):</strong><br><br><em>"Halo Kak [Nama Calon Maba]! Terima kasih sudah berkonsultasi mengenai program studi di kampus kami 😊. Biaya pendaftaran gelombang 1 akan ditutup dalam 3 hari lagi lho. Yuk amankan kuota prodi impianmu di sini: [Link Pendaftaran]. Jika butuh bantuan pengisian berkas, kami siap bantu ya!"</em>`;
+    } else {
+      return `📱 <strong>Draf Pesan WhatsApp Penawaran Stok (Pak Ujang ke Toko Mall):</strong><br><br><em>"Siang Ko/Ci [Nama Pemilik Toko Agres/Mall]! Ini Pak Ujang. Mau info ada masuk stok laptop Lenovo & Asus siap pajang, kondisi mulus grade A + garansi toko. Harga grosir spesial khusus restock minggu ini ya. Nanti sore Mas Iqbal bisa sekalian mampir bawain unitnya kalau mau cek dulu. Terima kasih!"</em>`;
+    }
+  }
+
+  // 5. Rekomendasi / Saran / Tindakan
   if (q.includes('rekomendasi') || q.includes('saran') || q.includes('tindakan') || q.includes('aksi') || q.includes('tips') || q.includes('solusi')) {
     const recs = data.recommendations.map(r => `• <strong>[Prioritas ${r.priority}] ${r.title}:</strong> ${r.action}`).join('<br><br>');
     return `💡 <strong>Rencana Tindakan Strategis (Berdasarkan Data):</strong><br><br>${recs}`;
   }
 
-  // 5. Konversi / CVR / Angka Ringkasan
+  // 6. Konversi / CVR / Angka Ringkasan
   if (q.includes('konversi') || q.includes('cvr') || q.includes('angka') || q.includes('total') || q.includes('deal') || q.includes('ringkasan')) {
     return `📊 <strong>Ringkasan Performa Corong Saat Ini:</strong><br><br>• <strong>Total Prospek Masuk:</strong> ${data.summary.total_prospects.toLocaleString('id-ID')} unit/orang<br>• <strong>Total Berhasil Konversi:</strong> ${data.summary.total_converted.toLocaleString('id-ID')} transaksi/maba<br>• <strong>Rasio Konversi Keseluruhan (CVR):</strong> <strong>${data.summary.overall_conversion_rate}</strong><br>• <strong>Saluran Teratas:</strong> ${data.summary.top_channel}<br>• <strong>Status Funnel:</strong> Berjalan stabil dan terukur.`;
   }
 
-  // 6. Default Answer
-  return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Fokus perbaikan saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas untuk analisis mendalam! 😊`;
+  // 7. Edukasi Istilah (Funnel, UCD, ACCRA)
+  if (q.includes('ucd') || q.includes('accra') || q.includes('apa itu') || q.includes('pengertian')) {
+    return `📚 <strong>Edukasi Konsep Desain Interaksi Pengguna (DIP):</strong><br><br>• <strong>UCD (ISO 9241-210):</strong> Pendekatan desain yang menempatkan kebutuhan nyata pengguna (Pak Ujang / Tim PMB) sebagai pusat pengembangan, dievaluasi lewat metrik kepuasan dan efisiensi.<br>• <strong>Model ACCRA:</strong> Alur corong 5 tahap dari <em>Awareness</em> (tahu), <em>Consideration</em> (tanya/menimbang), <em>Conversion</em> (beli/deal), <em>Retention</em> (repeat order/kuliah), hingga <em>Advocacy</em> (rekomendasi).`;
+  }
+
+  // 8. Default Answer
+  return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Titik hambatan utama saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas atau bertanya tentang stok, saluran, dan strategi closing! 😊`;
 }
 
 // Initialize when DOM is ready

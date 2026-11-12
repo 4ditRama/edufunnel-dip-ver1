@@ -70,6 +70,68 @@ app.post('/api/webhook/update-data', (req, res) => {
   }
 });
 
+// 4. POST /api/chat: Integrasi Generative AI dengan Google Gemini API
+app.post('/api/chat', async (req, res) => {
+  const { message, persona, funnelData, clientApiKey } = req.body;
+  const apiKey = process.env.GEMINI_API_KEY || clientApiKey;
+
+  if (!apiKey) {
+    return res.status(400).json({
+      error: 'GEMINI_API_KEY belum dikonfigurasi',
+      fallback: true
+    });
+  }
+
+  const isEdu = persona === 'edufunnel';
+  const systemContext = isEdu
+    ? `Anda adalah Asisten Keputusan Strategis EduFunnel untuk pendaftaran mahasiswa baru (PMB Kampus).
+Gunakan konteks data corong pendaftaran berikut:
+${JSON.stringify(funnelData, null, 2)}
+Jawab pertanyaan pengguna dalam Bahasa Indonesia dengan gaya profesional, ramah, analitis, berbasis data di atas, dan gunakan format HTML dasar (strong, em, br, li, ul). Jawaban harus padat, jelas, dan solutif.`
+    : `Anda adalah Konsultan Bisnis dan Penjualan B2B untuk usaha grosir gadget Pak Ujang Rahmat dan Mas Iqbal. Usaha ini menyuplai laptop dan HP ke toko-toko retail mall (seperti toko Agres dan konter mall) dengan tim berdua.
+Gunakan konteks data corong penjualan berikut:
+${JSON.stringify(funnelData, null, 2)}
+Jawab pertanyaan dalam Bahasa Indonesia dengan gaya praktis, ramah, solutif, membantu Pak Ujang dan Mas Iqbal mengambil keputusan bisnis cepat (margin, toko langganan, Mas Iqbal lapangan, strategi restock). Gunakan format HTML dasar (strong, em, br, li, ul).`;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { text: `${systemContext}\n\nPertanyaan Pengguna: "${message}"` }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 600
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`Gemini API Error: ${errBody}`);
+    }
+
+    const result = await response.json();
+    let reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, saya tidak dapat memproses jawaban saat ini.";
+    
+    // Format markdown bold/newlines to HTML if needed
+    reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+    res.json({ reply });
+  } catch (error) {
+    console.error('Chat endpoint error:', error);
+    res.status(500).json({ error: error.message, fallback: true });
+  }
+});
+
 // Fallback routing untuk Single Page Application
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
