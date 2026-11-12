@@ -26,6 +26,8 @@
       }
     }
   </script>
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
@@ -166,6 +168,9 @@
         <p class="text-xs text-stone-500">Masuk untuk mengakses analitik dan rekomendasi funnel</p>
       </div>
 
+      <!-- ALERT NOTIFIKASI LOGIN -->
+      <div id="loginAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
       <!-- FORM LOGIN MANUAL -->
       <form id="formLogin" class="space-y-4">
         <div>
@@ -227,6 +232,9 @@
         <h2 class="text-2xl font-heading font-bold text-[#140b06]">Daftar Akun Baru</h2>
         <p class="text-xs text-stone-500">Buat akun untuk memantau performa saluran dan konversi</p>
       </div>
+
+      <!-- ALERT NOTIFIKASI REGISTER -->
+      <div id="registerAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
 
       <form id="formRegister" class="space-y-3.5">
         <div>

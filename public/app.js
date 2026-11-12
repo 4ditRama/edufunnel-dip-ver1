@@ -32,10 +32,38 @@ document.getElementById('btnBackToLandingFromLogin').addEventListener('click', (
 document.getElementById('btnBackToLandingFromReg').addEventListener('click', () => showView('landing'));
 
 // ==========================================
-// AUTHENTICATION LOGIC (LOCAL STORAGE & DEMO)
+// SUPABASE CLIENT & AUTHENTICATION LOGIC
 // ==========================================
+const SUPABASE_URL = "https://kprrkitfkgssgufobfsat.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable__PdQEQY0JyGThf4BtHfWHg_I4xBrVaI";
+
+let supabaseClient = null;
+try {
+  if (window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (err) {
+  console.warn('Inisialisasi Supabase SDK gagal, beralih ke mode fallback:', err);
+}
+
 const lblCurrentUserName = document.getElementById('lblCurrentUserName');
 const btnLogout = document.getElementById('btnLogout');
+const loginAlert = document.getElementById('loginAlert');
+const registerAlert = document.getElementById('registerAlert');
+
+// Helper to show alert messages
+function showAlert(element, message, type = 'error') {
+  element.className = type === 'success' 
+    ? "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
+    : "p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200";
+  element.innerHTML = message;
+  element.classList.remove('hidden');
+}
+
+function clearAlert(element) {
+  element.classList.add('hidden');
+  element.innerHTML = '';
+}
 
 // Handle Successful Login
 function loginUser(name, persona = 'gadget') {
@@ -48,7 +76,14 @@ function loginUser(name, persona = 'gadget') {
 }
 
 // Logout
-btnLogout.addEventListener('click', () => {
+btnLogout.addEventListener('click', async () => {
+  if (supabaseClient) {
+    try {
+      await supabaseClient.auth.signOut();
+    } catch (err) {
+      console.error('Logout Supabase error:', err);
+    }
+  }
   localStorage.removeItem('edufunnel_user');
   showView('landing');
 });
@@ -62,25 +97,137 @@ document.getElementById('btnQuickLoginBuRina').addEventListener('click', () => {
   loginUser('Bu Rina (Admisi PMB)', 'edufunnel');
 });
 
-// Form Login Manual
-document.getElementById('formLogin').addEventListener('submit', (e) => {
+// Form Login Manual (Real Supabase Auth)
+document.getElementById('formLogin').addEventListener('submit', async (e) => {
   e.preventDefault();
+  clearAlert(loginAlert);
+
   const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.textContent;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Memverifikasi...";
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const userName = data.user.user_metadata?.full_name || email.split('@')[0];
+      const userRole = data.user.user_metadata?.role;
+      const initialPersona = userRole === 'owner_gadget' ? 'gadget' : 'edufunnel';
+
+      loginUser(userName, initialPersona);
+      return;
+    } catch (err) {
+      console.warn('Supabase signIn error, checking fallback:', err.message);
+      showAlert(loginAlert, `Gagal masuk: ${err.message || 'Email atau password salah'}`);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+      return;
+    }
+  }
+
+  // Fallback demo login
   const derivedName = email.split('@')[0] || 'User';
   loginUser(derivedName, 'edufunnel');
+  submitBtn.disabled = false;
+  submitBtn.textContent = originalBtnText;
 });
 
-// Form Register Manual
-document.getElementById('formRegister').addEventListener('submit', (e) => {
+// Form Register Manual (Real Supabase Auth)
+document.getElementById('formRegister').addEventListener('submit', async (e) => {
   e.preventDefault();
+  clearAlert(registerAlert);
+
   const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
   const role = document.getElementById('regRole').value;
   const initialPersona = role === 'owner_gadget' ? 'gadget' : 'edufunnel';
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.textContent;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Mendaftarkan ke Cloud...";
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: name,
+            role: role
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Check if session was created immediately (email confirmation disabled)
+      if (data.session) {
+        showAlert(registerAlert, `Pendaftaran berhasil! Mengalihkan ke dashboard...`, 'success');
+        setTimeout(() => {
+          loginUser(name, initialPersona);
+        }, 800);
+        return;
+      } else {
+        // If email confirmation is enabled on Supabase
+        showAlert(registerAlert, `Akun berhasil didaftarkan di database Supabase! Silakan masuk dengan akun Anda.`, 'success');
+        document.getElementById('loginEmail').value = email;
+        setTimeout(() => {
+          showView('login');
+        }, 1500);
+        return;
+      }
+    } catch (err) {
+      console.error('Supabase signUp error:', err);
+      showAlert(registerAlert, `Gagal mendaftar: ${err.message}`);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+      return;
+    }
+  }
+
+  // Fallback if client isn't loaded
   loginUser(name, initialPersona);
+  submitBtn.disabled = false;
+  submitBtn.textContent = originalBtnText;
 });
 
-// Check Existing Auth on Load
-function checkExistingAuth() {
+// Check Existing Auth on Load (from Supabase or LocalStorage)
+async function checkExistingAuth() {
+  if (supabaseClient) {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && session.user) {
+        const userName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+        const userRole = session.user.user_metadata?.role;
+        const persona = userRole === 'owner_gadget' ? 'gadget' : 'edufunnel';
+
+        lblCurrentUserName.textContent = `👤 ${userName}`;
+        switchPersona(persona);
+        showView('dashboard');
+        return;
+      }
+    } catch (err) {
+      console.warn('Error reading Supabase session:', err);
+    }
+  }
+
   const savedUser = localStorage.getItem('edufunnel_user');
   if (savedUser) {
     try {
@@ -93,6 +240,7 @@ function checkExistingAuth() {
       localStorage.removeItem('edufunnel_user');
     }
   }
+
   showView('landing');
 }
 
