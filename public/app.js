@@ -1,12 +1,106 @@
-// Application State
+// ==========================================
+// APPLICATION STATE & VIEW SWITCHING
+// ==========================================
 let currentPersona = 'edufunnel';
 let funnelChartInstance = null;
 let channelChartInstance = null;
 
-// DOM Elements
+// Views
+const viewLanding = document.getElementById('viewLanding');
+const viewLogin = document.getElementById('viewLogin');
+const viewRegister = document.getElementById('viewRegister');
+const viewDashboard = document.getElementById('viewDashboard');
+
+// View Switching Function
+function showView(viewName) {
+  viewLanding.classList.toggle('hidden', viewName !== 'landing');
+  viewLogin.classList.toggle('hidden', viewName !== 'login');
+  viewRegister.classList.toggle('hidden', viewName !== 'register');
+  viewDashboard.classList.toggle('hidden', viewName !== 'dashboard');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Navigation Buttons
+document.getElementById('btnGoToLogin').addEventListener('click', () => showView('login'));
+document.getElementById('btnGoToRegister').addEventListener('click', () => showView('register'));
+document.getElementById('btnHeroRegister').addEventListener('click', () => showView('register'));
+document.getElementById('btnHeroQuickDemo').addEventListener('click', () => showView('login'));
+
+document.getElementById('btnSwitchToRegister').addEventListener('click', () => showView('register'));
+document.getElementById('btnSwitchToLogin').addEventListener('click', () => showView('login'));
+document.getElementById('btnBackToLandingFromLogin').addEventListener('click', () => showView('landing'));
+document.getElementById('btnBackToLandingFromReg').addEventListener('click', () => showView('landing'));
+
+// ==========================================
+// AUTHENTICATION LOGIC (LOCAL STORAGE & DEMO)
+// ==========================================
+const lblCurrentUserName = document.getElementById('lblCurrentUserName');
+const btnLogout = document.getElementById('btnLogout');
+
+// Handle Successful Login
+function loginUser(name, persona = 'gadget') {
+  const user = { name, persona, loggedInAt: new Date().toISOString() };
+  localStorage.setItem('edufunnel_user', JSON.stringify(user));
+  
+  lblCurrentUserName.textContent = `👤 ${name}`;
+  switchPersona(persona);
+  showView('dashboard');
+}
+
+// Logout
+btnLogout.addEventListener('click', () => {
+  localStorage.removeItem('edufunnel_user');
+  showView('landing');
+});
+
+// Quick Demo Login (Special for Lecturer / Evaluator)
+document.getElementById('btnQuickLoginPakUjang').addEventListener('click', () => {
+  loginUser('Pak Ujang (Owner)', 'gadget');
+});
+
+document.getElementById('btnQuickLoginBuRina').addEventListener('click', () => {
+  loginUser('Bu Rina (Admisi PMB)', 'edufunnel');
+});
+
+// Form Login Manual
+document.getElementById('formLogin').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const derivedName = email.split('@')[0] || 'User';
+  loginUser(derivedName, 'edufunnel');
+});
+
+// Form Register Manual
+document.getElementById('formRegister').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('regName').value.trim();
+  const role = document.getElementById('regRole').value;
+  const initialPersona = role === 'owner_gadget' ? 'gadget' : 'edufunnel';
+  loginUser(name, initialPersona);
+});
+
+// Check Existing Auth on Load
+function checkExistingAuth() {
+  const savedUser = localStorage.getItem('edufunnel_user');
+  if (savedUser) {
+    try {
+      const parsed = JSON.parse(savedUser);
+      lblCurrentUserName.textContent = `👤 ${parsed.name}`;
+      switchPersona(parsed.persona || 'edufunnel');
+      showView('dashboard');
+      return;
+    } catch (err) {
+      localStorage.removeItem('edufunnel_user');
+    }
+  }
+  showView('landing');
+}
+
+// ==========================================
+// DASHBOARD LOGIC & DUAL PERSONA
+// ==========================================
 const btnPersonaEdu = document.getElementById('btnPersonaEdu');
 const btnPersonaGadget = document.getElementById('btnPersonaGadget');
-const btnSyncWebhook = document.getElementById('btnSyncWebhook');
 
 const headerTitle = document.getElementById('headerTitle');
 const headerSubtitle = document.getElementById('headerSubtitle');
@@ -23,10 +117,6 @@ const funnelStagesList = document.getElementById('funnelStagesList');
 const tableChannelBody = document.getElementById('tableChannelBody');
 const recommendationsList = document.getElementById('recommendationsList');
 
-const formSimulateLead = document.getElementById('formSimulateLead');
-const simLogBox = document.getElementById('simLogBox');
-
-// Event Listeners for Persona Switching
 btnPersonaEdu.addEventListener('click', () => switchPersona('edufunnel'));
 btnPersonaGadget.addEventListener('click', () => switchPersona('gadget'));
 
@@ -69,21 +159,17 @@ async function loadFunnelData(persona) {
 
 // Render Dashboard Elements
 function renderDashboard(data) {
-  // 1. Info Banner
   infoTargetAudience.textContent = `${data.system_title} — ${data.target_audience}`;
   infoPeriod.textContent = `Periode Evaluasi: ${data.period}`;
 
-  // 2. Layer 1: KPI Cards
   kpiTotalProspects.textContent = data.summary.total_prospects.toLocaleString('id-ID');
   kpiTotalConverted.textContent = data.summary.total_converted.toLocaleString('id-ID');
   kpiConversionRate.textContent = data.summary.overall_conversion_rate;
   kpiBottleneck.textContent = data.summary.primary_bottleneck;
   badgeTopChannel.textContent = `Top: ${data.summary.top_channel}`;
 
-  // 3. Layer 2: Render Funnel Stage Chart
   renderFunnelChart(data.funnel_stages);
 
-  // Render Funnel Stage Pills
   funnelStagesList.innerHTML = data.funnel_stages.map((stage, idx) => `
     <div class="p-2.5 rounded-xl border border-stone-200/70 bg-[#faf9f6] hover:border-[#fbe0c1] transition">
       <div class="flex items-center justify-between text-xs">
@@ -94,7 +180,6 @@ function renderDashboard(data) {
     </div>
   `).join('');
 
-  // 4. Render Channel Performance Chart & Table
   renderChannelChart(data.channel_performance);
 
   tableChannelBody.innerHTML = data.channel_performance.map(ch => `
@@ -106,7 +191,6 @@ function renderDashboard(data) {
     </tr>
   `).join('');
 
-  // 5. Layer 3: Recommendations
   recommendationsList.innerHTML = data.recommendations.map(rec => `
     <div class="p-4 rounded-xl border ${rec.priority === 'Tinggi' ? 'border-rose-200 bg-rose-50/40' : 'border-[#fbe0c1] bg-[#fff2ea]/40'} flex items-start space-x-3.5">
       <div class="px-2.5 py-1 rounded-md text-[10px] font-heading font-bold uppercase tracking-wider ${rec.priority === 'Tinggi' ? 'bg-rose-100 text-rose-700' : 'bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1]'}">
@@ -120,7 +204,7 @@ function renderDashboard(data) {
   `).join('');
 }
 
-// Chart.js: Funnel Stages with vibrant jasaanimasi palette
+// Chart.js: Funnel Stages
 function renderFunnelChart(stages) {
   const ctx = document.getElementById('chartFunnelStages').getContext('2d');
   
@@ -132,13 +216,12 @@ function renderFunnelChart(stages) {
   const counts = stages.map(s => s.count);
   const percentages = stages.map(s => s.percentage);
 
-  // Gradient sunset orange to espresso
   const colors = [
-    '#ff6210', // vibrant orange
+    '#ff6210',
     '#ff7934',
     '#ff9359',
     '#ffb288',
-    '#221915'  // final stage accent
+    '#221915'
   ];
 
   funnelChartInstance = new Chart(ctx, {
@@ -204,14 +287,14 @@ function renderChannelChart(channels) {
         {
           label: 'Total Prospek Masuk',
           data: channels.map(c => c.leads),
-          backgroundColor: '#e7e5e4', // soft warm stone
+          backgroundColor: '#e7e5e4',
           hoverBackgroundColor: '#d6d3d1',
           borderRadius: 6
         },
         {
           label: 'Berhasil Konversi',
           data: channels.map(c => c.converted),
-          backgroundColor: '#ff6210', // jasaanimasi vibrant orange
+          backgroundColor: '#ff6210',
           hoverBackgroundColor: '#e55509',
           borderRadius: 6
         }
@@ -246,62 +329,7 @@ function renderChannelChart(channels) {
   });
 }
 
-// Form Simulation & n8n Webhook Trigger
-formSimulateLead.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const leadName = document.getElementById('simLeadName').value;
-  const leadChannel = document.getElementById('simLeadChannel').value;
-  const leadStage = document.getElementById('simLeadStage').value;
-
-  const payload = {
-    timestamp: new Date().toISOString(),
-    persona: currentPersona,
-    lead: {
-      name: leadName,
-      channel: leadChannel,
-      stage: leadStage,
-      status: 'active'
-    },
-    source: 'EduFunnel-Dashboard-UI'
-  };
-
-  simLogBox.classList.remove('hidden');
-  simLogBox.innerHTML = `Mengirimkan data ke backend & pipeline...<br><span class="text-stone-400 font-mono text-[10px]">${JSON.stringify(payload)}</span>`;
-
-  try {
-    const res = await fetch('/api/webhook/simulate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await res.json();
-    simLogBox.innerHTML = `
-      <span class="text-emerald-400 font-bold">✓ Webhook Berhasil Dikirim!</span><br>
-      Status: ${result.status} | Respon Pipeline: ${result.message}<br>
-      <span class="text-stone-400 text-[10px]">Tercatat pada execution pipeline.</span>
-    `;
-  } catch (err) {
-    simLogBox.innerHTML = `
-      <span class="text-emerald-400 font-bold">✓ Simulasi Payload Siap!</span><br>
-      Payload: ${JSON.stringify(payload, null, 2)}<br>
-      <span class="text-[#ff8544] text-[10px]">Pipeline webhook siap diteruskan ke n8n.</span>
-    `;
-  }
-});
-
-// Trigger Webhook Button helper
-btnSyncWebhook.addEventListener('click', () => {
-  formSimulateLead.scrollIntoView({ behavior: 'smooth' });
-  simLogBox.classList.remove('hidden');
-  simLogBox.innerHTML = `
-    <span class="text-[#ff8544] font-semibold">ℹ️ Status Integrasi n8n:</span><br>
-    Pipeline webhook disiapkan untuk memproses update otomatis data funnel ke Telegram/Email.
-  `;
-});
-
-// Initialize on page load
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  loadFunnelData('edufunnel');
+  checkExistingAuth();
 });

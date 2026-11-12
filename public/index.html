@@ -30,223 +30,461 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#faf9f6] text-stone-900 min-h-screen">
+<body class="bg-[#faf9f6] text-stone-900 min-h-screen flex flex-col font-sans">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="bg-[#140b06] text-white border-b border-stone-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+  <!-- ============================================================== -->
+  <!-- 1. VIEW: LANDING PAGE                                         -->
+  <!-- ============================================================== -->
+  <section id="viewLanding" class="flex-1 flex flex-col">
+    <!-- LANDING HEADER -->
+    <header class="bg-[#140b06] text-white border-b border-stone-800 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white shadow-lg shadow-[#ff6210]/20 font-heading font-black text-lg">
+            EF
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-heading font-bold text-white tracking-tight">EduFunnel</h1>
+            <p class="text-[11px] text-stone-400">Decision Support System</p>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 text-xs text-stone-300 font-medium">
+          <a href="#fitur" class="hover:text-white transition">Fitur Unggulan</a>
+          <a href="#arsitektur" class="hover:text-white transition">Model UCD</a>
+          <a href="#persona" class="hover:text-white transition">Dual Persona</a>
+        </nav>
+
+        <div class="flex items-center space-x-2.5">
+          <button type="button" id="btnGoToLogin" class="px-3.5 py-1.5 rounded-xl text-xs font-heading font-semibold text-stone-300 hover:text-white transition">
+            Masuk
+          </button>
+          <button type="button" id="btnGoToRegister" class="px-4 py-1.5 rounded-xl text-xs font-heading font-semibold bg-[#ff6210] hover:bg-[#e55509] text-white shadow-md transition">
+            Daftar Akun &rarr;
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- LANDING HERO -->
+    <div class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 flex flex-col lg:flex-row items-center gap-12">
+      <div class="flex-1 space-y-6 text-center lg:text-left">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#fff2ea] border border-[#fbe0c1] text-[11px] font-heading font-bold text-[#ff6210]">
+          <span class="w-2 h-2 rounded-full bg-[#ff6210] animate-ping"></span>
+          <span>Sistem Pendukung Keputusan • ISO 9241-210 UCD</span>
+        </div>
+
+        <h2 class="text-3xl sm:text-5xl font-heading font-extrabold text-[#140b06] tracking-tight leading-tight">
+          Dari data mentah ke aksi nyata, <em class="text-[#ff6210] not-italic">tanpa pusing baca spreadsheet.</em>
+        </h2>
+
+        <p class="text-sm sm:text-base text-stone-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+          EduFunnel memantau perjalanan konversi calon mahasiswa baru (PMB) hingga alur grosir gadget B2B Pak Ujang, mengungkap titik hambatan (*bottleneck*), dan memandu pengambilan keputusan strategis.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+          <button type="button" id="btnHeroRegister" class="px-6 py-3 rounded-xl text-sm font-heading font-bold bg-[#ff6210] hover:bg-[#e55509] text-white shadow-lg shadow-[#ff6210]/25 transition flex items-center space-x-2">
+            <span>Mulai Sekarang</span>
+            <span>&rarr;</span>
+          </button>
+          <button type="button" id="btnHeroQuickDemo" class="px-5 py-3 rounded-xl text-sm font-heading font-semibold bg-white hover:bg-stone-50 text-stone-800 border border-stone-200 shadow-sm transition">
+            ⚡ Masuk Cepat (Akun Demo)
+          </button>
+        </div>
+
+        <div class="pt-4 flex items-center justify-center lg:justify-start space-x-4 text-xs text-stone-500">
+          <span class="flex items-center space-x-1.5"><span class="text-emerald-500">✓</span><span>Framework 3 Lapisan</span></span>
+          <span class="flex items-center space-x-1.5"><span class="text-emerald-500">✓</span><span>Dual Persona Siap Pakai</span></span>
+          <span class="flex items-center space-x-1.5"><span class="text-emerald-500">✓</span><span>Siap Integrasi Webhook</span></span>
+        </div>
+      </div>
+
+      <!-- HERO VISUAL PREVIEW CARD -->
+      <div class="flex-1 w-full max-w-lg bg-white rounded-3xl p-6 border border-stone-200/90 shadow-xl space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+            <span class="text-xs font-mono text-stone-400 ml-2">Preview Funnel 7 Hari</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">● LIVE DATA</span>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
+              <span>Awareness (Penawaran Masuk)</span>
+              <span class="font-mono text-[#ff6210]">12.500 (100%)</span>
+            </div>
+            <div class="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff6210] rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
+              <span>Consideration (Tanya / Nego)</span>
+              <span class="font-mono text-[#ff6210]">4.800 (38.4%)</span>
+            </div>
+            <div class="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff7934] rounded-full" style="width: 38.4%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
+              <span>Conversion (Deal / Bayar)</span>
+              <span class="font-mono text-[#ff6210]">1.150 (9.2%)</span>
+            </div>
+            <div class="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-[#ff9359] rounded-full" style="width: 15%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-[#fff2ea] border border-[#fbe0c1] flex items-center space-x-3 text-xs">
+          <span class="text-xl">💡</span>
+          <p class="text-stone-700"><strong class="text-[#ff6210]">Wawasan Instan:</strong> Terdeteksi penurunan terbesar di tahap Consideration &rarr; Conversion. Fokuskan intervensi!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================== -->
+  <!-- 2. VIEW: LOGIN PAGE                                           -->
+  <!-- ============================================================== -->
+  <section id="viewLogin" class="hidden flex-1 flex items-center justify-center p-4 py-12">
+    <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-xl space-y-6">
       
-      <!-- BRAND & IDENTITY -->
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white shadow-lg shadow-[#ff6210]/20 font-heading font-black text-lg">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-[#ff6210] text-white font-heading font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-[#ff6210]/20 mb-3">
           EF
         </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="text-base sm:text-lg font-heading font-bold tracking-tight text-white" id="headerTitle">EduFunnel Decision Support</h1>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff6210]/20 text-[#ff8544] border border-[#ff6210]/40">v1.2</span>
-          </div>
-          <p class="text-xs text-stone-400" id="headerSubtitle">Desain Interaksi Pengguna • Standar ISO 9241-210 UCD</p>
-        </div>
+        <h2 class="text-2xl font-heading font-bold text-[#140b06]">Selamat Datang Kembali</h2>
+        <p class="text-xs text-stone-500">Masuk untuk mengakses analitik dan rekomendasi funnel</p>
       </div>
 
-      <!-- PERSONA SWITCHER & CONTROLS -->
-      <div class="flex flex-wrap items-center gap-2.5">
-        
-        <div class="bg-[#221915] p-1 rounded-xl flex items-center border border-stone-800">
-          <button id="btnPersonaEdu" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md">
-            🎓 PMB Kampus
-          </button>
-          <button id="btnPersonaGadget" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200">
-            📱 Grosir Gadget (Pak Ujang)
-          </button>
+      <!-- FORM LOGIN MANUAL -->
+      <form id="formLogin" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Email Pengguna</label>
+          <input type="email" id="loginEmail" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] transition" placeholder="nama@email.com" required>
         </div>
 
-        <button id="btnSyncWebhook" class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-xl text-xs font-medium border border-stone-700 transition">
-          <span class="w-2 h-2 rounded-full bg-[#ff6210] animate-pulse"></span>
-          <span>Integrasi n8n</span>
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-medium text-stone-700">Password</label>
+            <span class="text-[11px] text-stone-400">Min. 6 karakter</span>
+          </div>
+          <input type="password" id="loginPassword" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] transition" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition">
+          Masuk ke Dashboard
         </button>
+      </form>
 
+      <!-- QUICK DEMO LOGIN (FOR EVALUATION / DOSEN) -->
+      <div class="pt-4 border-t border-stone-100 space-y-2.5">
+        <p class="text-[11px] font-heading font-bold text-stone-400 uppercase tracking-wider text-center">
+          ⚡ Masuk Cepat Sebagai Persona (Demo Dosen):
+        </p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button type="button" id="btnQuickLoginPakUjang" class="p-2.5 rounded-xl border border-[#fbe0c1] bg-[#fff2ea] hover:bg-[#ffe7d6] text-left transition text-xs flex flex-col justify-between">
+            <span class="font-heading font-bold text-[#140b06]">📱 Pak Ujang</span>
+            <span class="text-[10px] text-stone-500">Owner Grosir Gadget</span>
+          </button>
+
+          <button type="button" id="btnQuickLoginBuRina" class="p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-left transition text-xs flex flex-col justify-between">
+            <span class="font-heading font-bold text-[#140b06]">🎓 Bu Rina</span>
+            <span class="text-[10px] text-stone-500">Admisi PMB Kampus</span>
+          </button>
+        </div>
       </div>
+
+      <div class="text-center text-xs text-stone-500 pt-2 flex items-center justify-between">
+        <button type="button" id="btnBackToLandingFromLogin" class="text-stone-400 hover:text-stone-700">&larr; Kembali ke Beranda</button>
+        <p>Belum punya akun? <button type="button" id="btnSwitchToRegister" class="text-[#ff6210] font-bold hover:underline">Daftar di sini</button></p>
+      </div>
+
     </div>
-  </header>
+  </section>
 
-  <!-- MAIN DASHBOARD CONTENT -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- HERO CONTEXT BANNER -->
-    <div class="bg-white border border-[#fbe0c1] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden">
-      <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-[#fff2ea] rounded-full pointer-events-none -z-0"></div>
+  <!-- ============================================================== -->
+  <!-- 3. VIEW: REGISTER PAGE                                        -->
+  <!-- ============================================================== -->
+  <section id="viewRegister" class="hidden flex-1 flex items-center justify-center p-4 py-12">
+    <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-xl space-y-6">
       
-      <div class="flex items-start space-x-3.5 relative z-10">
-        <div class="p-2.5 bg-[#fff2ea] text-[#ff6210] rounded-xl border border-[#fbe0c1] text-xl">
-          🎯
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-[#ff6210] text-white font-heading font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-[#ff6210]/20 mb-3">
+          EF
         </div>
+        <h2 class="text-2xl font-heading font-bold text-[#140b06]">Daftar Akun Baru</h2>
+        <p class="text-xs text-stone-500">Buat akun untuk memantau performa saluran dan konversi</p>
+      </div>
+
+      <form id="formRegister" class="space-y-3.5">
         <div>
-          <div class="flex items-center space-x-2">
-            <h2 class="text-sm sm:text-base font-heading font-bold text-[#140b06]" id="infoTargetAudience">Memuat Profil Pengguna...</h2>
-            <span class="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1]">Aktif</span>
-          </div>
-          <p class="text-xs text-stone-600 mt-0.5" id="infoPeriod">Periode: -</p>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Nama Lengkap</label>
+          <input type="text" id="regName" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] transition" placeholder="Contoh: Rian Pratama" required>
         </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Email</label>
+          <input type="email" id="regEmail" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] transition" placeholder="nama@email.com" required>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Password</label>
+          <input type="password" id="regPassword" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] transition" placeholder="Minimal 6 karakter" required>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Peran / Organisasi</label>
+          <select id="regRole" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210]">
+            <option value="owner_gadget">📱 Owner / Tim UMKM Gadget (Pak Ujang)</option>
+            <option value="marketing_pmb">🎓 Tim Marketing / Admisi Kampus (PMB)</option>
+            <option value="analyst">📊 Pengambil Keputusan / Analis Data</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition mt-2">
+          Buat Akun Sekarang
+        </button>
+      </form>
+
+      <div class="text-center text-xs text-stone-500 pt-2 flex items-center justify-between">
+        <button type="button" id="btnBackToLandingFromReg" class="text-stone-400 hover:text-stone-700">&larr; Beranda</button>
+        <p>Sudah punya akun? <button type="button" id="btnSwitchToLogin" class="text-[#ff6210] font-bold hover:underline">Masuk</button></p>
       </div>
 
-      <div class="flex items-center space-x-2 text-xs font-medium text-stone-700 bg-stone-50 border border-stone-200 px-3.5 py-1.5 rounded-xl self-start md:self-auto relative z-10">
-        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        <span>Framework Naratif: <strong>What • So What • Now What</strong></span>
-      </div>
     </div>
+  </section>
 
-    <!-- 1. LAPISAN ATAS: WHAT? (KEY PERFORMANCE INDICATORS) -->
-    <section>
-      <div class="flex items-center space-x-2 mb-3.5">
-        <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1] uppercase tracking-wider">
-          Lapisan 1: What?
-        </span>
-        <h3 class="text-sm font-heading font-semibold text-stone-800">Ringkasan Metrik Kunci (Key Performance Indicators)</h3>
-      </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- ============================================================== -->
+  <!-- 4. VIEW: MAIN DASHBOARD                                       -->
+  <!-- ============================================================== -->
+  <section id="viewDashboard" class="hidden flex-1 flex flex-col">
+    
+    <!-- DASHBOARD HEADER -->
+    <header class="bg-[#140b06] text-white border-b border-stone-800 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         
-        <!-- CARD 1 -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-stone-500">Total Prospek Masuk</span>
-            <span class="p-1.5 rounded-lg bg-stone-100 text-stone-600 text-xs">📥 Inbound</span>
+        <!-- BRAND & IDENTITY -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white shadow-lg shadow-[#ff6210]/20 font-heading font-black text-lg">
+            EF
           </div>
-          <div class="mt-3">
-            <h4 class="text-2xl sm:text-3xl font-heading font-black text-[#140b06]" id="kpiTotalProspects">0</h4>
-            <p class="text-[11px] text-stone-400 mt-1">Tahap awal corong (Awareness)</p>
-          </div>
-        </div>
-
-        <!-- CARD 2 -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-stone-500">Total Terkonversi (Closing)</span>
-            <span class="p-1.5 rounded-lg bg-[#fff2ea] text-[#ff6210] text-xs font-bold font-mono">🏆 Final</span>
-          </div>
-          <div class="mt-3">
-            <h4 class="text-2xl sm:text-3xl font-heading font-black text-[#ff6210]" id="kpiTotalConverted">0</h4>
-            <p class="text-[11px] text-stone-400 mt-1">Selesai bayar / registrasi resmi</p>
-          </div>
-        </div>
-
-        <!-- CARD 3 -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-stone-500">Conversion Rate (CVR)</span>
-            <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold font-mono">📊 Rasio</span>
-          </div>
-          <div class="mt-3">
-            <h4 class="text-2xl sm:text-3xl font-heading font-black text-emerald-600" id="kpiConversionRate">0%</h4>
-            <p class="text-[11px] text-stone-400 mt-1">Efisiensi total corong konversi</p>
-          </div>
-        </div>
-
-        <!-- CARD 4 -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-stone-500">Titik Hambatan Utama</span>
-            <span class="p-1.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold">⚠️ Drop-off</span>
-          </div>
-          <div class="mt-3">
-            <h4 class="text-sm sm:text-base font-heading font-bold text-rose-600 truncate" id="kpiBottleneck">-</h4>
-            <p class="text-[11px] text-stone-400 mt-1">Fokus prioritas intervensi</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- 2. LAPISAN TENGAH: SO WHAT? (FUNNEL & CHANNEL VISUALIZATION) -->
-    <section class="space-y-4">
-      <div class="flex items-center space-x-2">
-        <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#140b06] text-white uppercase tracking-wider">
-          Lapisan 2: So What?
-        </span>
-        <h3 class="text-sm font-heading font-semibold text-stone-800">Pola Kehilangan Pengguna & Komparasi Saluran</h3>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- FUNNEL CHART -->
-        <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06]">Alur Tahapan Corong (Funnel Stages)</h4>
-              <p class="text-xs text-stone-500">Penurunan volume dari tahap awal hingga retensi akhir</p>
-            </div>
-            <span class="text-xs bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1] px-2.5 py-1 rounded-lg font-heading font-semibold">
-              ACCRA Model
-            </span>
-          </div>
-
-          <div class="h-64 sm:h-72">
-            <canvas id="chartFunnelStages"></canvas>
-          </div>
-
-          <div id="funnelStagesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-stone-100">
-            <!-- Stage pills dynamic -->
-          </div>
-        </div>
-
-        <!-- CHANNEL PERFORMANCE -->
-        <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-4 flex flex-col justify-between">
           <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-base sm:text-lg font-heading font-bold tracking-tight text-white" id="headerTitle">EduFunnel Decision Support</h1>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff6210]/20 text-[#ff8544] border border-[#ff6210]/40">v1.3</span>
+            </div>
+            <p class="text-xs text-stone-400" id="headerSubtitle">Desain Interaksi Pengguna • Standar ISO 9241-210 UCD</p>
+          </div>
+        </div>
+
+        <!-- PERSONA SWITCHER & USER PROFILE -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          
+          <!-- PERSONA SWITCHER -->
+          <div class="bg-[#221915] p-1 rounded-xl flex items-center border border-stone-800">
+            <button id="btnPersonaEdu" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md">
+              🎓 PMB Kampus
+            </button>
+            <button id="btnPersonaGadget" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200">
+              📱 Grosir Gadget (Pak Ujang)
+            </button>
+          </div>
+
+          <!-- USER BADGE -->
+          <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#221915] border border-stone-800 text-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="text-stone-300 font-medium" id="lblCurrentUserName">Pak Ujang</span>
+          </div>
+
+          <!-- LOGOUT BUTTON -->
+          <button id="btnLogout" class="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-rose-400 rounded-xl text-xs font-medium border border-stone-700 transition flex items-center space-x-1">
+            <span>Keluar</span>
+            <span>&rarr;</span>
+          </button>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD CONTENT -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 w-full">
+
+      <!-- HERO CONTEXT BANNER -->
+      <div class="bg-white border border-[#fbe0c1] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-[#fff2ea] rounded-full pointer-events-none -z-0"></div>
+        
+        <div class="flex items-start space-x-3.5 relative z-10">
+          <div class="p-2.5 bg-[#fff2ea] text-[#ff6210] rounded-xl border border-[#fbe0c1] text-xl">
+            🎯
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h2 class="text-sm sm:text-base font-heading font-bold text-[#140b06]" id="infoTargetAudience">Memuat Profil Pengguna...</h2>
+              <span class="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1]">Aktif</span>
+            </div>
+            <p class="text-xs text-stone-600 mt-0.5" id="infoPeriod">Periode: -</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 text-xs font-medium text-stone-700 bg-stone-50 border border-stone-200 px-3.5 py-1.5 rounded-xl self-start md:self-auto relative z-10">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Framework Naratif: <strong>What • So What • Now What</strong></span>
+        </div>
+      </div>
+
+      <!-- 1. LAPISAN ATAS: WHAT? (KEY PERFORMANCE INDICATORS) -->
+      <section>
+        <div class="flex items-center space-x-2 mb-3.5">
+          <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1] uppercase tracking-wider">
+            Lapisan 1: What?
+          </span>
+          <h3 class="text-sm font-heading font-semibold text-stone-800">Ringkasan Metrik Kunci (Key Performance Indicators)</h3>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-stone-500">Total Prospek Masuk</span>
+              <span class="p-1.5 rounded-lg bg-stone-100 text-stone-600 text-xs">📥 Inbound</span>
+            </div>
+            <div class="mt-3">
+              <h4 class="text-2xl sm:text-3xl font-heading font-black text-[#140b06]" id="kpiTotalProspects">0</h4>
+              <p class="text-[11px] text-stone-400 mt-1">Tahap awal corong (Awareness)</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-stone-500">Total Terkonversi (Closing)</span>
+              <span class="p-1.5 rounded-lg bg-[#fff2ea] text-[#ff6210] text-xs font-bold font-mono">🏆 Final</span>
+            </div>
+            <div class="mt-3">
+              <h4 class="text-2xl sm:text-3xl font-heading font-black text-[#ff6210]" id="kpiTotalConverted">0</h4>
+              <p class="text-[11px] text-stone-400 mt-1">Selesai bayar / registrasi resmi</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-stone-500">Conversion Rate (CVR)</span>
+              <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold font-mono">📊 Rasio</span>
+            </div>
+            <div class="mt-3">
+              <h4 class="text-2xl sm:text-3xl font-heading font-black text-emerald-600" id="kpiConversionRate">0%</h4>
+              <p class="text-[11px] text-stone-400 mt-1">Efisiensi total corong konversi</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-stone-500">Titik Hambatan Utama</span>
+              <span class="p-1.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold">⚠️ Drop-off</span>
+            </div>
+            <div class="mt-3">
+              <h4 class="text-sm sm:text-base font-heading font-bold text-rose-600 truncate" id="kpiBottleneck">-</h4>
+              <p class="text-[11px] text-stone-400 mt-1">Fokus prioritas intervensi</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 2. LAPISAN TENGAH: SO WHAT? (FUNNEL & CHANNEL VISUALIZATION) -->
+      <section class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#140b06] text-white uppercase tracking-wider">
+            Lapisan 2: So What?
+          </span>
+          <h3 class="text-sm font-heading font-semibold text-stone-800">Pola Kehilangan Pengguna & Komparasi Saluran</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
               <div>
-                <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06]">Performa Saluran (Channels)</h4>
-                <p class="text-xs text-stone-500">Komparasi jumlah prospek vs hasil deal</p>
+                <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06]">Alur Tahapan Corong (Funnel Stages)</h4>
+                <p class="text-xs text-stone-500">Penurunan volume dari tahap awal hingga retensi akhir</p>
               </div>
-              <span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 rounded-full font-heading font-semibold" id="badgeTopChannel">
-                Top: -
+              <span class="text-xs bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1] px-2.5 py-1 rounded-lg font-heading font-semibold">
+                ACCRA Model
               </span>
             </div>
 
-            <div class="h-56 mt-3">
-              <canvas id="chartChannelPerformance"></canvas>
+            <div class="h-64 sm:h-72">
+              <canvas id="chartFunnelStages"></canvas>
+            </div>
+
+            <div id="funnelStagesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-stone-100">
+              <!-- Stage pills dynamic -->
             </div>
           </div>
 
-          <!-- MINI DATA TABLE -->
-          <div class="overflow-x-auto pt-3 border-t border-stone-100">
-            <table class="w-full text-left text-xs">
-              <thead>
-                <tr class="text-stone-400 border-b border-stone-100">
-                  <th class="pb-1.5 font-heading font-medium">Saluran</th>
-                  <th class="pb-1.5 font-heading font-medium text-right">Prospek</th>
-                  <th class="pb-1.5 font-heading font-medium text-right">Deal</th>
-                  <th class="pb-1.5 font-heading font-medium text-right">CVR</th>
-                </tr>
-              </thead>
-              <tbody id="tableChannelBody" class="divide-y divide-stone-50 text-stone-700">
-                <!-- Injected via app.js -->
-              </tbody>
-            </table>
+          <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06]">Performa Saluran (Channels)</h4>
+                  <p class="text-xs text-stone-500">Komparasi jumlah prospek vs hasil deal</p>
+                </div>
+                <span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 rounded-full font-heading font-semibold" id="badgeTopChannel">
+                  Top: -
+                </span>
+              </div>
+
+              <div class="h-56 mt-3">
+                <canvas id="chartChannelPerformance"></canvas>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto pt-3 border-t border-stone-100">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-stone-400 border-b border-stone-100">
+                    <th class="pb-1.5 font-heading font-medium">Saluran</th>
+                    <th class="pb-1.5 font-heading font-medium text-right">Prospek</th>
+                    <th class="pb-1.5 font-heading font-medium text-right">Deal</th>
+                    <th class="pb-1.5 font-heading font-medium text-right">CVR</th>
+                  </tr>
+                </thead>
+                <tbody id="tableChannelBody" class="divide-y divide-stone-50 text-stone-700">
+                  <!-- Injected via app.js -->
+                </tbody>
+              </table>
+            </div>
           </div>
+
+        </div>
+      </section>
+
+      <!-- 3. LAPISAN BAWAH: NOW WHAT? (REKOMENDASI STRATEGIS) -->
+      <section class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#ff6210] text-white uppercase tracking-wider">
+            Lapisan 3: Now What?
+          </span>
+          <h3 class="text-sm font-heading font-semibold text-stone-800">Rekomendasi Keputusan Strategis & Action Plan</h3>
         </div>
 
-      </div>
-    </section>
-
-    <!-- 3. LAPISAN BAWAH: NOW WHAT? (REKOMENDASI & INTEGRASI) -->
-    <section class="space-y-4">
-      <div class="flex items-center space-x-2">
-        <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#ff6210] text-white uppercase tracking-wider">
-          Lapisan 3: Now What?
-        </span>
-        <h3 class="text-sm font-heading font-semibold text-stone-800">Rekomendasi Keputusan Strategis & Uji Webhook</h3>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- STRATEGIC RECOMMENDATIONS -->
-        <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-3.5">
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-3.5">
           <div class="flex items-center justify-between">
             <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06] flex items-center space-x-2">
               <span>💡</span>
-              <span>Rencana Tindakan Strategis (Action Plan)</span>
+              <span>Rencana Tindakan Strategis Berbasis Bottleneck</span>
             </h4>
             <span class="text-xs text-stone-400 font-medium">Auto-generated</span>
           </div>
@@ -255,68 +493,13 @@
             <!-- Dynamic recommendation cards injected by app.js -->
           </div>
         </div>
+      </section>
 
-        <!-- SIMULASI WEBHOOK n8n -->
-        <div class="lg:col-span-5 bg-[#140b06] text-white rounded-2xl p-5 sm:p-6 border border-stone-800 shadow-sm space-y-3.5">
-          <div class="flex items-center justify-between">
-            <h4 class="text-sm sm:text-base font-heading font-bold text-white flex items-center space-x-2">
-              <span class="text-[#ff6210]">⚡</span>
-              <span>Uji Simulasi Webhook n8n</span>
-            </h4>
-            <span class="text-[10px] bg-[#221915] text-[#ff8544] border border-[#ff6210]/40 px-2 py-0.5 rounded-full font-mono font-bold">
-              POST /webhook
-            </span>
-          </div>
-
-          <p class="text-xs text-stone-300 leading-relaxed">
-            Kirimkan simulasi event pendaftar/toko baru ke n8n untuk diteruskan menjadi notifikasi Telegram.
-          </p>
-
-          <form id="formSimulateLead" class="space-y-2.5 pt-1">
-            <div>
-              <label class="block text-[11px] text-stone-400 font-medium mb-1">Nama Prospek / Nama Toko</label>
-              <input type="text" id="simLeadName" class="w-full bg-[#221915] border border-stone-700 rounded-xl px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#ff6210] transition" placeholder="Cth: Toko Agres Mall / Calon Maba" required>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-[11px] text-stone-400 font-medium mb-1">Saluran Sumber</label>
-                <select id="simLeadChannel" class="w-full bg-[#221915] border border-stone-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#ff6210]">
-                  <option value="Instagram Ads / WA">Instagram Ads / WA</option>
-                  <option value="Toko Mall / Kunjungan">Toko Mall / Kunjungan</option>
-                  <option value="TikTok / Marketplace">TikTok / Marketplace</option>
-                  <option value="Referral / Rekanan">Referral / Rekanan</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-[11px] text-stone-400 font-medium mb-1">Status Tahapan</label>
-                <select id="simLeadStage" class="w-full bg-[#221915] border border-stone-700 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#ff6210]">
-                  <option value="Consideration">Consideration (Nego/Tanya)</option>
-                  <option value="Conversion">Conversion (Deal/Daftar)</option>
-                </select>
-              </div>
-            </div>
-
-            <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-semibold py-2.5 px-4 rounded-xl text-xs shadow-md transition flex items-center justify-center space-x-1.5">
-              <span>🚀</span>
-              <span>Kirim Payload ke Webhook</span>
-            </button>
-          </form>
-
-          <!-- CONSOLE LOG SIMULATION OUTPUT -->
-          <div id="simLogBox" class="hidden bg-black/70 rounded-xl p-3 text-[11px] font-mono text-emerald-400 border border-emerald-900/40">
-            <!-- Output log will appear here -->
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
+    </div>
+  </section>
 
   <!-- FOOTER -->
-  <footer class="bg-white border-t border-stone-200 mt-12 py-7 text-center text-xs text-stone-500">
+  <footer class="bg-white border-t border-stone-200 py-6 text-center text-xs text-stone-500">
     <div class="max-w-7xl mx-auto px-4 space-y-1">
       <p class="font-medium text-stone-700">EduFunnel Decision Support System • Tugas Desain Interaksi Pengguna (DIP)</p>
       <p class="text-stone-400">Dirancang oleh: <a href="https://github.com/4ditRama" target="_blank" class="text-[#ff6210] hover:underline font-semibold">@4ditRama</a> • Dosen Pengampu: Bu Ama</p>
