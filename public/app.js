@@ -34,7 +34,7 @@ document.getElementById('btnBackToLandingFromReg').addEventListener('click', () 
 // ==========================================
 // SUPABASE CLIENT & AUTHENTICATION LOGIC
 // ==========================================
-const SUPABASE_URL = "https://kprrkitfkgssgufobfsat.supabase.co";
+const SUPABASE_URL = "https://kprrkitfkgsgufobfsat.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable__PdQEQY0JyGThf4BtHfWHg_I4xBrVaI";
 
 let supabaseClient = null;
@@ -177,20 +177,11 @@ document.getElementById('formRegister').addEventListener('submit', async (e) => 
         throw error;
       }
 
-      // Check if session was created immediately (email confirmation disabled)
-      if (data.session) {
-        showAlert(registerAlert, `Pendaftaran berhasil! Mengalihkan ke dashboard...`, 'success');
+      if (data.user) {
+        showAlert(registerAlert, `✓ Akun berhasil tersimpan di database Supabase! Mengalihkan...`, 'success');
         setTimeout(() => {
           loginUser(name, initialPersona);
-        }, 800);
-        return;
-      } else {
-        // If email confirmation is enabled on Supabase
-        showAlert(registerAlert, `Akun berhasil didaftarkan di database Supabase! Silakan masuk dengan akun Anda.`, 'success');
-        document.getElementById('loginEmail').value = email;
-        setTimeout(() => {
-          showView('login');
-        }, 1500);
+        }, 1000);
         return;
       }
     } catch (err) {
