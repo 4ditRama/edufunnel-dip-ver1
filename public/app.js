@@ -10,6 +10,7 @@ const viewLanding = document.getElementById('viewLanding');
 const viewLogin = document.getElementById('viewLogin');
 const viewRegister = document.getElementById('viewRegister');
 const viewDashboard = document.getElementById('viewDashboard');
+const aiFloatingContainer = document.getElementById('aiFloatingContainer');
 
 // View Switching Function
 function showView(viewName) {
@@ -17,6 +18,9 @@ function showView(viewName) {
   viewLogin.classList.toggle('hidden', viewName !== 'login');
   viewRegister.classList.toggle('hidden', viewName !== 'register');
   viewDashboard.classList.toggle('hidden', viewName !== 'dashboard');
+  if (aiFloatingContainer) {
+    aiFloatingContainer.classList.toggle('hidden', viewName !== 'dashboard');
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -277,6 +281,8 @@ function switchPersona(persona) {
   loadFunnelData(persona);
 }
 
+let currentFunnelData = null;
+
 // Fetch Funnel Data (via backend API with fallback to static JSON)
 async function loadFunnelData(persona) {
   try {
@@ -290,7 +296,9 @@ async function loadFunnelData(persona) {
     }
     
     const data = await response.json();
+    currentFunnelData = data;
     renderDashboard(data);
+    initAiAssistantForPersona(persona);
   } catch (error) {
     console.error('Gagal memuat data funnel:', error);
   }
@@ -466,6 +474,191 @@ function renderChannelChart(channels) {
       }
     }
   });
+}
+
+// ==========================================
+// FLOATING AI DECISION ASSISTANT
+// ==========================================
+const btnToggleAi = document.getElementById('btnToggleAi');
+const btnCloseAi = document.getElementById('btnCloseAi');
+const aiChatWindow = document.getElementById('aiChatWindow');
+const aiChatLog = document.getElementById('aiChatLog');
+const aiQuickChips = document.getElementById('aiQuickChips');
+const aiChatForm = document.getElementById('aiChatForm');
+const aiChatInput = document.getElementById('aiChatInput');
+const aiHeaderTitle = document.getElementById('aiHeaderTitle');
+const aiActiveBadge = document.getElementById('aiActiveBadge');
+
+let isAiOpen = false;
+
+if (btnToggleAi && aiChatWindow) {
+  btnToggleAi.addEventListener('click', () => {
+    isAiOpen = !isAiOpen;
+    aiChatWindow.classList.toggle('hidden', !isAiOpen);
+    if (isAiOpen) {
+      aiChatLog.scrollTop = aiChatLog.scrollHeight;
+      setTimeout(() => aiChatInput && aiChatInput.focus(), 100);
+    }
+  });
+
+  if (btnCloseAi) {
+    btnCloseAi.addEventListener('click', () => {
+      isAiOpen = false;
+      aiChatWindow.classList.add('hidden');
+    });
+  }
+}
+
+function initAiAssistantForPersona(persona) {
+  if (!aiChatLog) return;
+  aiChatLog.innerHTML = '';
+
+  const isEdu = persona === 'edufunnel';
+  if (aiHeaderTitle) aiHeaderTitle.textContent = isEdu ? "Asisten Keputusan EduFunnel" : "Konsultan Bisnis Pak Ujang";
+  if (aiActiveBadge) aiActiveBadge.textContent = isEdu ? "Mode: PMB Kampus" : "Mode: Grosir Gadget";
+
+  // Initial greeting
+  const welcomeText = isEdu
+    ? `Halo! Saya <strong>Asisten Keputusan EduFunnel</strong> 🎓.<br>Saya menganalisis data pendaftaran mahasiswa baru, titik kebocoran calon pendaftar, dan performa iklan digital.<br><br>Pilih topik cepat di bawah atau ketik pertanyaan Anda!`
+    : `Halo Pak Ujang & Mas Iqbal! Saya <strong>Konsultan Bisnis Gadget</strong> 📱.<br>Saya memantau alur penawaran stok HP/laptop, performa toko retail mall (Agres, dll), serta perputaran barang Anda.<br><br>Ada yang ingin dianalisis hari ini?`;
+
+  appendAiMessage(welcomeText);
+
+  // Suggested prompt chips
+  const chips = isEdu
+    ? [
+        { label: "🔍 Titik Hambatan (Bottleneck)?", query: "Apa titik hambatan terbesar pada pendaftaran PMB saat ini?" },
+        { label: "🏆 Saluran Paling Efektif?", query: "Saluran promosi mana yang paling banyak menghasilkan pendaftar resmi?" },
+        { label: "💡 Rekomendasi Tindakan?", query: "Apa rekomendasi strategis prioritas untuk tim marketing?" },
+        { label: "📊 Ringkasan Konversi", query: "Berapa rasio konversi keseluruhan saat ini?" }
+      ]
+    : [
+        { label: "⚠️ Mengapa Nego Banyak Batal?", query: "Kenapa banyak toko yang batal deal setelah tahap penawaran/nego?" },
+        { label: "🏬 Toko Mana Paling Loyal?", query: "Saluran atau toko mana yang paling banyak menghasilkan closing penjualan?" },
+        { label: "🛵 Arahan untuk Mas Iqbal?", query: "Apa arahan operasional untuk Mas Iqbal minggu ini?" },
+        { label: "💰 Rekomendasi Margin Laptop?", query: "Bagaimana strategi meningkatkan penjualan unit laptop?" }
+      ];
+
+  if (aiQuickChips) {
+    aiQuickChips.innerHTML = '';
+    chips.forEach(chip => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ai-chip';
+      btn.textContent = chip.label;
+      btn.addEventListener('click', () => handleAiQuery(chip.query));
+      aiQuickChips.appendChild(btn);
+    });
+  }
+}
+
+function appendUserMessage(text) {
+  if (!aiChatLog) return;
+  const div = document.createElement('div');
+  div.className = 'user-bubble';
+  div.textContent = text;
+  aiChatLog.appendChild(div);
+  aiChatLog.scrollTop = aiChatLog.scrollHeight;
+}
+
+function appendAiMessage(html) {
+  if (!aiChatLog) return;
+  const div = document.createElement('div');
+  div.className = 'ai-bubble';
+  div.innerHTML = html;
+  aiChatLog.appendChild(div);
+  aiChatLog.scrollTop = aiChatLog.scrollHeight;
+}
+
+function showTypingIndicator() {
+  if (!aiChatLog) return;
+  const div = document.createElement('div');
+  div.id = 'aiTypingIndicator';
+  div.className = 'ai-bubble flex items-center space-x-1.5 text-stone-400 font-mono text-[11px]';
+  div.innerHTML = `
+    <span class="w-1.5 h-1.5 rounded-full bg-[#ff6210] animate-bounce"></span>
+    <span class="w-1.5 h-1.5 rounded-full bg-[#ff6210] animate-bounce [animation-delay:0.2s]"></span>
+    <span class="w-1.5 h-1.5 rounded-full bg-[#ff6210] animate-bounce [animation-delay:0.4s]"></span>
+    <span class="ml-1 text-stone-500">Menganalisis data funnel...</span>
+  `;
+  aiChatLog.appendChild(div);
+  aiChatLog.scrollTop = aiChatLog.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('aiTypingIndicator');
+  if (el) el.remove();
+}
+
+// AI Query Processor
+function handleAiQuery(query) {
+  appendUserMessage(query);
+  showTypingIndicator();
+
+  setTimeout(() => {
+    removeTypingIndicator();
+    const response = generateAiAnswer(query.toLowerCase());
+    appendAiMessage(response);
+  }, 350);
+}
+
+if (aiChatForm) {
+  aiChatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = aiChatInput.value.trim();
+    if (!query) return;
+    aiChatInput.value = '';
+    handleAiQuery(query);
+  });
+}
+
+function generateAiAnswer(q) {
+  const data = currentFunnelData;
+  const isEdu = currentPersona === 'edufunnel';
+
+  if (!data) {
+    return "Data funnel belum dimuat dengan sempurna. Silakan muat ulang halaman.";
+  }
+
+  // 1. Bottleneck / Hambatan / Drop-off
+  if (q.includes('bottleneck') || q.includes('hambatan') || q.includes('kendala') || q.includes('drop') || q.includes('batal')) {
+    if (isEdu) {
+      return `⚠️ <strong>Analisis Bottleneck (PMB Kampus):</strong><br><br>Titik kebocoran utama terjadi di tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>4.800 calon mahasiswa</strong> yang bertanya/download brosur (<em>Consideration</em>), hanya <strong>1.150 orang</strong> yang membeli voucher formulir (<em>Conversion</em>).<br>• Terjadi kehilangan <strong>76% calon pendaftar</strong> di fase ini.<br><br>💡 <strong>Solusi Rekomendasi:</strong> Sederhanakan formulir pendaftaran online dan kirim pengingat WhatsApp otomatis via n8n kepada pendaftar yang belum menyelesaikan pembayaran voucher.`;
+    } else {
+      return `⚠️ <strong>Analisis Kebocoran Penawaran (Pak Ujang):</strong><br><br>Titik hambatan terbesar ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>240 toko</strong> yang dikirimi list stok, <strong>110 toko</strong> merespon dan menawar harga.<br>• Namun hanya <strong>58 toko</strong> yang deal beli unit (52 toko gugur saat negosiasi margin).<br><br>💡 <strong>Solusi untuk Pak Ujang:</strong> Saat COD hunting barang di marketplace, tawar harga modal lebih miring lagi agar punya ruang margin lebih fleksibel saat toko mall menawar!`;
+    }
+  }
+
+  // 2. Saluran / Channel / Toko / Iklan
+  if (q.includes('channel') || q.includes('saluran') || q.includes('loyal') || q.includes('toko') || q.includes('iklan') || q.includes('agres') || q.includes('efektif')) {
+    const topChannel = data.channel_performance.reduce((prev, curr) => parseFloat(curr.cvr) > parseFloat(prev.cvr) ? curr : prev, data.channel_performance[0]);
+    const maxVolume = data.channel_performance.reduce((prev, curr) => curr.leads > prev.leads ? curr : prev, data.channel_performance[0]);
+
+    if (isEdu) {
+      return `🏆 <strong>Analisis Saluran Promosi (PMB):</strong><br><br>• <strong>Konversi Tertinggi:</strong> Saluran <strong>${topChannel.channel}</strong> dengan CVR mencapai <strong>${topChannel.cvr}</strong> (${topChannel.converted} pendaftar dari ${topChannel.leads} prospek). Kunjungan tatap muka terbukti paling meyakinkan orang tua calon maba.<br>• <strong>Volume Terbesar:</strong> Iklan <strong>${maxVolume.channel}</strong> menyumbang <strong>${maxVolume.leads} prospek</strong> dengan CVR <strong>${maxVolume.cvr}</strong>.<br><br>🎯 <strong>Saran:</strong> Alokasikan lebih banyak anggaran ke kegiatan roadshow/expo sekolah bulan depan!`;
+    } else {
+      return `🏆 <strong>Analisis Saluran Penjualan Toko (Pak Ujang):</strong><br><br>• <strong>Paling Loyal & Cepat Deal:</strong> <strong>Toko Retail Mall (Agres & Mitra)</strong> dengan rasio konversi tertinggi sebesar <strong>${topChannel.cvr}</strong> (28 transaksi closing).<br>• Saluran broadcast grup WA reseller hanya menghasilkan CVR 18%.<br><br>🎯 <strong>Rekomendasi:</strong> Toko Agres dan gerai mall adalah tulang punggung perputaran kas. Jadwalkan Mas Iqbal untuk kunjungan tatap muka rutin setiap restock!`;
+    }
+  }
+
+  // 3. Mas Iqbal / Kurir / Arahan Operasional Lapangan
+  if (q.includes('iqbal') || q.includes('kurir') || q.includes('antar') || q.includes('lapangan') || q.includes('jadwal')) {
+    return `🛵 <strong>Arahan Operasional Khusus Mas Iqbal:</strong><br><br>1. <strong>Jadwal Kunjungan Prioritas:</strong> Kunjungi toko rekanan mall (terutama gerai Agres) setiap hari <strong>Selasa dan Jumat</strong> saat etalase mereka sedang kosong.<br>2. <strong>Bawa Sampel Unit:</strong> Selalu bawa unit laptop siap jual yang sudah dicek fisiknya.<br>3. <strong>Siapkan Paket Bundling:</strong> Bawa bonus tas laptop atau mouse saat negosiasi di toko agar pemilik toko langsung deal di tempat!`;
+  }
+
+  // 4. Rekomendasi / Saran / Tindakan
+  if (q.includes('rekomendasi') || q.includes('saran') || q.includes('tindakan') || q.includes('aksi') || q.includes('tips') || q.includes('solusi')) {
+    const recs = data.recommendations.map(r => `• <strong>[Prioritas ${r.priority}] ${r.title}:</strong> ${r.action}`).join('<br><br>');
+    return `💡 <strong>Rencana Tindakan Strategis (Berdasarkan Data):</strong><br><br>${recs}`;
+  }
+
+  // 5. Konversi / CVR / Angka Ringkasan
+  if (q.includes('konversi') || q.includes('cvr') || q.includes('angka') || q.includes('total') || q.includes('deal') || q.includes('ringkasan')) {
+    return `📊 <strong>Ringkasan Performa Corong Saat Ini:</strong><br><br>• <strong>Total Prospek Masuk:</strong> ${data.summary.total_prospects.toLocaleString('id-ID')} unit/orang<br>• <strong>Total Berhasil Konversi:</strong> ${data.summary.total_converted.toLocaleString('id-ID')} transaksi/maba<br>• <strong>Rasio Konversi Keseluruhan (CVR):</strong> <strong>${data.summary.overall_conversion_rate}</strong><br>• <strong>Saluran Teratas:</strong> ${data.summary.top_channel}<br>• <strong>Status Funnel:</strong> Berjalan stabil dan terukur.`;
+  }
+
+  // 6. Default Answer
+  return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Fokus perbaikan saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas untuk analisis mendalam! 😊`;
 }
 
 // Initialize when DOM is ready

@@ -46,3 +46,61 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 ::-webkit-scrollbar-thumb:hover {
   background: #ff6210;
 }
+
+
+/* AI Assistant Chat Styles */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#aiChatWindow {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ai-bubble {
+  background-color: #ffffff;
+  border: 1px solid #e7e5e4;
+  border-radius: 1rem;
+  border-top-left-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  color: #1c1917;
+  max-width: 88%;
+  line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.user-bubble {
+  background-color: #ff6210;
+  color: #ffffff;
+  border-radius: 1rem;
+  border-top-right-radius: 0.25rem;
+  padding: 0.65rem 0.95rem;
+  max-width: 85%;
+  margin-left: auto;
+  line-height: 1.4;
+  box-shadow: 0 2px 6px rgba(255, 98, 16, 0.2);
+}
+
+.ai-chip {
+  padding: 0.35rem 0.65rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 1px solid #e7e5e4;
+  font-size: 11px;
+  font-weight: 600;
+  color: #44403c;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-chip:hover {
+  background-color: #fff2ea;
+  border-color: #fbe0c1;
+  color: #ff6210;
+}
