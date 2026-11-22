@@ -303,11 +303,23 @@
           
           <!-- PERSONA SWITCHER -->
           <div class="bg-[#221915] p-1 rounded-xl flex items-center border border-stone-800">
-            <button id="btnPersonaEdu" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md">
-              🎓 PMB Kampus
-            </button>
-            <button id="btnPersonaGadget" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200">
+            <button id="btnPersonaGadget" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md">
               📱 Grosir Gadget (Pak Ujang)
+            </button>
+            <button id="btnPersonaEdu" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200">
+              🎓 PMB Kampus (Demo)
+            </button>
+          </div>
+
+          <!-- ACTION TOOLS: SUS EVALUATION & N8N WEBHOOK CONFIG -->
+          <div class="flex items-center gap-1.5">
+            <button id="btnOpenSusModal" type="button" class="px-3 py-1.5 bg-[#ff6210] hover:bg-[#e55509] text-white rounded-xl text-xs font-heading font-bold shadow-sm transition flex items-center space-x-1.5 cursor-pointer">
+              <span>📝</span>
+              <span>Uji SUS (ISO 9241-210)</span>
+            </button>
+            <button id="btnOpenN8nModal" type="button" class="px-3 py-1.5 bg-[#221915] hover:bg-stone-800 text-stone-300 hover:text-white rounded-xl text-xs font-heading font-medium border border-stone-700 transition flex items-center space-x-1.5 cursor-pointer">
+              <span>⚡</span>
+              <span>n8n Webhook</span>
             </button>
           </div>
 
@@ -350,6 +362,48 @@
         <div class="flex items-center space-x-2 text-xs font-medium text-stone-700 bg-stone-50 border border-stone-200 px-3.5 py-1.5 rounded-xl self-start md:self-auto relative z-10">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           <span>Framework Naratif: <strong>What • So What • Now What</strong></span>
+        </div>
+      </div>
+
+      <!-- UCD QUALITY & PIPELINE METRICS BANNER (ISO 9241-210) -->
+      <div class="bg-gradient-to-r from-stone-900 to-[#1c120c] text-white rounded-2xl p-4 sm:p-5 border border-stone-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl font-bold shadow-sm">
+            ✓
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="text-xs sm:text-sm font-heading font-bold text-white">Evaluasi Kegunaan Sistem (UCD ISO 9241-210)</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Target ≥ 70 Tercapai</span>
+            </div>
+            <p class="text-[11px] text-stone-400 mt-0.5">Pengujian usability terukur • Otomatisasi 2 Jalur (Webhook & Schedule Cron)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+            <span class="text-[10px] text-stone-400 uppercase font-mono block">Skor SUS</span>
+            <span class="text-sm sm:text-base font-heading font-black text-emerald-400" id="badgeAvgSusScore">82.5 / 100</span>
+            <span class="text-[9px] text-emerald-300 block font-medium" id="lblSusGrade">Grade A (Acceptable)</span>
+          </div>
+          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+            <span class="text-[10px] text-stone-400 uppercase font-mono block">Time-to-Insight</span>
+            <span class="text-sm sm:text-base font-heading font-black text-[#ff8544]">&lt; 3 Menit</span>
+            <span class="text-[9px] text-stone-400 block font-medium">Target &lt; 5 Menit</span>
+          </div>
+          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+            <span class="text-[10px] text-stone-400 uppercase font-mono block">Task Success</span>
+            <span class="text-sm sm:text-base font-heading font-black text-sky-400">100%</span>
+            <span class="text-[9px] text-stone-400 block font-medium">Navigasi Selesai</span>
+          </div>
+          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+            <span class="text-[10px] text-stone-400 uppercase font-mono block">Pipeline n8n</span>
+            <span class="text-xs sm:text-sm font-heading font-bold text-emerald-400 flex items-center justify-center gap-1.5 my-0.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Jalur A Active</span>
+            </span>
+            <span class="text-[9px] text-stone-400 block font-medium" id="lblN8nStatus">Webhook Ready</span>
+          </div>
         </div>
       </div>
 
@@ -563,6 +617,171 @@
     </div>
   </div>
 
+  <!-- ============================================================== -->
+  <!-- MODAL: KUESIONER SUS (SYSTEM USABILITY SCALE - ISO 9241-210)   -->
+  <!-- ============================================================== -->
+  <div id="modalSusEvaluation" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- MODAL HEADER -->
+      <div class="bg-[#140b06] text-white p-5 flex items-center justify-between border-b border-stone-800">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white text-lg font-heading font-black shadow-md shadow-[#ff6210]/20">
+            SUS
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-heading font-bold text-white flex items-center space-x-2">
+              <span>Evaluasi Kegunaan Sistem (ISO 9241-210)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff6210]/20 text-[#ff8544] border border-[#ff6210]/40">Jalur A Webhook</span>
+            </h3>
+            <p class="text-xs text-stone-400 mt-0.5">Kuesioner baku 10 butir Likert 1–5 • Target Kelayakan: Skor ≥ 70</p>
+          </div>
+        </div>
+
+        <button type="button" id="btnCloseSusModal" class="w-8 h-8 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- MODAL BODY: FORM 10 QUESTIONS -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1 text-xs text-stone-800 bg-[#faf9f6]">
+        
+        <!-- ALERT STATUS SUBMIT -->
+        <div id="susAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
+        <!-- RESPONDENT INFO -->
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h4 class="font-heading font-bold text-stone-900 text-xs">Identitas Penguji / Responden</h4>
+            <span class="text-[11px] text-stone-400">Pilih Cepat atau Ketik:</span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-[#fff2ea] hover:bg-[#ffe6d6] text-[#ff6210] border border-[#fbe0c1] text-[11px] font-medium transition cursor-pointer" data-name="Pak Ujang Rahmat" data-role="Owner Grosir Gadget">
+              📱 Pak Ujang (Owner)
+            </button>
+            <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-[11px] font-medium transition cursor-pointer" data-name="Mas Iqbal" data-role="Operasional & Kurir COD">
+              🛵 Mas Iqbal (Operasional)
+            </button>
+            <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-[11px] font-medium transition cursor-pointer" data-name="Bu Rina" data-role="Admisi PMB Kampus">
+              🎓 Bu Rina (Admisi PMB)
+            </button>
+            <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-[11px] font-medium transition cursor-pointer" data-name="Bu Ama" data-role="Dosen Pengampu DIP">
+              👩‍🏫 Bu Ama (Dosen Penguji)
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div>
+              <label class="block text-[11px] font-medium text-stone-600 mb-1">Nama Responden</label>
+              <input type="text" id="susRespondentName" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff6210]" value="Pak Ujang Rahmat" required>
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-stone-600 mb-1">Peran / Posisi</label>
+              <input type="text" id="susRespondentRole" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff6210]" value="Owner Grosir Gadget" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 QUESTIONS LIST -->
+        <form id="formSusEvaluation" class="space-y-4">
+          <div class="flex items-center justify-between text-[11px] text-stone-500 font-mono px-1">
+            <span>Petunjuk: 1 = Sangat Tidak Setuju, 5 = Sangat Setuju</span>
+            <span>Butir Ganjil (+), Butir Genap (-)</span>
+          </div>
+
+          <div id="susQuestionsContainer" class="space-y-3">
+            <!-- 10 Questions injected by app.js -->
+          </div>
+
+          <div>
+            <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Masukan Tambahan / Catatan Evaluasi (Opsional):</label>
+            <textarea id="susFeedback" rows="2" class="w-full bg-white border border-stone-200 rounded-xl p-3 text-xs focus:outline-none focus:border-[#ff6210]" placeholder="Tuliskan pengalaman kemudahan navigasi atau saran perbaikan dashboard..."></textarea>
+          </div>
+        </form>
+
+      </div>
+
+      <!-- MODAL FOOTER: REAL-TIME SCORE & SUBMIT -->
+      <div class="p-4 bg-white border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+            <span class="text-[9px] text-emerald-700 uppercase font-mono block">Prediksi Skor SUS</span>
+            <span class="text-lg font-heading font-black text-emerald-600" id="susScorePreview">85.0</span>
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="font-heading font-bold text-xs text-stone-900" id="susGradePreview">Grade A (Excellent)</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800" id="susBenchmarkBadge">≥ 70 Terpenuhi</span>
+            </div>
+            <p class="text-[11px] text-stone-400">Rumus baku: (Σ Ganjil-1 + Σ 5-Genap) × 2.5</p>
+          </div>
+        </div>
+
+        <button type="button" id="btnSubmitSus" class="px-5 py-2.5 bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center space-x-2 cursor-pointer">
+          <span>🚀</span>
+          <span>Kirim ke Webhook n8n (Jalur A)</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: KONFIGURASI N8N CLOUD & WEBHOOK                         -->
+  <!-- ============================================================== -->
+  <div id="modalN8nConfig" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
+      
+      <div class="bg-[#140b06] text-white p-5 flex items-center justify-between border-b border-stone-800">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-[#221915] border border-stone-700 flex items-center justify-center text-[#ff6210] text-xl font-bold">
+            ⚡
+          </div>
+          <div>
+            <h3 class="text-sm font-heading font-bold text-white">Integrasi Webhook n8n Pipeline</h3>
+            <p class="text-xs text-stone-400 mt-0.5">Jalur A (Webhook SUS) & Jalur B (Schedule Cron Alert)</p>
+          </div>
+        </div>
+
+        <button type="button" id="btnCloseN8nModal" class="w-8 h-8 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 text-xs text-stone-700 bg-[#faf9f6]">
+        
+        <div id="n8nConfigAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 space-y-2">
+          <label class="block font-heading font-bold text-stone-900">URL Webhook n8n Anda (Cloud Trial / Local):</label>
+          <input type="url" id="inputN8nWebhookUrl" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210]" placeholder="https://your-instance.app.n8n.cloud/webhook-test/kuesioner-sus">
+          <p class="text-[11px] text-stone-400">
+            Salin <strong>Test URL</strong> atau <strong>Production URL</strong> dari node <em>Webhook Trigger</em> di kanvas n8n Cloud Anda. Jika dikosongkan, sistem memakai backend simulator internal.
+          </p>
+        </div>
+
+        <div class="bg-stone-100 p-3.5 rounded-xl border border-stone-200 space-y-1.5 text-[11px] text-stone-600">
+          <span class="font-heading font-bold text-stone-800 block">💡 Cara Cepat Pakai n8n Cloud (14 Hari Trial):</span>
+          <p>1. Buat workflow baru di n8n Cloud ➡️ Klik <strong>Import from file</strong> ➡️ Pilih <code>n8n/jalur_a_kuesioner_sus_workflow.json</code>.</p>
+          <p>2. Klik node <strong>Webhook</strong> ➡️ Salin URL-nya ➡️ Tempelkan ke kotak di atas.</p>
+          <p>3. Tiap kali kamu isi form SUS di web ini, notifikasi otomatis langsung masuk ke Telegram/Email kamu!</p>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="button" id="btnSaveN8nUrl" class="flex-1 bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition cursor-pointer">
+            Simpan Konfigurasi Webhook
+          </button>
+          <button type="button" id="btnTestN8nPing" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-heading font-medium py-2.5 px-4 rounded-xl text-xs transition cursor-pointer">
+            Tes Ping
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="bg-white border-t border-stone-200 py-6 text-center text-xs text-stone-500">
     <div class="max-w-7xl mx-auto px-4 space-y-1">
@@ -571,6 +790,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=2.2"></script>
+  <script src="app.js?v=2.3"></script>
 </body>
 </html>

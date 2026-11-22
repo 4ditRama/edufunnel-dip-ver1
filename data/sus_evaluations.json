@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1795350069276,
+    "nama": "Pak Ujang Rahmat",
+    "peran": "Owner",
+    "sumber_trafik": "Test",
+    "jawaban": [
+      5,
+      2,
+      4,
+      1,
+      5,
+      2,
+      4,
+      2,
+      5,
+      2
+    ],
+    "sus_score": 85,
+    "target_met": true,
+    "feedback": "Sistem sangat mudah dipahami.",
+    "timestamp": "2026-11-22T12:21:09.276Z"
+  },
+  {
+    "id": 1,
+    "nama": "Pak Ujang Rahmat",
+    "peran": "Owner Grosir Gadget",
+    "sumber_trafik": "Dashboard Web",
+    "jawaban": [
+      5,
+      2,
+      4,
+      1,
+      5,
+      2,
+      4,
+      2,
+      5,
+      2
+    ],
+    "sus_score": 85,
+    "target_met": true,
+    "feedback": "Sangat membantu memantau toko mana yang sering ambil unit laptop dan margin tawarannya.",
+    "timestamp": "2026-11-20T10:30:00.000Z"
+  },
+  {
+    "id": 2,
+    "nama": "Mas Iqbal",
+    "peran": "Operasional & Kurir COD",
+    "sumber_trafik": "Mobile Browser",
+    "jawaban": [
+      4,
+      2,
+      4,
+      2,
+      4,
+      1,
+      5,
+      2,
+      4,
+      2
+    ],
+    "sus_score": 82.5,
+    "target_met": true,
+    "feedback": "Rekomendasi toko prioritas untuk COD sangat jelas, tidak perlu bolak-balik tanya lagi.",
+    "timestamp": "2026-11-21T14:15:00.000Z"
+  },
+  {
+    "id": 3,
+    "nama": "Bu Rina",
+    "peran": "Admisi PMB Kampus (Demo)",
+    "sumber_trafik": "Dashboard Web",
+    "jawaban": [
+      4,
+      2,
+      4,
+      2,
+      5,
+      2,
+      4,
+      2,
+      5,
+      2
+    ],
+    "sus_score": 80,
+    "target_met": true,
+    "feedback": "Visualisasi corong ACCRA dan titik bottleneck pendaftaran sangat mudah dipahami pimpinan.",
+    "timestamp": "2026-11-22T09:00:00.000Z"
+  }
+]

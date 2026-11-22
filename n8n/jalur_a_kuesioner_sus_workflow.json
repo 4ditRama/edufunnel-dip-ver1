@@ -1,0 +1,107 @@
+{
+  "name": "Jalur A - Webhook Kuesioner SUS (ISO 9241-210)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kuesioner-sus",
+        "responseMode": "onReceived",
+        "responseData": "{\n  \"status\": \"success\",\n  \"message\": \"Data kuesioner SUS berhasil diterima n8n pipeline!\"\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-1111-4000-8000-000000000001",
+      "name": "Webhook Trigger (Form SUS)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "edufunnel-sus-webhook"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "nama_responden",
+              "value": "={{ $json.body.nama || 'Pengguna Dashboard' }}"
+            },
+            {
+              "name": "peran",
+              "value": "={{ $json.body.peran || 'Evaluator' }}"
+            },
+            {
+              "name": "skor_sus",
+              "value": "={{ $json.body.sus_score || '85.0' }}"
+            },
+            {
+              "name": "status_kelayakan",
+              "value": "={{ ($json.body.sus_score >= 70) ? '✅ Memenuhi Target ISO 9241-210 (≥ 70)' : '⚠️ Di Bawah Standar (< 70)' }}"
+            },
+            {
+              "name": "masukan_evaluasi",
+              "value": "={{ $json.body.feedback || 'Tidak ada catatan tambahan.' }}"
+            },
+            {
+              "name": "pesan_telegram",
+              "value": "=📝 *EVALUASI KUESIONER SUS BARU MASUK!* 📝\n\n👤 *Nama:* {{ $json.body.nama || 'Responden' }}\n💼 *Peran:* {{ $json.body.peran || 'Evaluator' }}\n📊 *Skor SUS:* {{ $json.body.sus_score }} / 100\n🎯 *Status:* {{ ($json.body.sus_score >= 70) ? '✅ Memenuhi Target (≥ 70)' : '⚠️ Di Bawah Standar' }}\n💬 *Catatan:* _{{ $json.body.feedback || '-' }}_\n⏰ *Waktu:* {{ $now.setZone('Asia/Jakarta').toFormat('dd LLL yyyy, HH:mm') }} WIB"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-2222-4000-8000-000000000002",
+      "name": "Format & Validasi Skor SUS",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.pesan_telegram }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "a1b2c3d4-3333-4000-8000-000000000003",
+      "name": "Kirim Notifikasi Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        720,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger (Form SUS)": {
+      "main": [
+        [
+          {
+            "node": "Format & Validasi Skor SUS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format & Validasi Skor SUS": {
+      "main": [
+        [
+          {
+            "node": "Kirim Notifikasi Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

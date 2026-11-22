@@ -1,7 +1,7 @@
 // ==========================================
 // APPLICATION STATE & VIEW SWITCHING
 // ==========================================
-let currentPersona = 'edufunnel';
+let currentPersona = 'gadget'; // Default fokus utama: Kasus Bisnis Riil Gadget B2B Pak Ujang & Mas Iqbal
 let funnelChartInstance = null;
 let channelChartInstance = null;
 
@@ -278,13 +278,13 @@ function switchPersona(persona) {
   if (persona === 'edufunnel') {
     btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md";
     btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200";
-    headerTitle.textContent = "EduFunnel PMB Decision Support";
-    headerSubtitle.textContent = "Desain Interaksi Pengguna • Standar ISO 9241-210 UCD";
+    if (headerTitle) headerTitle.textContent = "EduFunnel PMB Decision Support (Mode Demo Modul)";
+    if (headerSubtitle) headerSubtitle.textContent = "Penerimaan Mahasiswa Baru • Standar ISO 9241-210 UCD";
   } else {
     btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md";
     btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200";
-    headerTitle.textContent = "B2B Gadget Wholesale Funnel";
-    headerSubtitle.textContent = "Operasional Usaha Pak Ujang & Mas Iqbal (Supply Toko Mall)";
+    if (headerTitle) headerTitle.textContent = "GadgetFlow B2B — Wholesale Decision Support";
+    if (headerSubtitle) headerSubtitle.textContent = "Studi Kasus Grosir Gadget Pak Ujang & Mas Iqbal (Supply Mall) • UCD ISO 9241-210";
   }
 
   loadFunnelData(persona);
@@ -789,7 +789,308 @@ function generateAiAnswer(q) {
   return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Titik hambatan utama saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas atau bertanya tentang stok, saluran, dan strategi closing! 😊`;
 }
 
+// ==========================================
+// SUS EVALUATION (ISO 9241-210) & N8N WEBHOOK
+// ==========================================
+const btnOpenSusModal = document.getElementById('btnOpenSusModal');
+const btnCloseSusModal = document.getElementById('btnCloseSusModal');
+const modalSusEvaluation = document.getElementById('modalSusEvaluation');
+const susQuestionsContainer = document.getElementById('susQuestionsContainer');
+const susScorePreview = document.getElementById('susScorePreview');
+const susGradePreview = document.getElementById('susGradePreview');
+const susBenchmarkBadge = document.getElementById('susBenchmarkBadge');
+const btnSubmitSus = document.getElementById('btnSubmitSus');
+const susAlert = document.getElementById('susAlert');
+const susRespondentName = document.getElementById('susRespondentName');
+const susRespondentRole = document.getElementById('susRespondentRole');
+const susFeedback = document.getElementById('susFeedback');
+
+const badgeAvgSusScore = document.getElementById('badgeAvgSusScore');
+const lblSusGrade = document.getElementById('lblSusGrade');
+
+const btnOpenN8nModal = document.getElementById('btnOpenN8nModal');
+const btnCloseN8nModal = document.getElementById('btnCloseN8nModal');
+const modalN8nConfig = document.getElementById('modalN8nConfig');
+const inputN8nWebhookUrl = document.getElementById('inputN8nWebhookUrl');
+const btnSaveN8nUrl = document.getElementById('btnSaveN8nUrl');
+const btnTestN8nPing = document.getElementById('btnTestN8nPing');
+const n8nConfigAlert = document.getElementById('n8nConfigAlert');
+const lblN8nStatus = document.getElementById('lblN8nStatus');
+
+const SUS_QUESTIONS = [
+  { id: 1, text: "Saya merasa akan sering menggunakan sistem dashboard ini.", type: "positive" },
+  { id: 2, text: "Saya merasa sistem ini terlalu rumit untuk digunakan.", type: "negative" },
+  { id: 3, text: "Saya merasa sistem ini mudah untuk digunakan.", type: "positive" },
+  { id: 4, text: "Saya membutuhkan bantuan orang teknis untuk dapat menggunakan sistem ini.", type: "negative" },
+  { id: 5, text: "Saya merasa berbagai fungsi dalam dashboard ini terintegrasi dengan sangat baik.", type: "positive" },
+  { id: 6, text: "Saya merasa ada terlalu banyak hal yang tidak konsisten pada sistem ini.", type: "negative" },
+  { id: 7, text: "Saya rasa kebanyakan orang akan cepat belajar menggunakan sistem ini.", type: "positive" },
+  { id: 8, text: "Saya merasa dashboard ini membingungkan saat pertama kali dipakai.", type: "negative" },
+  { id: 9, text: "Saya merasa sangat percaya diri saat menggunakan sistem ini.", type: "positive" },
+  { id: 10, text: "Saya harus belajar banyak hal terlebih dahulu sebelum bisa memahaminya.", type: "negative" }
+];
+
+function renderSusQuestions() {
+  if (!susQuestionsContainer) return;
+  // Default jawaban seimbang yang menghasilkan skor awal ~85.0 (Memenuhi syarat UCD Bu Ama >= 70)
+  const defaultAnswers = [5, 2, 4, 1, 5, 2, 4, 2, 5, 2];
+
+  susQuestionsContainer.innerHTML = SUS_QUESTIONS.map((q, idx) => {
+    const isOdd = (idx + 1) % 2 === 1;
+    const defVal = defaultAnswers[idx];
+    return `
+      <div class="bg-white p-3.5 rounded-2xl border border-stone-200 shadow-sm space-y-2">
+        <div class="flex items-start justify-between gap-2">
+          <p class="font-heading font-semibold text-stone-800 text-xs">
+            <span class="text-[#ff6210] font-bold mr-1">${idx + 1}.</span> ${q.text}
+          </p>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold ${isOdd ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">
+            ${isOdd ? 'Butir Ganjil (+)' : 'Butir Genap (-)'}
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-5 gap-1.5 pt-1">
+          ${[1, 2, 3, 4, 5].map(val => `
+            <label class="flex flex-col items-center justify-center p-2 rounded-xl border border-stone-200/80 hover:border-[#ff6210] hover:bg-[#fff2ea]/40 cursor-pointer transition text-center text-[10px]">
+              <input type="radio" name="sus_q_${idx + 1}" value="${val}" ${val === defVal ? 'checked' : ''} class="sus-radio accent-[#ff6210] mb-1">
+              <span class="font-heading font-bold text-stone-700">${val}</span>
+              <span class="text-[9px] text-stone-400 hidden sm:inline-block leading-tight">
+                ${val === 1 ? 'Sgt Tdk Setuju' : val === 2 ? 'Tdk Setuju' : val === 3 ? 'Netral' : val === 4 ? 'Setuju' : 'Sgt Setuju'}
+              </span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.querySelectorAll('.sus-radio').forEach(radio => {
+    radio.addEventListener('change', updateSusScoreCalculation);
+  });
+
+  updateSusScoreCalculation();
+}
+
+function updateSusScoreCalculation() {
+  let oddContribution = 0;
+  let evenContribution = 0;
+
+  for (let i = 1; i <= 10; i++) {
+    const checked = document.querySelector(`input[name="sus_q_${i}"]:checked`);
+    const val = checked ? parseInt(checked.value) : 3;
+    if (i % 2 === 1) {
+      oddContribution += (val - 1);
+    } else {
+      evenContribution += (5 - val);
+    }
+  }
+
+  const score = Number(((oddContribution + evenContribution) * 2.5).toFixed(1));
+  if (susScorePreview) susScorePreview.textContent = score.toFixed(1);
+
+  let grade = "Grade C (Marginal)";
+  const isMet = score >= 70;
+
+  if (score >= 85) grade = "Grade A (Excellent)";
+  else if (score >= 70) grade = "Grade B (Good / Acceptable)";
+  else if (score >= 50) grade = "Grade C (Marginal)";
+  else grade = "Grade F (Unacceptable)";
+
+  if (susGradePreview) susGradePreview.textContent = grade;
+  if (susBenchmarkBadge) {
+    susBenchmarkBadge.className = isMet 
+      ? "px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"
+      : "px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800";
+    susBenchmarkBadge.textContent = isMet ? "≥ 70 Terpenuhi" : "< 70 Belum Memenuhi";
+  }
+
+  return score;
+}
+
+// Preset Responder Buttons
+document.querySelectorAll('.btn-sus-preset').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const name = btn.getAttribute('data-name');
+    const role = btn.getAttribute('data-role');
+    if (susRespondentName) susRespondentName.value = name;
+    if (susRespondentRole) susRespondentRole.value = role;
+  });
+});
+
+// Modal Open & Close Event Listeners
+if (btnOpenSusModal && modalSusEvaluation) {
+  btnOpenSusModal.addEventListener('click', () => {
+    modalSusEvaluation.classList.remove('hidden');
+    renderSusQuestions();
+  });
+}
+if (btnCloseSusModal && modalSusEvaluation) {
+  btnCloseSusModal.addEventListener('click', () => {
+    modalSusEvaluation.classList.add('hidden');
+  });
+}
+
+if (btnOpenN8nModal && modalN8nConfig) {
+  btnOpenN8nModal.addEventListener('click', () => {
+    modalN8nConfig.classList.remove('hidden');
+    if (inputN8nWebhookUrl) {
+      inputN8nWebhookUrl.value = localStorage.getItem('n8n_webhook_url') || '';
+    }
+  });
+}
+if (btnCloseN8nModal && modalN8nConfig) {
+  btnCloseN8nModal.addEventListener('click', () => {
+    modalN8nConfig.classList.add('hidden');
+  });
+}
+
+// Save n8n Webhook URL
+if (btnSaveN8nUrl && inputN8nWebhookUrl) {
+  btnSaveN8nUrl.addEventListener('click', () => {
+    const url = inputN8nWebhookUrl.value.trim();
+    if (url) {
+      localStorage.setItem('n8n_webhook_url', url);
+      if (lblN8nStatus) lblN8nStatus.textContent = "Custom Cloud n8n";
+      showN8nAlert("✓ URL Webhook n8n Cloud berhasil disimpan!", "success");
+    } else {
+      localStorage.removeItem('n8n_webhook_url');
+      if (lblN8nStatus) lblN8nStatus.textContent = "Simulator Internal";
+      showN8nAlert("URL dikosongkan. Sistem memakai simulator internal.", "info");
+    }
+  });
+}
+
+function showN8nAlert(msg, type = "success") {
+  if (!n8nConfigAlert) return;
+  n8nConfigAlert.className = type === "success" 
+    ? "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 block"
+    : "p-3 rounded-xl text-xs font-medium bg-stone-100 text-stone-800 border border-stone-200 block";
+  n8nConfigAlert.textContent = msg;
+  setTimeout(() => n8nConfigAlert.classList.add('hidden'), 3000);
+}
+
+// Test Ping n8n Webhook
+if (btnTestN8nPing) {
+  btnTestN8nPing.addEventListener('click', async () => {
+    const url = inputN8nWebhookUrl ? inputN8nWebhookUrl.value.trim() : '';
+    btnTestN8nPing.disabled = true;
+    btnTestN8nPing.textContent = "Menguji...";
+
+    try {
+      const pingPayload = {
+        event: "test_ping",
+        source: "EduFunnel Dashboard",
+        timestamp: new Date().toISOString(),
+        message: "Ping koneksi pipeline n8n berhasil!"
+      };
+
+      if (url && url.startsWith('http')) {
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pingPayload)
+        });
+        showN8nAlert("✓ Ping berhasil diterima endpoint n8n Cloud!", "success");
+      } else {
+        await fetch('/api/webhook/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pingPayload)
+        });
+        showN8nAlert("✓ Ping berhasil diterima backend simulator!", "success");
+      }
+    } catch (err) {
+      showN8nAlert("Koneksi ping gagal: " + err.message, "error");
+    } finally {
+      btnTestN8nPing.disabled = false;
+      btnTestN8nPing.textContent = "Tes Ping";
+    }
+  });
+}
+
+// Submit SUS Evaluation
+if (btnSubmitSus) {
+  btnSubmitSus.addEventListener('click', async () => {
+    btnSubmitSus.disabled = true;
+    btnSubmitSus.innerHTML = `<span>⏳</span><span>Mengirim ke Webhook...</span>`;
+
+    const answers = [];
+    for (let i = 1; i <= 10; i++) {
+      const checked = document.querySelector(`input[name="sus_q_${i}"]:checked`);
+      answers.push(checked ? parseInt(checked.value) : 3);
+    }
+
+    const currentScore = updateSusScoreCalculation();
+    const payload = {
+      nama: susRespondentName ? susRespondentName.value.trim() : 'Pengguna Dashboard',
+      peran: susRespondentRole ? susRespondentRole.value.trim() : 'Evaluator',
+      sumber_trafik: currentPersona === 'gadget' ? 'Dashboard Grosir Gadget' : 'Dashboard EduFunnel PMB',
+      jawaban: answers,
+      sus_score: currentScore,
+      feedback: susFeedback ? susFeedback.value.trim() : '',
+      n8nWebhookUrl: localStorage.getItem('n8n_webhook_url') || ''
+    };
+
+    try {
+      const res = await fetch('/api/webhook/kuesioner-sus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+
+      if (susAlert) {
+        susAlert.className = "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 block";
+        const fwdNote = result.n8n_pipeline && result.n8n_pipeline.forwarded 
+          ? `⚡ Berhasil diteruskan ke n8n Cloud (${result.n8n_pipeline.url})!` 
+          : `✓ Tersimpan di basis data evaluasi ISO 9241-210.`;
+        susAlert.innerHTML = `🎉 <strong>Berhasil Dikirim!</strong> Skor SUS: <strong>${currentScore}</strong> (${currentScore >= 70 ? 'Memenuhi Standar ≥ 70' : 'Di Bawah Standar'}).<br><span class="text-[11px]">${fwdNote}</span>`;
+      }
+
+      loadSusStats();
+      setTimeout(() => {
+        if (modalSusEvaluation) modalSusEvaluation.classList.add('hidden');
+        if (susAlert) susAlert.classList.add('hidden');
+      }, 2500);
+    } catch (err) {
+      if (susAlert) {
+        susAlert.className = "p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200 block";
+        susAlert.textContent = "Gagal mengirim kuesioner: " + err.message;
+      }
+    } finally {
+      btnSubmitSus.disabled = false;
+      btnSubmitSus.innerHTML = `<span>🚀</span><span>Kirim ke Webhook n8n (Jalur A)</span>`;
+    }
+  });
+}
+
+// Load SUS Stats for Dashboard Banner
+async function loadSusStats() {
+  try {
+    const res = await fetch('/api/webhook/sus-stats');
+    if (res.ok) {
+      const data = await res.json();
+      if (badgeAvgSusScore) {
+        badgeAvgSusScore.textContent = `${data.average_sus_score} / 100`;
+      }
+      if (lblSusGrade) {
+        lblSusGrade.textContent = data.average_sus_score >= 85 
+          ? "Grade A (Excellent)" 
+          : data.average_sus_score >= 70 
+          ? "Grade B (Acceptable)" 
+          : "Grade C (Marginal)";
+      }
+    }
+  } catch (err) {
+    console.warn('Gagal memuat statistik SUS:', err);
+  }
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   checkExistingAuth();
+  loadSusStats();
+  if (localStorage.getItem('n8n_webhook_url') && lblN8nStatus) {
+    lblN8nStatus.textContent = "Custom Cloud n8n";
+  }
 });

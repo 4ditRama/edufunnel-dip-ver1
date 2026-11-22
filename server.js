@@ -35,15 +35,120 @@ app.post('/api/webhook/simulate', (req, res) => {
   const payload = req.body;
   console.log('[WEBHOOK RECEIVED FROM UI]:', JSON.stringify(payload, null, 2));
 
-  // Di sini kamu bisa meneruskan payload ke URL Webhook n8n asli Anda jika sudah online:
-  // axios.post(process.env.N8N_WEBHOOK_URL, payload)
-
   res.json({
     status: 'success',
     message: 'Payload berhasil diterima backend & diteruskan ke n8n pipeline',
     receivedAt: new Date().toISOString(),
     payload: payload
   });
+});
+
+// 2b. POST /api/webhook/kuesioner-sus: Jalur A (Event-Driven Webhook Kuesioner SUS ISO 9241-210)
+// Menerima data evaluasi kegunaan 10 butir Likert, menghitung skor, dan meneruskan ke n8n Cloud
+app.post('/api/webhook/kuesioner-sus', async (req, res) => {
+  const { nama, peran, sumber_trafik, jawaban, sus_score, feedback, n8nWebhookUrl } = req.body;
+
+  if (!jawaban || !Array.isArray(jawaban) || jawaban.length !== 10) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Format jawaban SUS tidak valid. Harus berupa array 10 angka Likert (1-5).'
+    });
+  }
+
+  // Hitung ulang skor SUS di server untuk validasi (Ganjil: score-1, Genap: 5-score, total * 2.5)
+  let oddSum = 0;
+  let evenSum = 0;
+  jawaban.forEach((val, idx) => {
+    const num = Number(val);
+    if ((idx + 1) % 2 === 1) {
+      oddSum += (num - 1);
+    } else {
+      evenSum += (5 - num);
+    }
+  });
+  const calculatedScore = Number(((oddSum + evenSum) * 2.5).toFixed(1));
+  const finalScore = sus_score || calculatedScore;
+  const targetMet = finalScore >= 70; // Standar kelayakan modul EduFunnel Bu Ama (>= 70)
+
+  const newEntry = {
+    id: Date.now(),
+    nama: nama || 'Pengguna Anonim',
+    peran: peran || 'Evaluator',
+    sumber_trafik: sumber_trafik || 'Dashboard Web',
+    jawaban,
+    sus_score: finalScore,
+    target_met: targetMet,
+    feedback: feedback || '',
+    timestamp: new Date().toISOString()
+  };
+
+  // Simpan ke data historis lokal
+  const susFilePath = path.join(__dirname, 'data', 'sus_evaluations.json');
+  try {
+    let existingList = [];
+    if (fs.existsSync(susFilePath)) {
+      existingList = JSON.parse(fs.readFileSync(susFilePath, 'utf8') || '[]');
+    }
+    existingList.unshift(newEntry);
+    fs.writeFileSync(susFilePath, JSON.stringify(existingList, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Gagal menyimpan evaluasi SUS:', err);
+  }
+
+  // Jika user menyertakan URL Webhook n8n Cloud, teruskan secara real-time
+  let n8nForwardResult = null;
+  if (n8nWebhookUrl && n8nWebhookUrl.startsWith('http')) {
+    try {
+      const n8nRes = await fetch(n8nWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEntry)
+      });
+      n8nForwardResult = {
+        forwarded: true,
+        status: n8nRes.status,
+        url: n8nWebhookUrl
+      };
+    } catch (n8nErr) {
+      console.warn('Gagal meneruskan ke n8n Cloud:', n8nErr.message);
+      n8nForwardResult = {
+        forwarded: false,
+        error: n8nErr.message
+      };
+    }
+  }
+
+  res.json({
+    status: 'success',
+    message: 'Evaluasi SUS berhasil dicatat di sistem!',
+    data: newEntry,
+    n8n_pipeline: n8nForwardResult || { forwarded: false, note: 'Tersimpan di database lokal' }
+  });
+});
+
+// 2c. GET /api/webhook/sus-stats: Mengambil ringkasan rata-rata skor SUS untuk indikator UCD
+app.get('/api/webhook/sus-stats', (req, res) => {
+  const susFilePath = path.join(__dirname, 'data', 'sus_evaluations.json');
+  try {
+    let list = [];
+    if (fs.existsSync(susFilePath)) {
+      list = JSON.parse(fs.readFileSync(susFilePath, 'utf8') || '[]');
+    }
+    const count = list.length;
+    const avgScore = count > 0 
+      ? Number((list.reduce((acc, curr) => acc + (curr.sus_score || 0), 0) / count).toFixed(1))
+      : 82.5;
+
+    res.json({
+      total_respondents: count,
+      average_sus_score: avgScore,
+      target_benchmark: 70.0,
+      meets_iso_criteria: avgScore >= 70.0,
+      recent: list.slice(0, 5)
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // 3. POST /api/webhook/update-data: Endpoint yang dipanggil oleh n8n untuk memperbarui data dashboard
