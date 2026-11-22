@@ -205,8 +205,8 @@ Panduan Menjawab:
 3. Gunakan format HTML dasar (strong, em, br, li, ul). Jawaban harus hangat, hidup, dan solutif.`;
 
   try {
-    // Model Gemini 3.5 Flash Lite yang terverifikasi aktif
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
+    // Model Gemini 3.8 Flash aktif
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -57,7 +57,7 @@ const registerAlert = document.getElementById('registerAlert');
 
 // Helper to show alert messages
 function showAlert(element, message, type = 'error') {
-  element.className = type === 'success' 
+  element.className = type === 'success'
     ? "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
     : "p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200";
   element.innerHTML = message;
@@ -73,8 +73,8 @@ function clearAlert(element) {
 function loginUser(name, persona = 'gadget') {
   const user = { name, persona, loggedInAt: new Date().toISOString() };
   localStorage.setItem('edufunnel_user', JSON.stringify(user));
-  
-  lblCurrentUserName.textContent = name;
+
+  if (lblCurrentUserName) lblCurrentUserName.textContent = name;
   switchPersona(persona);
   showView('dashboard');
 }
@@ -222,7 +222,7 @@ async function checkExistingAuth() {
         const userRole = session.user.user_metadata?.role;
         const persona = userRole === 'owner_gadget' ? 'gadget' : 'edufunnel';
 
-        lblCurrentUserName.textContent = userName;
+        if (lblCurrentUserName) lblCurrentUserName.textContent = userName;
         switchPersona(persona);
         showView('dashboard');
         return;
@@ -236,8 +236,8 @@ async function checkExistingAuth() {
   if (savedUser) {
     try {
       const parsed = JSON.parse(savedUser);
-      lblCurrentUserName.textContent = parsed.name;
-      switchPersona(parsed.persona || 'edufunnel');
+      if (lblCurrentUserName) lblCurrentUserName.textContent = parsed.name;
+      switchPersona(parsed.persona || 'gadget');
       showView('dashboard');
       return;
     } catch (err) {
@@ -274,17 +274,17 @@ btnPersonaGadget.addEventListener('click', () => switchPersona('gadget'));
 
 function switchPersona(persona) {
   currentPersona = persona;
-  
+
   if (persona === 'edufunnel') {
-    btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md";
-    btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200";
-    if (headerTitle) headerTitle.textContent = "EduFunnel PMB Decision Support (Mode Demo Modul)";
+    btnPersonaEdu.className = "px-3 py-1.5 rounded-md text-xs font-heading font-semibold transition-all bg-[#ff6210] text-white shadow-sm flex items-center space-x-1.5 cursor-pointer";
+    btnPersonaGadget.className = "px-3 py-1.5 rounded-md text-xs font-heading font-medium text-stone-400 hover:text-white transition-all flex items-center space-x-1.5 cursor-pointer";
+    if (headerTitle) headerTitle.textContent = "EduFunnel PMB";
     if (headerSubtitle) headerSubtitle.textContent = "Penerimaan Mahasiswa Baru • Standar ISO 9241-210 UCD";
   } else {
-    btnPersonaGadget.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md";
-    btnPersonaEdu.className = "px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200";
-    if (headerTitle) headerTitle.textContent = "GadgetFlow B2B — Wholesale Decision Support";
-    if (headerSubtitle) headerSubtitle.textContent = "Studi Kasus Grosir Gadget Pak Ujang & Mas Iqbal (Supply Mall) • UCD ISO 9241-210";
+    btnPersonaGadget.className = "px-3 py-1.5 rounded-md text-xs font-heading font-semibold transition-all bg-[#ff6210] text-white shadow-sm flex items-center space-x-1.5 cursor-pointer";
+    btnPersonaEdu.className = "px-3 py-1.5 rounded-md text-xs font-heading font-medium text-stone-400 hover:text-white transition-all flex items-center space-x-1.5 cursor-pointer";
+    if (headerTitle) headerTitle.textContent = "GadgetFlow B2B";
+    if (headerSubtitle) headerSubtitle.textContent = "Grosir Gadget Pak Ujang & Mas Iqbal • Standar ISO 9241-210 UCD";
   }
 
   loadFunnelData(persona);
@@ -303,7 +303,7 @@ async function loadFunnelData(persona) {
       const fallbackUrl = persona === 'edufunnel' ? './data/edufunnel_data.json' : './data/gadget_data.json';
       response = await fetch(fallbackUrl);
     }
-    
+
     const data = await response.json();
     currentFunnelData = data;
     renderDashboard(data);
@@ -363,7 +363,7 @@ function renderDashboard(data) {
 // Chart.js: Funnel Stages
 function renderFunnelChart(stages) {
   const ctx = document.getElementById('chartFunnelStages').getContext('2d');
-  
+
   if (funnelChartInstance) {
     funnelChartInstance.destroy();
   }
@@ -405,7 +405,7 @@ function renderFunnelChart(stages) {
           padding: 10,
           cornerRadius: 8,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               const val = context.raw;
               const pct = percentages[context.dataIndex];
               return ` Volume: ${val.toLocaleString('id-ID')} (${pct}% dari tahap 1)`;
@@ -528,25 +528,25 @@ function initAiAssistantForPersona(persona) {
 
   // Initial greeting
   const welcomeText = isEdu
-    ? `Halo! Saya <strong>Asisten Keputusan EduFunnel</strong>.<br>Saya menganalisis data pendaftaran mahasiswa baru, titik kebocoran calon pendaftar, dan performa saluran promosi.<br><br>Pilih topik analisis cepat di bawah atau ketik pertanyaan Anda.`
-    : `Halo Pak Ujang & Mas Iqbal. Saya <strong>Konsultan Bisnis Gadget</strong>.<br>Saya memantau alur penawaran stok gadget, performa toko retail mall (Agres, dsb), serta efisiensi closing transaksi Anda.<br><br>Pilih topik analisis cepat di bawah atau ketik pertanyaan Anda.`;
+    ? `Halo, saya <strong>Asisten Analitik EduFunnel</strong>.<br>Saya memantau data pendaftaran mahasiswa baru, titik kebocoran calon pendaftar, dan efisiensi saluran promosi.<br><br>Pilih topik analisis di bawah atau ketik pertanyaan Anda.`
+    : `Halo Pak Ujang & Mas Iqbal. Saya <strong>Konsultan Analitik Gadget B2B</strong>.<br>Saya memantau alur penawaran stok HP/laptop, efisiensi toko rekanan mall (Agres, dll), serta perputaran barang.<br><br>Ada data corong yang ingin dianalisis hari ini?`;
 
   appendAiMessage(welcomeText);
 
   // Suggested prompt chips
   const chips = isEdu
     ? [
-        { label: "Titik Hambatan (Bottleneck)", query: "Apa titik hambatan terbesar pada pendaftaran PMB saat ini?" },
-        { label: "Saluran Paling Efektif", query: "Saluran promosi mana yang paling banyak menghasilkan pendaftar resmi?" },
-        { label: "Rekomendasi Tindakan", query: "Apa rekomendasi strategis prioritas untuk tim marketing?" },
-        { label: "Ringkasan Konversi", query: "Berapa rasio konversi keseluruhan saat ini?" }
-      ]
+      { label: "Titik Hambatan Utama", query: "Apa titik hambatan terbesar pada pendaftaran PMB saat ini?" },
+      { label: "Saluran Paling Efektif", query: "Saluran promosi mana yang paling banyak menghasilkan pendaftar resmi?" },
+      { label: "Rekomendasi Tindakan", query: "Apa rekomendasi strategis prioritas untuk tim marketing?" },
+      { label: "Ringkasan Konversi", query: "Berapa rasio konversi keseluruhan saat ini?" }
+    ]
     : [
-        { label: "Analisis Batal Nego", query: "Kenapa banyak toko yang batal deal setelah tahap penawaran/nego?" },
-        { label: "Performa Toko Retail", query: "Saluran atau toko mana yang paling banyak menghasilkan closing penjualan?" },
-        { label: "Arahan Operasional Iqbal", query: "Apa arahan operasional untuk Mas Iqbal minggu ini?" },
-        { label: "Rekomendasi Margin Laptop", query: "Bagaimana strategi meningkatkan penjualan unit laptop?" }
-      ];
+      { label: "Penyebab Nego Batal", query: "Kenapa banyak toko yang batal deal setelah tahap penawaran/nego?" },
+      { label: "Toko Paling Loyal", query: "Saluran atau toko mana yang paling banyak menghasilkan closing penjualan?" },
+      { label: "Arahan Mas Iqbal", query: "Apa arahan operasional untuk Mas Iqbal minggu ini?" },
+      { label: "Rekomendasi Margin", query: "Bagaimana strategi meningkatkan penjualan unit laptop?" }
+    ];
 
   if (aiQuickChips) {
     aiQuickChips.innerHTML = '';
@@ -619,7 +619,7 @@ Panduan Menjawab:
 2. Jika pengguna bertanya di luar tema grosir gadget (seperti resep cemilan mac n cheese, rekomendasi makanan, obrolan santai), jawablah pertanyaannya secara ramah, lengkap, dan lezat (jangan menolak), lalu dengan gaya hangat khas Pak Ujang selipkan humor santai bahwa Anda siap lanjut bantu hitung margin dan stok kapan pun siap!
 3. Format teks menggunakan tag HTML: <strong> untuk tebal, <em> untuk miring, <br> untuk baris baru, <li> untuk poin-poin.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -719,7 +719,7 @@ function generateAiAnswer(q) {
   // 0. Pertanyaan Meta / Perkenalan & Kemampuan
   if (q.includes('kamu siapa') || q.includes('siapa kamu') || q.includes('bisa apa') || q.includes('bantu apa') || q.includes('fungsi') || q.includes('peran') || q.includes('halo') || q.includes('hai')) {
     if (isEdu) {
-      return `Halo! Saya adalah <strong>Asisten Keputusan EduFunnel</strong>.<br><br>Di sistem ini, peran utama saya adalah membantu pimpinan & tim marketing PMB untuk:<br>1. <strong>Mendeteksi Bottleneck:</strong> Mengetahui di tahap mana calon mahasiswa paling banyak gugur (drop-off).<br>2. <strong>Evaluasi Saluran Promosi:</strong> Membandingkan performa Instagram, TikTok, dan Edu Expo.<br>3. <strong>Saran Strategis (Now What):</strong> Memberikan langkah konkret untuk mendongkrak pendaftaran.<br><br>Silakan tanyakan apa saja seputar data atau klik pertanyaan cepat di atas.`;
+      return `Halo! Saya adalah <strong>Asisten Keputusan EduFunnel</strong>.<br><br>Di sistem ini, peran utama saya adalah membantu pimpinan & tim marketing PMB untuk:<br>1. <strong>Mendeteksi Bottleneck:</strong> Mengetahui di tahap mana calon mahasiswa paling banyak gugur (drop-off).<br>2. <strong>Evaluasi Saluran Iklan:</strong> Membandingkan performa Instagram, TikTok, dan Edu Expo.<br>3. <strong>Saran Strategis (Now What):</strong> Memberikan langkah konkret untuk mendongkrak pendaftaran.<br><br>Silakan tanyakan apa saja seputar data atau klik pertanyaan cepat di atas!`;
     } else {
       return `Halo! Saya adalah <strong>Konsultan Bisnis B2B untuk Pak Ujang & Mas Iqbal</strong>.<br><br>Tugas utama saya di aplikasi ini adalah:<br>1. <strong>Menganalisis Penjualan Toko:</strong> Memantau penawaran stok HP/laptop ke toko retail mall (seperti Agres).<br>2. <strong>Mengevaluasi Nego & Closing:</strong> Mencari tahu kenapa penawaran batal deal dan cara memaksimalkan margin.<br>3. <strong>Arahan Lapangan:</strong> Memberi rekomendasi rute dan taktik negosiasi untuk Mas Iqbal saat COD/kunjungan toko.<br><br>Ada hal spesifik tentang stok atau toko langganan yang ingin dibahas?`;
     }
@@ -728,9 +728,9 @@ function generateAiAnswer(q) {
   // 1. Bottleneck / Hambatan / Drop-off
   if (q.includes('bottleneck') || q.includes('hambatan') || q.includes('kendala') || q.includes('drop') || q.includes('batal')) {
     if (isEdu) {
-      return `<strong>Analisis Bottleneck (PMB Kampus):</strong><br><br>Titik kebocoran utama terjadi di tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>4.800 calon mahasiswa</strong> yang bertanya/download brosur (<em>Consideration</em>), hanya <strong>1.150 orang</strong> yang membeli voucher formulir (<em>Conversion</em>).<br>• Terjadi kehilangan <strong>76% calon pendaftar</strong> di fase ini.<br><br><strong>Rekomendasi Solusi:</strong> Sederhanakan formulir pendaftaran online dan kirim pengingat WhatsApp otomatis via n8n kepada pendaftar yang belum menyelesaikan pembayaran voucher.`;
+      return `<strong>[Analisis Bottleneck PMB]</strong><br><br>Titik kebocoran utama terjadi di tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>4.800 calon mahasiswa</strong> yang bertanya/download brosur (<em>Consideration</em>), hanya <strong>1.150 orang</strong> yang membeli voucher formulir (<em>Conversion</em>).<br>• Terjadi kehilangan <strong>76% calon pendaftar</strong> di fase ini.<br><br><strong>Rekomendasi Tindakan:</strong> Sederhanakan formulir pendaftaran online dan kirim pengingat WhatsApp otomatis via n8n kepada pendaftar yang belum menyelesaikan pembayaran voucher.`;
     } else {
-      return `<strong>Analisis Kebocoran Penawaran (Pak Ujang):</strong><br><br>Titik hambatan terbesar ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>240 toko</strong> yang dikirimi list stok, <strong>110 toko</strong> merespon dan menawar harga.<br>• Namun hanya <strong>58 toko</strong> yang deal beli unit (52 toko gugur saat negosiasi margin).<br><br><strong>Rekomendasi Solusi:</strong> Saat COD hunting barang di marketplace, tawar harga modal lebih miring lagi agar punya ruang margin lebih fleksibel saat toko mall menawar!`;
+      return `<strong>[Analisis Hambatan Penjualan B2B]</strong><br><br>Titik hambatan terbesar ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>240 toko</strong> yang dikirimi list stok, <strong>110 toko</strong> merespon dan menawar harga.<br>• Namun hanya <strong>58 toko</strong> yang deal beli unit (52 toko gugur saat negosiasi margin).<br><br><strong>Rekomendasi untuk Pak Ujang:</strong> Saat COD hunting barang di marketplace, tawar harga modal lebih miring lagi agar punya ruang margin lebih fleksibel saat toko mall menawar!`;
     }
   }
 
@@ -740,53 +740,53 @@ function generateAiAnswer(q) {
     const maxVolume = data.channel_performance.reduce((prev, curr) => curr.leads > prev.leads ? curr : prev, data.channel_performance[0]);
 
     if (isEdu) {
-      return `<strong>Analisis Saluran Promosi (PMB):</strong><br><br>• <strong>Konversi Tertinggi:</strong> Saluran <strong>${topChannel.channel}</strong> dengan CVR mencapai <strong>${topChannel.cvr}</strong> (${topChannel.converted} pendaftar dari ${topChannel.leads} prospek). Kunjungan tatap muka terbukti paling meyakinkan orang tua calon maba.<br>• <strong>Volume Terbesar:</strong> Iklan <strong>${maxVolume.channel}</strong> menyumbang <strong>${maxVolume.leads} prospek</strong> dengan CVR <strong>${maxVolume.cvr}</strong>.<br><br><strong>Saran:</strong> Alokasikan lebih banyak anggaran ke kegiatan roadshow/expo sekolah bulan depan!`;
+      return `<strong>[Analisis Saluran Promosi PMB]</strong><br><br>• <strong>Konversi Tertinggi:</strong> Saluran <strong>${topChannel.channel}</strong> dengan CVR mencapai <strong>${topChannel.cvr}</strong> (${topChannel.converted} pendaftar dari ${topChannel.leads} prospek). Kunjungan tatap muka terbukti paling meyakinkan orang tua calon maba.<br>• <strong>Volume Terbesar:</strong> Iklan <strong>${maxVolume.channel}</strong> menyumbang <strong>${maxVolume.leads} prospek</strong> dengan CVR <strong>${maxVolume.cvr}</strong>.<br><br><strong>Saran:</strong> Alokasikan lebih banyak anggaran ke kegiatan roadshow/expo sekolah bulan depan!`;
     } else {
-      return `<strong>Analisis Saluran Penjualan Toko (Pak Ujang):</strong><br><br>• <strong>Paling Loyal & Cepat Deal:</strong> <strong>Toko Retail Mall (Agres & Mitra)</strong> dengan rasio konversi tertinggi sebesar <strong>${topChannel.cvr}</strong> (28 transaksi closing).<br>• Saluran broadcast grup WA reseller hanya menghasilkan CVR 18%.<br><br><strong>Rekomendasi:</strong> Toko Agres dan gerai mall adalah tulang punggung perputaran kas. Jadwalkan Mas Iqbal untuk kunjungan tatap muka rutin setiap restock!`;
+      return `<strong>[Analisis Saluran Penjualan Toko]</strong><br><br>• <strong>Paling Loyal & Cepat Deal:</strong> <strong>Toko Retail Mall (Agres & Mitra)</strong> dengan rasio konversi tertinggi sebesar <strong>${topChannel.cvr}</strong> (28 transaksi closing).<br>• Saluran broadcast grup WA reseller hanya menghasilkan CVR 18%.<br><br><strong>Rekomendasi:</strong> Toko Agres dan gerai mall adalah tulang punggung perputaran kas. Jadwalkan Mas Iqbal untuk kunjungan tatap muka rutin setiap restock!`;
     }
   }
 
   // 3. Mas Iqbal / Kurir / Arahan Operasional Lapangan
   if (q.includes('iqbal') || q.includes('kurir') || q.includes('antar') || q.includes('lapangan') || q.includes('jadwal')) {
-    return `<strong>Arahan Operasional Khusus Mas Iqbal:</strong><br><br>1. <strong>Jadwal Kunjungan Prioritas:</strong> Kunjungi toko rekanan mall (terutama gerai Agres) setiap hari <strong>Selasa dan Jumat</strong> saat etalase mereka sedang kosong.<br>2. <strong>Bawa Sampel Unit:</strong> Selalu bawa unit laptop siap jual yang sudah dicek fisiknya.<br>3. <strong>Siapkan Paket Bundling:</strong> Bawa bonus tas laptop atau mouse saat negosiasi di toko agar pemilik toko langsung deal di tempat!`;
+    return `<strong>[Arahan Operasional Khusus Mas Iqbal]</strong><br><br>1. <strong>Jadwal Kunjungan Prioritas:</strong> Kunjungi toko rekanan mall (terutama gerai Agres) setiap hari <strong>Selasa dan Jumat</strong> saat etalase mereka sedang kosong.<br>2. <strong>Bawa Sampel Unit:</strong> Selalu bawa unit laptop siap jual yang sudah dicek fisiknya.<br>3. <strong>Siapkan Paket Bundling:</strong> Bawa bonus tas laptop atau mouse saat negosiasi di toko agar pemilik toko langsung deal di tempat!`;
   }
 
   // 4. Draft Chat WA / Pesan Promosi
   if (q.includes('draft') || q.includes('wa') || q.includes('chat') || q.includes('pesan') || q.includes('teks')) {
     if (isEdu) {
-      return `<strong>Draf Pesan Follow-up (PMB Kampus):</strong><br><br><em>"Halo Kak [Nama Calon Maba]! Terima kasih sudah berkonsultasi mengenai program studi di kampus kami. Biaya pendaftaran gelombang 1 akan ditutup dalam 3 hari lagi lho. Yuk amankan kuota prodi impianmu di sini: [Link Pendaftaran]. Jika butuh bantuan pengisian berkas, kami siap bantu ya!"</em>`;
+      return `<strong>[Draf Pesan WhatsApp Follow-up PMB]</strong><br><br><em>"Halo Kak [Nama Calon Maba]! Terima kasih sudah berkonsultasi mengenai program studi di kampus kami. Biaya pendaftaran gelombang 1 akan ditutup dalam 3 hari lagi lho. Yuk amankan kuota prodi impianmu di sini: [Link Pendaftaran]. Jika butuh bantuan pengisian berkas, kami siap bantu ya!"</em>`;
     } else {
-      return `<strong>Draf Pesan Penawaran Stok (Pak Ujang ke Toko Mall):</strong><br><br><em>"Siang Ko/Ci [Nama Pemilik Toko Agres/Mall]! Ini Pak Ujang. Mau info ada masuk stok laptop Lenovo & Asus siap pajang, kondisi mulus grade A + garansi toko. Harga grosir spesial khusus restock minggu ini ya. Nanti sore Mas Iqbal bisa sekalian mampir bawain unitnya kalau mau cek dulu. Terima kasih!"</em>`;
+      return `<strong>[Draf Pesan WhatsApp Penawaran Stok]</strong><br><br><em>"Siang Ko/Ci [Nama Pemilik Toko Agres/Mall]! Ini Pak Ujang. Mau info ada masuk stok laptop Lenovo & Asus siap pajang, kondisi mulus grade A + garansi toko. Harga grosir spesial khusus restock minggu ini ya. Nanti sore Mas Iqbal bisa sekalian mampir bawain unitnya kalau mau cek dulu. Terima kasih!"</em>`;
     }
   }
 
   // 5. Rekomendasi / Saran / Tindakan
   if (q.includes('rekomendasi') || q.includes('saran') || q.includes('tindakan') || q.includes('aksi') || q.includes('tips') || q.includes('solusi')) {
     const recs = data.recommendations.map(r => `• <strong>[Prioritas ${r.priority}] ${r.title}:</strong> ${r.action}`).join('<br><br>');
-    return `<strong>Rencana Tindakan Strategis (Berdasarkan Data):</strong><br><br>${recs}`;
+    return `<strong>[Rencana Tindakan Strategis - Now What]</strong><br><br>${recs}`;
   }
 
   // 6. Konversi / CVR / Angka Ringkasan
   if (q.includes('konversi') || q.includes('cvr') || q.includes('angka') || q.includes('total') || q.includes('deal') || q.includes('ringkasan')) {
-    return `<strong>Ringkasan Performa Corong Saat Ini:</strong><br><br>• <strong>Total Prospek Masuk:</strong> ${data.summary.total_prospects.toLocaleString('id-ID')} unit/orang<br>• <strong>Total Berhasil Konversi:</strong> ${data.summary.total_converted.toLocaleString('id-ID')} transaksi/maba<br>• <strong>Rasio Konversi Keseluruhan (CVR):</strong> <strong>${data.summary.overall_conversion_rate}</strong><br>• <strong>Saluran Teratas:</strong> ${data.summary.top_channel}<br>• <strong>Status Funnel:</strong> Berjalan stabil dan terukur.`;
+    return `<strong>[Ringkasan Performa Corong]</strong><br><br>• <strong>Total Prospek Masuk:</strong> ${data.summary.total_prospects.toLocaleString('id-ID')} unit/orang<br>• <strong>Total Berhasil Konversi:</strong> ${data.summary.total_converted.toLocaleString('id-ID')} transaksi/maba<br>• <strong>Rasio Konversi Keseluruhan (CVR):</strong> <strong>${data.summary.overall_conversion_rate}</strong><br>• <strong>Saluran Teratas:</strong> ${data.summary.top_channel}<br>• <strong>Status Corong:</strong> Berjalan stabil dan terukur.`;
   }
 
   // 7. Edukasi Istilah (Funnel, UCD, ACCRA)
   if (q.includes('ucd') || q.includes('accra') || q.includes('apa itu') || q.includes('pengertian')) {
-    return `<strong>Edukasi Konsep Desain Interaksi Pengguna (DIP):</strong><br><br>• <strong>UCD (ISO 9241-210):</strong> Pendekatan desain yang menempatkan kebutuhan nyata pengguna (Pak Ujang / Tim PMB) sebagai pusat pengembangan, dievaluasi lewat metrik kepuasan dan efisiensi.<br>• <strong>Model ACCRA:</strong> Alur corong 5 tahap dari <em>Awareness</em> (tahu), <em>Consideration</em> (tanya/menimbang), <em>Conversion</em> (beli/deal), <em>Retention</em> (repeat order/kuliah), hingga <em>Advocacy</em> (rekomendasi).`;
+    return `<strong>[Edukasi Konsep Desain Interaksi Pengguna - DIP]</strong><br><br>• <strong>UCD (ISO 9241-210):</strong> Pendekatan desain yang menempatkan kebutuhan nyata pengguna (Pak Ujang / Tim PMB) sebagai pusat pengembangan, dievaluasi lewat metrik kepuasan dan efisiensi.<br>• <strong>Model ACCRA:</strong> Alur corong 5 tahap dari <em>Awareness</em> (tahu), <em>Consideration</em> (tanya/menimbang), <em>Conversion</em> (beli/deal), <em>Retention</em> (repeat order/kuliah), hingga <em>Advocacy</em> (rekomendasi).`;
   }
 
   // 8. Cemilan, Resep, Makanan Santai
-  if (q.includes('resep') || q.includes('mac') || q.includes('cheese') || q.includes('makan') || q.includes('cemilan') || q.includes('masak') || q.includes('laper') || q.includes('lapar')) {
+  if (q.includes('resep') || q.includes('mac') || q.includes('cheese') || q.includes('chesse') || q.includes('keju') || q.includes('makan') || q.includes('cemil') || q.includes('snack') || q.includes('masak') || q.includes('laper') || q.includes('lapar') || q.includes('kuliner')) {
     if (isEdu) {
-      return `<strong>Resep Praktis Mac and Cheese ala Mahasiswa PMB:</strong><br><br>1. <strong>Bahan:</strong> 150g makaroni rebus, 2 sdm mentega, 1 gelas susu cair, parutan keju cheddar & mozzarella secukupnya.<br>2. <strong>Cara Cepat:</strong> Lelehkan mentega di teflon, masukkan susu dan keju sampai saus mengental gurih. Masukkan makaroni, aduk rata dengan sejumput garam dan merica hitam.<br><br>Selesai memasak, kita bisa kembali melanjutkan analisis saluran promosi kampus.`;
+      return `<strong>[Resep Praktis Mac and Cheese ala Mahasiswa PMB]</strong><br><br>1. <strong>Bahan:</strong> 150g makaroni rebus, 2 sdm mentega, 1 gelas susu cair, parutan keju cheddar & mozzarella secukupnya.<br>2. <strong>Cara Cepat:</strong> Lelehkan mentega di teflon, masukkan susu dan keju sampai saus mengental gurih. Masukkan makaroni, aduk rata dengan sejumput garam dan merica hitam.<br><br>Nikmati cemilannya selagi hangat sambil kita lanjut evaluasi saluran promosi kampus ya!`;
     } else {
-      return `<strong>Resep Praktis Mac and Cheese Rekomendasi Lapangan:</strong><br><br>Biar stamina tetap prima saat mobilitas pengiriman stok ke toko retail, berikut resep praktisnya:<br>• <strong>Bahan:</strong> 200g macaroni rebus, 2 sdm margarin, 1 kotak susu UHT (200ml), keju cheddar parut + sedikit keju quick melt.<br>• <strong>Cara Buat:</strong> Lelehkan margarin di wajan, tuang susu dan masukkan keju sampai meleleh jadi saus creamy kental. Masukkan macaroni, bumbui merica & kaldu jamur secukupnya.<br><br>Siap disantap sebelum Mas Iqbal berangkat kunjungan ke gerai mall.`;
+      return `<strong>[Resep Spesial Mac and Cheese Rekomendasi Pak Ujang & Mas Iqbal]</strong><br><br>Biar stamina tetap prima saat muter COD kirim laptop ke toko mall, ini resep simpelnya:<br>• <strong>Bahan:</strong> 200g macaroni rebus, 2 sdm margarin, 1 kotak susu UHT (200ml), keju cheddar parut + sedikit keju quick melt.<br>• <strong>Cara Buat:</strong> Lelehkan margarin di wajan, tuang susu dan masukkan keju sampai meleleh jadi saus creamy kental. Masukkan macaroni, bumbui merica & kaldu jamur secukupnya.<br><br>Mantap disantap hangat sebelum Mas Iqbal berangkat kunjungan ke gerai Agres! Mau lanjut hitung margin stok laptop?`;
     }
   }
 
   // 9. Default Answer
-  return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Titik hambatan utama saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas atau bertanya tentang stok, saluran, dan strategi closing.`;
+  return `Saya memahami pertanyaan Anda tentang "<em>${q}</em>". Berdasarkan data aktif <strong>${data.system_title}</strong>:<br><br>• Total prospek: <strong>${data.summary.total_prospects.toLocaleString('id-ID')}</strong> dengan konversi final <strong>${data.summary.overall_conversion_rate}</strong>.<br>• Titik hambatan utama saat ini ada pada tahap <strong>${data.summary.primary_bottleneck}</strong>.<br><br>Anda bisa mengklik salah satu tombol pertanyaan instan di atas atau bertanya tentang stok, saluran, dan strategi closing!`;
 }
 
 // ==========================================
@@ -898,7 +898,7 @@ function updateSusScoreCalculation() {
 
   if (susGradePreview) susGradePreview.textContent = grade;
   if (susBenchmarkBadge) {
-    susBenchmarkBadge.className = isMet 
+    susBenchmarkBadge.className = isMet
       ? "px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"
       : "px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800";
     susBenchmarkBadge.textContent = isMet ? "≥ 70 Terpenuhi" : "< 70 Belum Memenuhi";
@@ -962,7 +962,7 @@ if (btnSaveN8nUrl && inputN8nWebhookUrl) {
 
 function showN8nAlert(msg, type = "success") {
   if (!n8nConfigAlert) return;
-  n8nConfigAlert.className = type === "success" 
+  n8nConfigAlert.className = type === "success"
     ? "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 block"
     : "p-3 rounded-xl text-xs font-medium bg-stone-100 text-stone-800 border border-stone-200 block";
   n8nConfigAlert.textContent = msg;
@@ -1012,7 +1012,7 @@ if (btnTestN8nPing) {
 if (btnSubmitSus) {
   btnSubmitSus.addEventListener('click', async () => {
     btnSubmitSus.disabled = true;
-    btnSubmitSus.innerHTML = `<span class="inline-block animate-pulse">Mengirim ke Webhook...</span>`;
+    btnSubmitSus.innerHTML = `<span>⏳</span><span>Mengirim ke Webhook...</span>`;
 
     const answers = [];
     for (let i = 1; i <= 10; i++) {
@@ -1041,10 +1041,10 @@ if (btnSubmitSus) {
 
       if (susAlert) {
         susAlert.className = "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 block";
-        const fwdNote = result.n8n_pipeline && result.n8n_pipeline.forwarded 
-          ? `Berhasil diteruskan ke endpoint n8n Cloud (${result.n8n_pipeline.url})` 
-          : `Tersimpan di basis data evaluasi ISO 9241-210.`;
-        susAlert.innerHTML = `<strong>Evaluasi Berhasil Dikirim.</strong> Skor SUS: <strong>${currentScore}</strong> (${currentScore >= 70 ? 'Memenuhi Standar ISO ≥ 70' : 'Di Bawah Standar'}).<br><span class="text-[11px] text-stone-500">${fwdNote}</span>`;
+        const fwdNote = result.n8n_pipeline && result.n8n_pipeline.forwarded
+          ? `Diteruskan ke n8n Cloud (${result.n8n_pipeline.url})`
+          : `Tersimpan di basis data evaluasi ISO 9241-210`;
+        susAlert.innerHTML = `<strong>Evaluasi Berhasil Dicatat</strong> — Skor SUS: <strong>${currentScore}</strong> (${currentScore >= 70 ? 'Standar Kelayakan ≥ 70 Terpenuhi' : 'Di Bawah Standar'}).<br><span class="text-[11px] text-stone-500">${fwdNote}</span>`;
       }
 
       loadSusStats();
@@ -1059,7 +1059,7 @@ if (btnSubmitSus) {
       }
     } finally {
       btnSubmitSus.disabled = false;
-      btnSubmitSus.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg><span>Kirim ke Pipeline Webhook (Jalur A)</span>`;
+      btnSubmitSus.innerHTML = `<svg class="w-3.5 h-3.5 inline mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Kirim ke Webhook n8n (Jalur A)</span>`;
     }
   });
 }
@@ -1074,11 +1074,11 @@ async function loadSusStats() {
         badgeAvgSusScore.textContent = `${data.average_sus_score} / 100`;
       }
       if (lblSusGrade) {
-        lblSusGrade.textContent = data.average_sus_score >= 85 
-          ? "Grade A (Excellent)" 
-          : data.average_sus_score >= 70 
-          ? "Grade B (Acceptable)" 
-          : "Grade C (Marginal)";
+        lblSusGrade.textContent = data.average_sus_score >= 85
+          ? "Grade A (Excellent)"
+          : data.average_sus_score >= 70
+            ? "Grade B (Acceptable)"
+            : "Grade C (Marginal)";
       }
     }
   } catch (err) {
