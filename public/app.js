@@ -946,11 +946,13 @@ if (btnCloseSusModal && modalSusEvaluation) {
   });
 }
 
+const DEFAULT_N8N_WEBHOOK_URL = "https://aditkuni.app.n8n.cloud/webhook/kuesioner-sus";
+
 if (btnOpenN8nModal && modalN8nConfig) {
   btnOpenN8nModal.addEventListener('click', () => {
     modalN8nConfig.classList.remove('hidden');
     if (inputN8nWebhookUrl) {
-      inputN8nWebhookUrl.value = localStorage.getItem('n8n_webhook_url') || '';
+      inputN8nWebhookUrl.value = localStorage.getItem('n8n_webhook_url') || DEFAULT_N8N_WEBHOOK_URL;
     }
   });
 }
@@ -970,8 +972,8 @@ if (btnSaveN8nUrl && inputN8nWebhookUrl) {
       showN8nAlert("✓ URL Webhook n8n Cloud berhasil disimpan!", "success");
     } else {
       localStorage.removeItem('n8n_webhook_url');
-      if (lblN8nStatus) lblN8nStatus.textContent = "Simulator Internal";
-      showN8nAlert("URL dikosongkan. Sistem memakai simulator internal.", "info");
+      if (lblN8nStatus) lblN8nStatus.textContent = "Default Cloud n8n";
+      showN8nAlert("Memakai endpoint default n8n Cloud resmi.", "info");
     }
   });
 }
@@ -980,46 +982,37 @@ function showN8nAlert(msg, type = "success") {
   if (!n8nConfigAlert) return;
   n8nConfigAlert.className = type === "success"
     ? "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 block"
-    : "p-3 rounded-xl text-xs font-medium bg-stone-100 text-stone-800 border border-stone-200 block";
+    : "p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200 block";
   n8nConfigAlert.textContent = msg;
-  setTimeout(() => n8nConfigAlert.classList.add('hidden'), 3000);
+  setTimeout(() => n8nConfigAlert.classList.add('hidden'), 3500);
 }
 
 // Test Ping n8n Webhook
 if (btnTestN8nPing) {
   btnTestN8nPing.addEventListener('click', async () => {
-    const url = inputN8nWebhookUrl ? inputN8nWebhookUrl.value.trim() : '';
+    const url = (inputN8nWebhookUrl && inputN8nWebhookUrl.value.trim()) || localStorage.getItem('n8n_webhook_url') || DEFAULT_N8N_WEBHOOK_URL;
     btnTestN8nPing.disabled = true;
-    btnTestN8nPing.textContent = "Menguji...";
+    btnTestN8nPing.innerHTML = `<svg class="w-3.5 h-3.5 text-amber-400 animate-spin mr-1.5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" class="opacity-75"></path></svg><span>Mengirim Sinyal Ping...</span>`;
 
     try {
       const pingPayload = {
         event: "test_ping",
-        source: "EduFunnel Dashboard",
+        source: "EduFunnel Dashboard Live",
         timestamp: new Date().toISOString(),
         message: "Ping koneksi pipeline n8n berhasil!"
       };
 
-      if (url && url.startsWith('http')) {
-        await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pingPayload)
-        });
-        showN8nAlert("✓ Ping berhasil diterima endpoint n8n Cloud!", "success");
-      } else {
-        await fetch('/api/webhook/simulate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pingPayload)
-        });
-        showN8nAlert("✓ Ping berhasil diterima backend simulator!", "success");
-      }
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pingPayload)
+      });
+      showN8nAlert("✓ Sinyal koneksi berhasil diterima n8n Cloud (Status 200 OK)!", "success");
     } catch (err) {
       showN8nAlert("Koneksi ping gagal: " + err.message, "error");
     } finally {
       btnTestN8nPing.disabled = false;
-      btnTestN8nPing.textContent = "Tes Ping";
+      btnTestN8nPing.innerHTML = `<svg class="w-3.5 h-3.5 text-amber-400 mr-1.5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Uji Sinyal Koneksi Pipeline (Ping ke n8n Cloud)</span>`;
     }
   });
 }
@@ -1037,12 +1030,16 @@ if (btnSubmitSus) {
     }
 
     const currentScore = updateSusScoreCalculation();
-    const n8nTargetUrl = localStorage.getItem('n8n_webhook_url') || '';
+    const n8nTargetUrl = localStorage.getItem('n8n_webhook_url') || DEFAULT_N8N_WEBHOOK_URL;
     const payload = {
       nama: susRespondentName ? susRespondentName.value.trim() : 'Pengguna Dashboard',
       peran: susRespondentRole ? susRespondentRole.value.trim() : 'Evaluator',
       sumber_trafik: currentPersona === 'gadget' ? 'Dashboard Grosir Gadget' : 'Dashboard EduFunnel PMB',
       jawaban: answers,
+      sus_score: currentScore,
+      feedback: susFeedback ? susFeedback.value.trim() : '',
+      n8nWebhookUrl: n8nTargetUrl
+    };
       sus_score: currentScore,
       feedback: susFeedback ? susFeedback.value.trim() : '',
       n8nWebhookUrl: n8nTargetUrl

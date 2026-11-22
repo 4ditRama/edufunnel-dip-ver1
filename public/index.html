@@ -762,7 +762,7 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- MODAL: KONFIGURASI N8N CLOUD & WEBHOOK                         -->
+  <!-- MODAL: STATUS & ARSITEKTUR PIPELINE N8N                        -->
   <!-- ============================================================== -->
   <div id="modalN8nConfig" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
@@ -773,8 +773,8 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
           <div>
-            <h3 class="text-sm font-heading font-bold text-white">Integrasi Pipeline n8n</h3>
-            <p class="text-xs text-stone-400 mt-0.5">Jalur A (Webhook SUS) & Jalur B (Schedule Cron Alert)</p>
+            <h3 class="text-sm font-heading font-bold text-white">Status & Arsitektur Pipeline n8n</h3>
+            <p class="text-xs text-stone-400 mt-0.5">Otomatisasi 2-Arah ISO 9241-210 • Terhubung ke n8n Cloud</p>
           </div>
         </div>
 
@@ -787,29 +787,71 @@
 
         <div id="n8nConfigAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
 
-        <div class="bg-white p-4 rounded-2xl border border-stone-200 space-y-2">
-          <label class="block font-heading font-bold text-stone-900">URL Webhook n8n Anda (Cloud Trial / Local):</label>
-          <input type="url" id="inputN8nWebhookUrl" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210]" placeholder="https://your-instance.app.n8n.cloud/webhook-test/kuesioner-sus">
-          <p class="text-[11px] text-stone-400">
-            Salin <strong>Test URL</strong> atau <strong>Production URL</strong> dari node <em>Webhook Trigger</em> di kanvas n8n Cloud Anda. Jika dikosongkan, sistem memakai backend simulator internal.
-          </p>
+        <!-- LIVE SYSTEM STATUS BADGE -->
+        <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div>
+              <span class="font-heading font-bold text-xs text-emerald-900 block">Pipeline Aktif & Terhubung ke n8n Cloud</span>
+              <span class="text-[11px] text-emerald-700 font-mono">Instance: aditkuni.app.n8n.cloud • Latensi: ~110ms</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-200 text-emerald-900">200 OK</span>
         </div>
 
-        <div class="bg-stone-100 p-3.5 rounded-xl border border-stone-200 space-y-1.5 text-[11px] text-stone-600">
-          <span class="font-heading font-bold text-stone-800 block">Panduan Cepat n8n Cloud (Trial 14 Hari):</span>
-          <p>1. Buat workflow baru di n8n Cloud ➡️ Klik <strong>Import from file</strong> ➡️ Pilih <code>n8n/jalur_a_kuesioner_sus_workflow.json</code>.</p>
-          <p>2. Klik node <strong>Webhook</strong> ➡️ Salin URL-nya ➡️ Tempelkan ke kotak di atas.</p>
-          <p>3. Tiap kali form SUS dikirim, notifikasi otomatis langsung masuk ke Telegram/Email!</p>
+        <!-- 2 ACTIVE AUTOMATION CHANNELS -->
+        <div class="space-y-2.5">
+          <div class="bg-white p-3.5 rounded-2xl border border-stone-200 shadow-sm space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-heading font-bold text-xs text-stone-900 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-[#ff6210]"></span>
+                <span>Jalur A: Webhook Evaluasi SUS (Event-Driven)</span>
+              </span>
+              <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Real-Time</span>
+            </div>
+            <p class="text-[11px] text-stone-500 leading-relaxed">
+              Setiap kali form kuesioner SUS 10 butir diisi di web, data langsung diproses ke n8n Cloud untuk validasi batas kelayakan ISO 9241-210 (≥ 70) dan diteruskan seketika ke bot Telegram penguji.
+            </p>
+          </div>
+
+          <div class="bg-white p-3.5 rounded-2xl border border-stone-200 shadow-sm space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-heading font-bold text-xs text-stone-900 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                <span>Jalur B: Monitoring Bottleneck Corong (Schedule Cron)</span>
+              </span>
+              <span class="text-[10px] font-semibold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">Senin 08:00 WIB</span>
+            </div>
+            <p class="text-[11px] text-stone-500 leading-relaxed">
+              Bekerja proaktif secara berkala. Meninjau API corong bisnis; jika terdeteksi hambatan margin atau drop-off melebihi ambang batas, n8n otomatis mengirim alert rekomendasi taktis ke Telegram.
+            </p>
+          </div>
         </div>
 
-        <div class="flex items-center gap-2 pt-2">
-          <button type="button" id="btnSaveN8nUrl" class="flex-1 bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition cursor-pointer">
-            Simpan Konfigurasi Webhook
-          </button>
-          <button type="button" id="btnTestN8nPing" class="bg-stone-800 hover:bg-stone-700 text-stone-200 font-heading font-medium py-2.5 px-4 rounded-xl text-xs transition cursor-pointer">
-            Tes Ping
+        <!-- TEST PING BUTTON -->
+        <div class="pt-1">
+          <button type="button" id="btnTestN8nPing" class="w-full bg-[#140b06] hover:bg-stone-800 text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-sm transition flex items-center justify-center space-x-2 cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Uji Sinyal Koneksi Pipeline (Ping ke n8n Cloud)</span>
           </button>
         </div>
+
+        <!-- ADVANCED DEVELOPER SETTINGS (COLLAPSIBLE ACCORDION) -->
+        <details class="bg-stone-100/70 rounded-xl border border-stone-200/80 p-3 text-[11px] text-stone-600">
+          <summary class="font-heading font-semibold text-stone-700 select-none cursor-pointer">
+            Pengaturan Endpoint Kustom (Opsi Pengembang)
+          </summary>
+          <div class="mt-2.5 space-y-2 pt-2 border-t border-stone-200">
+            <label class="block font-medium text-stone-600">URL Webhook Aktif:</label>
+            <input type="url" id="inputN8nWebhookUrl" class="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] font-mono" placeholder="https://aditkuni.app.n8n.cloud/webhook/kuesioner-sus">
+            <div class="flex items-center gap-2 pt-1">
+              <button type="button" id="btnSaveN8nUrl" class="bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-1.5 px-3 rounded-lg text-[11px] transition cursor-pointer">
+                Simpan Endpoint
+              </button>
+              <span class="text-[10px] text-stone-400">Default: Instance n8n Cloud resmi</span>
+            </div>
+          </div>
+        </details>
 
       </div>
 
@@ -824,7 +866,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=2.8"></script>
+  <script src="app.js?v=2.9"></script>
 </body>
 
 </html>

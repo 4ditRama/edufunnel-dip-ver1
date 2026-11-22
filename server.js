@@ -95,11 +95,12 @@ app.post('/api/webhook/kuesioner-sus', async (req, res) => {
     console.error('Gagal menyimpan evaluasi SUS:', err);
   }
 
-  // Jika user menyertakan URL Webhook n8n Cloud, teruskan secara real-time
+  // Teruskan ke n8n Cloud secara real-time (Default Production Webhook)
+  const targetWebhookUrl = n8nWebhookUrl || process.env.N8N_WEBHOOK_URL || 'https://aditkuni.app.n8n.cloud/webhook/kuesioner-sus';
   let n8nForwardResult = null;
-  if (n8nWebhookUrl && n8nWebhookUrl.startsWith('http')) {
+  if (targetWebhookUrl && targetWebhookUrl.startsWith('http')) {
     try {
-      const n8nRes = await fetch(n8nWebhookUrl, {
+      const n8nRes = await fetch(targetWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry)
@@ -107,7 +108,7 @@ app.post('/api/webhook/kuesioner-sus', async (req, res) => {
       n8nForwardResult = {
         forwarded: true,
         status: n8nRes.status,
-        url: n8nWebhookUrl
+        url: targetWebhookUrl
       };
     } catch (n8nErr) {
       console.warn('Gagal meneruskan ke n8n Cloud:', n8nErr.message);
