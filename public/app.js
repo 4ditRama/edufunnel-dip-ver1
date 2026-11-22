@@ -1021,6 +1021,7 @@ if (btnSubmitSus) {
     }
 
     const currentScore = updateSusScoreCalculation();
+    const n8nTargetUrl = localStorage.getItem('n8n_webhook_url') || '';
     const payload = {
       nama: susRespondentName ? susRespondentName.value.trim() : 'Pengguna Dashboard',
       peran: susRespondentRole ? susRespondentRole.value.trim() : 'Evaluator',
@@ -1028,8 +1029,26 @@ if (btnSubmitSus) {
       jawaban: answers,
       sus_score: currentScore,
       feedback: susFeedback ? susFeedback.value.trim() : '',
-      n8nWebhookUrl: localStorage.getItem('n8n_webhook_url') || ''
+      n8nWebhookUrl: n8nTargetUrl
     };
+
+    // Forwarding langsung dari client ke n8n Cloud (instan tanpa jeda)
+    if (n8nTargetUrl && n8nTargetUrl.startsWith('http')) {
+      fetch(n8nTargetUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nama: payload.nama,
+          peran: payload.peran,
+          sumber_trafik: payload.sumber_trafik,
+          jawaban: payload.jawaban,
+          sus_score: payload.sus_score,
+          target_met: payload.sus_score >= 70,
+          feedback: payload.feedback,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(e => console.warn('Direct n8n webhook push notice:', e.message));
+    }
 
     try {
       const res = await fetch('/api/webhook/kuesioner-sus', {
