@@ -35,6 +35,16 @@ document.getElementById('btnSwitchToLogin').addEventListener('click', () => show
 document.getElementById('btnBackToLandingFromLogin').addEventListener('click', () => showView('landing'));
 document.getElementById('btnBackToLandingFromReg').addEventListener('click', () => showView('landing'));
 
+// Quick Persona Cards on Landing Page
+const btnLandingPersonaGadget = document.getElementById('btnLandingPersonaGadget');
+const btnLandingPersonaEdu = document.getElementById('btnLandingPersonaEdu');
+if (btnLandingPersonaGadget) {
+  btnLandingPersonaGadget.addEventListener('click', () => loginUser('Pak Ujang (Owner)', 'gadget'));
+}
+if (btnLandingPersonaEdu) {
+  btnLandingPersonaEdu.addEventListener('click', () => loginUser('Tim PMB Kampus', 'edufunnel'));
+}
+
 // ==========================================
 // SUPABASE CLIENT & AUTHENTICATION LOGIC
 // ==========================================
