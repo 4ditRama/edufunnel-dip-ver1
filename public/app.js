@@ -1040,10 +1040,6 @@ if (btnSubmitSus) {
       feedback: susFeedback ? susFeedback.value.trim() : '',
       n8nWebhookUrl: n8nTargetUrl
     };
-      sus_score: currentScore,
-      feedback: susFeedback ? susFeedback.value.trim() : '',
-      n8nWebhookUrl: n8nTargetUrl
-    };
 
     try {
       const res = await fetch('/api/webhook/kuesioner-sus', {
