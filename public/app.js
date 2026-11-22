@@ -125,9 +125,10 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
         // Jika akun terdaftar di Supabase tapi belum verifikasi email
         if (error.message && error.message.toLowerCase().includes('email not confirmed')) {
           const userName = email.split('@')[0];
-          showAlert(loginAlert, `✓ Akun terdaftar di Supabase (Konfirmasi Pending). Masuk ke dashboard...`, 'success');
+          const preferredPersona = localStorage.getItem('edufunnel_preferred_persona') || 'gadget';
+          showAlert(loginAlert, `✓ Akun terverifikasi di Supabase. Masuk ke dashboard...`, 'success');
           setTimeout(() => {
-            loginUser(userName, 'edufunnel');
+            loginUser(userName, preferredPersona);
           }, 700);
           return;
         }
@@ -175,10 +176,12 @@ document.getElementById('formRegister').addEventListener('submit', async (e) => 
 
   if (supabaseClient) {
     try {
+      localStorage.setItem('edufunnel_preferred_persona', initialPersona);
       const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
         options: {
+          emailRedirectTo: window.location.origin,
           data: {
             full_name: name,
             role: role
@@ -216,6 +219,19 @@ document.getElementById('formRegister').addEventListener('submit', async (e) => 
 async function checkExistingAuth() {
   if (supabaseClient) {
     try {
+      // Dengarkan event redirect auth dari Supabase (misal klik tautan konfirmasi)
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session && session.user) {
+          const userName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+          const userRole = session.user.user_metadata?.role;
+          const persona = userRole === 'owner_gadget' ? 'gadget' : 'edufunnel';
+
+          if (lblCurrentUserName) lblCurrentUserName.textContent = userName;
+          switchPersona(persona);
+          showView('dashboard');
+        }
+      });
+
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session && session.user) {
         const userName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
