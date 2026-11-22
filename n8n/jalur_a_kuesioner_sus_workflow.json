@@ -37,7 +37,7 @@
             },
             {
               "name": "status_kelayakan",
-              "value": "={{ (($json.body?.sus_score || $json.sus_score || 85) >= 70) ? '✅ Memenuhi Target ISO 9241-210 (≥ 70)' : '⚠️ Di Bawah Standar (< 70)' }}"
+              "value": "={{ (($json.body?.sus_score || $json.sus_score || 85) >= 70) ? 'Memenuhi Target ISO 9241-210 (≥ 70)' : 'Di Bawah Standar (< 70)' }}"
             },
             {
               "name": "masukan_evaluasi",
@@ -45,7 +45,7 @@
             },
             {
               "name": "pesan_notifikasi",
-              "value": "=📝 *EVALUASI KUESIONER SUS BARU MASUK!* 📝\n\n👤 *Nama:* {{ $json.body?.nama || $json.nama || 'Responden' }}\n💼 *Peran:* {{ $json.body?.peran || $json.peran || 'Evaluator' }}\n📊 *Skor SUS:* {{ $json.body?.sus_score || $json.sus_score }} / 100\n🎯 *Status:* {{ (($json.body?.sus_score || $json.sus_score || 85) >= 70) ? '✅ Memenuhi Target (≥ 70)' : '⚠️ Di Bawah Standar' }}\n💬 *Catatan:* _{{ $json.body?.feedback || $json.feedback || '-' }}_\n⏰ *Waktu:* {{ $now.setZone('Asia/Jakarta').toFormat('dd LLL yyyy, HH:mm') }} WIB"
+              "value": "=EVALUASI KUESIONER SUS BARU MASUK!\n\nNama: {{ $json.body?.nama || $json.nama || 'Responden' }}\nPeran: {{ $json.body?.peran || $json.peran || 'Evaluator' }}\nSkor SUS: {{ $json.body?.sus_score || $json.sus_score }} / 100\nStatus: {{ (($json.body?.sus_score || $json.sus_score || 85) >= 70) ? 'Memenuhi Standar ISO (≥ 70)' : 'Di Bawah Standar' }}\nCatatan: {{ $json.body?.feedback || $json.feedback || '-' }}\nWaktu: {{ $now.setZone('Asia/Jakarta').toFormat('dd LLL yyyy, HH:mm') }} WIB"
             }
           ]
         },

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduFunnel — Decision Support System</title>
+  <title>EduFunnel — Decision Support & Pipeline System</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23140b06'/%3E%3Cpath d='M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24' stroke='%23ff6210' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3Cpath d='M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tailwind Config Custom Colors -->
@@ -40,29 +41,40 @@
   <section id="viewLanding" class="flex-1 flex flex-col">
     <!-- LANDING HEADER -->
     <header class="bg-[#140b06] text-white border-b border-stone-800 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white shadow-lg shadow-[#ff6210]/20 font-heading font-black text-lg">
-            EF
-          </div>
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="9" fill="#1f140e" stroke="#2d1f15" stroke-width="1"/>
+            <path d="M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24" stroke="url(#ef_brand_grad)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="ef_brand_grad" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ff8544"/>
+                <stop offset="1" stop-color="#ff6210"/>
+              </linearGradient>
+            </defs>
+          </svg>
           <div>
-            <h1 class="text-base sm:text-lg font-heading font-bold text-white tracking-tight">EduFunnel</h1>
-            <p class="text-[11px] text-stone-400">Decision Support System</p>
+            <div class="flex items-center space-x-1.5">
+              <h1 class="text-base font-heading font-bold text-white tracking-tight">EduFunnel</h1>
+              <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-stone-800 text-stone-300 border border-stone-700">v2.4</span>
+            </div>
+            <p class="text-[11px] text-stone-400">Decision Support &amp; Pipeline Engine</p>
           </div>
         </div>
 
         <nav class="hidden md:flex items-center space-x-6 text-xs text-stone-300 font-medium">
-          <a href="#fitur" class="hover:text-white transition">Fitur Unggulan</a>
-          <a href="#arsitektur" class="hover:text-white transition">Model UCD</a>
+          <a href="#fitur" class="hover:text-white transition">Fitur Analitik</a>
+          <a href="#arsitektur" class="hover:text-white transition">Model UCD ISO 9241-210</a>
           <a href="#persona" class="hover:text-white transition">Dual Persona</a>
         </nav>
 
         <div class="flex items-center space-x-2.5">
-          <button type="button" id="btnGoToLogin" class="px-3.5 py-1.5 rounded-xl text-xs font-heading font-semibold text-stone-300 hover:text-white transition">
+          <button type="button" id="btnGoToLogin" class="px-3.5 py-1.5 rounded-xl text-xs font-heading font-semibold text-stone-300 hover:text-white transition cursor-pointer">
             Masuk
           </button>
-          <button type="button" id="btnGoToRegister" class="px-4 py-1.5 rounded-xl text-xs font-heading font-semibold bg-[#ff6210] hover:bg-[#e55509] text-white shadow-md transition">
-            Daftar Akun &rarr;
+          <button type="button" id="btnGoToRegister" class="px-4 py-1.5 rounded-xl text-xs font-heading font-semibold bg-[#ff6210] hover:bg-[#e55509] text-white shadow-md transition cursor-pointer">
+            Mulai Demo &rarr;
           </button>
         </div>
       </div>
@@ -71,83 +83,93 @@
     <!-- LANDING HERO -->
     <div class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 flex flex-col lg:flex-row items-center gap-12">
       <div class="flex-1 space-y-6 text-center lg:text-left">
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#fff2ea] border border-[#fbe0c1] text-[11px] font-heading font-bold text-[#ff6210]">
-          <span class="w-2 h-2 rounded-full bg-[#ff6210] animate-ping"></span>
-          <span>Sistem Pendukung Keputusan • ISO 9241-210 UCD</span>
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-stone-100 border border-stone-200 text-[11px] font-mono font-medium text-stone-700">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#ff6210] animate-pulse"></span>
+          <span>Standar Global ISO 9241-210 • Pipeline n8n Ready</span>
         </div>
 
         <h2 class="text-3xl sm:text-5xl font-heading font-extrabold text-[#140b06] tracking-tight leading-tight">
-          Dari data mentah ke aksi nyata, <em class="text-[#ff6210] not-italic">tanpa pusing baca spreadsheet.</em>
+          Visualisasi data corong konversi, <em class="text-[#ff6210] not-italic">terstruktur dan siap tindak lanjut.</em>
         </h2>
 
         <p class="text-sm sm:text-base text-stone-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-          EduFunnel memantau perjalanan konversi calon mahasiswa baru (PMB) hingga alur grosir gadget B2B Pak Ujang, mengungkap titik hambatan (*bottleneck*), dan memandu pengambilan keputusan strategis.
+          Platform analitik keputusan berbasis corong ACCRA. Menganalisis alur pasokan grosir gadget B2B hingga penerimaan mahasiswa baru, mendeteksi bottleneck konversi, dan memicu automasi pipeline.
         </p>
 
         <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
-          <button type="button" id="btnHeroRegister" class="px-6 py-3 rounded-xl text-sm font-heading font-bold bg-[#ff6210] hover:bg-[#e55509] text-white shadow-lg shadow-[#ff6210]/25 transition flex items-center space-x-2">
-            <span>Mulai Sekarang</span>
+          <button type="button" id="btnHeroRegister" class="px-6 py-3 rounded-xl text-sm font-heading font-bold bg-[#ff6210] hover:bg-[#e55509] text-white shadow-lg shadow-[#ff6210]/20 transition flex items-center space-x-2 cursor-pointer">
+            <span>Buka Dashboard</span>
             <span>&rarr;</span>
           </button>
-          <button type="button" id="btnHeroQuickDemo" class="px-5 py-3 rounded-xl text-sm font-heading font-semibold bg-white hover:bg-stone-50 text-stone-800 border border-stone-200 shadow-sm transition">
-            ⚡ Masuk Cepat (Akun Demo)
+          <button type="button" id="btnHeroQuickDemo" class="px-5 py-3 rounded-xl text-sm font-heading font-semibold bg-white hover:bg-stone-50 text-stone-800 border border-stone-200 shadow-sm transition cursor-pointer flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Masuk Cepat (Akun Demo)</span>
           </button>
         </div>
 
-        <div class="pt-4 flex items-center justify-center lg:justify-start space-x-4 text-xs text-stone-500">
-          <span class="flex items-center space-x-1.5"><span class="text-emerald-500">✓</span><span>Framework 3 Lapisan</span></span>
-          <span class="flex items-center space-x-1.5"><span class="text-emerald-500">✓</span><span>Dual Persona Siap Pakai</span></span>
-          <span class="flex items-center space-x-1.5"><span class="text-emerald-500">✓</span><span>Siap Integrasi Webhook</span></span>
+        <div class="pt-4 flex items-center justify-center lg:justify-start space-x-5 text-xs text-stone-500">
+          <span class="flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            <span>Framework 3 Lapisan</span>
+          </span>
+          <span class="flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            <span>Dual Persona Terintegrasi</span>
+          </span>
+          <span class="flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            <span>Evaluasi Usability SUS</span>
+          </span>
         </div>
       </div>
 
       <!-- HERO VISUAL PREVIEW CARD -->
-      <div class="flex-1 w-full max-w-lg bg-white rounded-3xl p-6 border border-stone-200/90 shadow-xl space-y-4">
+      <div class="flex-1 w-full max-w-lg bg-white rounded-3xl p-6 border border-stone-200 shadow-xl space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-stone-100">
           <div class="flex items-center space-x-2">
-            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
-            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-            <span class="text-xs font-mono text-stone-400 ml-2">Preview Funnel 7 Hari</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span class="text-xs font-mono text-stone-400 ml-2">Preview Funnel Real-Time</span>
           </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">● LIVE DATA</span>
+          <span class="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">LIVE ENGINE</span>
         </div>
 
         <div class="space-y-3">
           <div>
             <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
-              <span>Awareness (Penawaran Masuk)</span>
+              <span>Penawaran Masuk (Awareness)</span>
               <span class="font-mono text-[#ff6210]">12.500 (100%)</span>
             </div>
-            <div class="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
+            <div class="h-2.5 w-full bg-stone-100 rounded-full overflow-hidden">
               <div class="h-full bg-[#ff6210] rounded-full" style="width: 100%"></div>
             </div>
           </div>
 
           <div>
             <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
-              <span>Consideration (Tanya / Nego)</span>
+              <span>Respon &amp; Negosiasi (Consideration)</span>
               <span class="font-mono text-[#ff6210]">4.800 (38.4%)</span>
             </div>
-            <div class="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
+            <div class="h-2.5 w-full bg-stone-100 rounded-full overflow-hidden">
               <div class="h-full bg-[#ff7934] rounded-full" style="width: 38.4%"></div>
             </div>
           </div>
 
           <div>
             <div class="flex justify-between text-xs font-semibold text-stone-700 mb-1">
-              <span>Conversion (Deal / Bayar)</span>
+              <span>Closing &amp; Pengiriman (Conversion)</span>
               <span class="font-mono text-[#ff6210]">1.150 (9.2%)</span>
             </div>
-            <div class="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
+            <div class="h-2.5 w-full bg-stone-100 rounded-full overflow-hidden">
               <div class="h-full bg-[#ff9359] rounded-full" style="width: 15%"></div>
             </div>
           </div>
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-[#fff2ea] border border-[#fbe0c1] flex items-center space-x-3 text-xs">
-          <span class="text-xl">💡</span>
-          <p class="text-stone-700"><strong class="text-[#ff6210]">Wawasan Instan:</strong> Terdeteksi penurunan terbesar di tahap Consideration &rarr; Conversion. Fokuskan intervensi!</p>
+        <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 flex items-start space-x-2.5 text-xs">
+          <svg class="w-4 h-4 text-[#ff6210] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p class="text-stone-700 leading-relaxed"><strong class="text-[#ff6210]">Wawasan Keputusan:</strong> Penurunan volume terbesar terdeteksi pada tahap Negosiasi Margin &rarr; Closing. Intervensi harga modal direkomendasikan.</p>
         </div>
       </div>
     </div>
@@ -160,11 +182,19 @@
   <section id="viewLogin" class="hidden flex-1 flex items-center justify-center p-4 py-12">
     <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-xl space-y-6">
       
-      <div class="text-center space-y-1">
-        <div class="w-12 h-12 rounded-2xl bg-[#ff6210] text-white font-heading font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-[#ff6210]/20 mb-3">
-          EF
-        </div>
-        <h2 class="text-2xl font-heading font-bold text-[#140b06]">Selamat Datang Kembali</h2>
+      <div class="text-center space-y-1.5">
+        <svg class="w-10 h-10 mx-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="9" fill="#1f140e" stroke="#2d1f15" stroke-width="1"/>
+          <path d="M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24" stroke="url(#ef_brand_grad2)" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="ef_brand_grad2" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ff8544"/>
+              <stop offset="1" stop-color="#ff6210"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <h2 class="text-2xl font-heading font-bold text-[#140b06]">Selamat Datang</h2>
         <p class="text-xs text-stone-500">Masuk untuk mengakses analitik dan rekomendasi funnel</p>
       </div>
 
@@ -186,33 +216,39 @@
           <input type="password" id="loginPassword" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210] transition" placeholder="••••••••" required>
         </div>
 
-        <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition">
+        <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition cursor-pointer">
           Masuk ke Dashboard
         </button>
       </form>
 
       <!-- QUICK DEMO LOGIN (FOR EVALUATION / DOSEN) -->
       <div class="pt-4 border-t border-stone-100 space-y-2.5">
-        <p class="text-[11px] font-heading font-bold text-stone-400 uppercase tracking-wider text-center">
-          ⚡ Masuk Cepat Sebagai Persona (Demo Dosen):
+        <p class="text-[10px] font-mono font-medium text-stone-400 uppercase tracking-wider text-center">
+          Akses Cepat Persona (Demo Evaluasi):
         </p>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <button type="button" id="btnQuickLoginPakUjang" class="p-2.5 rounded-xl border border-[#fbe0c1] bg-[#fff2ea] hover:bg-[#ffe7d6] text-left transition text-xs flex flex-col justify-between">
-            <span class="font-heading font-bold text-[#140b06]">📱 Pak Ujang</span>
-            <span class="text-[10px] text-stone-500">Owner Grosir Gadget</span>
+          <button type="button" id="btnQuickLoginPakUjang" class="p-2.5 rounded-xl border border-stone-200 bg-[#fff2ea]/40 hover:bg-[#fff2ea] text-left transition text-xs flex flex-col justify-between cursor-pointer">
+            <div class="flex items-center space-x-1.5">
+              <svg class="w-3.5 h-3.5 text-[#ff6210]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+              <span class="font-heading font-bold text-[#140b06]">Pak Ujang</span>
+            </div>
+            <span class="text-[10px] text-stone-500 mt-1">Owner Grosir Gadget</span>
           </button>
 
-          <button type="button" id="btnQuickLoginBuRina" class="p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-left transition text-xs flex flex-col justify-between">
-            <span class="font-heading font-bold text-[#140b06]">🎓 Bu Rina</span>
-            <span class="text-[10px] text-stone-500">Admisi PMB Kampus</span>
+          <button type="button" id="btnQuickLoginBuRina" class="p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-left transition text-xs flex flex-col justify-between cursor-pointer">
+            <div class="flex items-center space-x-1.5">
+              <svg class="w-3.5 h-3.5 text-stone-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+              <span class="font-heading font-bold text-[#140b06]">Bu Rina</span>
+            </div>
+            <span class="text-[10px] text-stone-500 mt-1">Admisi PMB Kampus</span>
           </button>
         </div>
       </div>
 
       <div class="text-center text-xs text-stone-500 pt-2 flex items-center justify-between">
-        <button type="button" id="btnBackToLandingFromLogin" class="text-stone-400 hover:text-stone-700">&larr; Kembali ke Beranda</button>
-        <p>Belum punya akun? <button type="button" id="btnSwitchToRegister" class="text-[#ff6210] font-bold hover:underline">Daftar di sini</button></p>
+        <button type="button" id="btnBackToLandingFromLogin" class="text-stone-400 hover:text-stone-700 cursor-pointer">&larr; Kembali ke Beranda</button>
+        <p>Belum punya akun? <button type="button" id="btnSwitchToRegister" class="text-[#ff6210] font-bold hover:underline cursor-pointer">Daftar</button></p>
       </div>
 
     </div>
@@ -225,10 +261,18 @@
   <section id="viewRegister" class="hidden flex-1 flex items-center justify-center p-4 py-12">
     <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-xl space-y-6">
       
-      <div class="text-center space-y-1">
-        <div class="w-12 h-12 rounded-2xl bg-[#ff6210] text-white font-heading font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-[#ff6210]/20 mb-3">
-          EF
-        </div>
+      <div class="text-center space-y-1.5">
+        <svg class="w-10 h-10 mx-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="9" fill="#1f140e" stroke="#2d1f15" stroke-width="1"/>
+          <path d="M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24" stroke="url(#ef_brand_grad3)" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.5" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="ef_brand_grad3" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ff8544"/>
+              <stop offset="1" stop-color="#ff6210"/>
+            </linearGradient>
+          </defs>
+        </svg>
         <h2 class="text-2xl font-heading font-bold text-[#140b06]">Daftar Akun Baru</h2>
         <p class="text-xs text-stone-500">Buat akun untuk memantau performa saluran dan konversi</p>
       </div>
@@ -255,84 +299,91 @@
         <div>
           <label class="block text-xs font-medium text-stone-700 mb-1">Peran / Organisasi</label>
           <select id="regRole" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-[#ff6210]">
-            <option value="owner_gadget">📱 Owner / Tim UMKM Gadget (Pak Ujang)</option>
-            <option value="marketing_pmb">🎓 Tim Marketing / Admisi Kampus (PMB)</option>
-            <option value="analyst">📊 Pengambil Keputusan / Analis Data</option>
+            <option value="owner_gadget">Owner / Tim UMKM Gadget (Pak Ujang)</option>
+            <option value="marketing_pmb">Tim Marketing / Admisi Kampus (PMB)</option>
+            <option value="analyst">Pengambil Keputusan / Analis Data</option>
           </select>
         </div>
 
-        <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition mt-2">
+        <button type="submit" class="w-full bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold py-2.5 px-4 rounded-xl text-xs shadow-md transition mt-2 cursor-pointer">
           Buat Akun Sekarang
         </button>
       </form>
 
       <div class="text-center text-xs text-stone-500 pt-2 flex items-center justify-between">
-        <button type="button" id="btnBackToLandingFromReg" class="text-stone-400 hover:text-stone-700">&larr; Beranda</button>
-        <p>Sudah punya akun? <button type="button" id="btnSwitchToLogin" class="text-[#ff6210] font-bold hover:underline">Masuk</button></p>
+        <button type="button" id="btnBackToLandingFromReg" class="text-stone-400 hover:text-stone-700 cursor-pointer">&larr; Beranda</button>
+        <p>Sudah punya akun? <button type="button" id="btnSwitchToLogin" class="text-[#ff6210] font-bold hover:underline cursor-pointer">Masuk</button></p>
       </div>
 
     </div>
   </section>
-
 
   <!-- ============================================================== -->
   <!-- 4. VIEW: MAIN DASHBOARD                                       -->
   <!-- ============================================================== -->
   <section id="viewDashboard" class="hidden flex-1 flex flex-col">
     
-    <!-- DASHBOARD HEADER -->
+    <!-- DASHBOARD HEADER (CLEAN SAAS NAVBAR) -->
     <header class="bg-[#140b06] text-white border-b border-stone-800 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         
         <!-- BRAND & IDENTITY -->
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white shadow-lg shadow-[#ff6210]/20 font-heading font-black text-lg">
-            EF
-          </div>
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="9" fill="#1f140e" stroke="#2d1f15" stroke-width="1"/>
+            <path d="M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24" stroke="url(#ef_brand_grad4)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="ef_brand_grad4" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ff8544"/>
+                <stop offset="1" stop-color="#ff6210"/>
+              </linearGradient>
+            </defs>
+          </svg>
           <div>
             <div class="flex items-center space-x-2">
-              <h1 class="text-base sm:text-lg font-heading font-bold tracking-tight text-white" id="headerTitle">EduFunnel Decision Support</h1>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff6210]/20 text-[#ff8544] border border-[#ff6210]/40">v2.3 (UCD &amp; n8n)</span>
+              <h1 class="text-base font-heading font-bold tracking-tight text-white" id="headerTitle">EduFunnel</h1>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-stone-800 text-stone-300 border border-stone-700">v2.4</span>
             </div>
-            <p class="text-xs text-stone-400" id="headerSubtitle">Desain Interaksi Pengguna • Standar ISO 9241-210 UCD</p>
+            <p class="text-[11px] text-stone-400" id="headerSubtitle">Decision Support &amp; Pipeline Engine • ISO 9241-210</p>
           </div>
         </div>
 
-        <!-- PERSONA SWITCHER & USER PROFILE -->
-        <div class="flex flex-wrap items-center gap-2.5">
+        <!-- PERSONA SWITCHER & ACTION TOOLS -->
+        <div class="flex flex-wrap items-center gap-2">
           
-          <!-- PERSONA SWITCHER -->
-          <div class="bg-[#221915] p-1 rounded-xl flex items-center border border-stone-800">
-            <button id="btnPersonaGadget" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-semibold transition-all duration-200 bg-[#ff6210] text-white shadow-md">
-              📱 Grosir Gadget (Pak Ujang)
+          <!-- PERSONA SWITCHER (SEGMENTED CONTROL) -->
+          <div class="bg-stone-900 p-1 rounded-xl flex items-center border border-stone-800 text-xs">
+            <button id="btnPersonaGadget" class="px-3 py-1.5 rounded-lg font-medium transition-all duration-150 bg-[#ff6210] text-white shadow-sm cursor-pointer">
+              Grosir Gadget
             </button>
-            <button id="btnPersonaEdu" class="px-3.5 py-1.5 rounded-lg text-xs font-heading font-medium text-stone-400 hover:text-white transition-all duration-200">
-              🎓 PMB Kampus (Demo)
+            <button id="btnPersonaEdu" class="px-3 py-1.5 rounded-lg font-medium text-stone-400 hover:text-white transition-all duration-150 cursor-pointer">
+              PMB Kampus
             </button>
           </div>
 
-          <!-- ACTION TOOLS: SUS EVALUATION & N8N WEBHOOK CONFIG -->
+          <!-- ACTION TOOLS: SUS & N8N -->
           <div class="flex items-center gap-1.5">
-            <button id="btnOpenSusModal" type="button" class="px-3 py-1.5 bg-[#ff6210] hover:bg-[#e55509] text-white rounded-xl text-xs font-heading font-bold shadow-sm transition flex items-center space-x-1.5 cursor-pointer">
-              <span>📝</span>
-              <span>Uji SUS (ISO 9241-210)</span>
+            <button id="btnOpenSusModal" type="button" class="px-3 py-1.5 bg-[#221915] hover:bg-stone-800 text-stone-200 hover:text-white rounded-xl text-xs font-medium border border-stone-700 transition flex items-center space-x-1.5 cursor-pointer">
+              <svg class="w-3.5 h-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Evaluasi SUS</span>
             </button>
-            <button id="btnOpenN8nModal" type="button" class="px-3 py-1.5 bg-[#221915] hover:bg-stone-800 text-stone-300 hover:text-white rounded-xl text-xs font-heading font-medium border border-stone-700 transition flex items-center space-x-1.5 cursor-pointer">
-              <span>⚡</span>
-              <span>n8n Webhook</span>
+            <button id="btnOpenN8nModal" type="button" class="px-3 py-1.5 bg-[#221915] hover:bg-stone-800 text-stone-200 hover:text-white rounded-xl text-xs font-medium border border-stone-700 transition flex items-center space-x-1.5 cursor-pointer">
+              <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Integrasi n8n</span>
             </button>
           </div>
 
           <!-- USER BADGE -->
-          <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#221915] border border-stone-800 text-xs">
+          <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-stone-900 border border-stone-800 text-xs">
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span class="text-stone-300 font-medium" id="lblCurrentUserName">Pak Ujang</span>
           </div>
 
           <!-- LOGOUT BUTTON -->
-          <button id="btnLogout" class="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-rose-400 rounded-xl text-xs font-medium border border-stone-700 transition flex items-center space-x-1">
+          <button id="btnLogout" class="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-rose-400 rounded-xl text-xs font-medium border border-stone-800 transition flex items-center space-x-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             <span>Keluar</span>
-            <span>&rarr;</span>
           </button>
 
         </div>
@@ -343,63 +394,61 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 w-full">
 
       <!-- HERO CONTEXT BANNER -->
-      <div class="bg-white border border-[#fbe0c1] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-[#fff2ea] rounded-full pointer-events-none -z-0"></div>
-        
+      <div class="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden">
         <div class="flex items-start space-x-3.5 relative z-10">
-          <div class="p-2.5 bg-[#fff2ea] text-[#ff6210] rounded-xl border border-[#fbe0c1] text-xl">
-            🎯
+          <div class="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 text-[#ff6210] flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke-width="2"/><circle cx="12" cy="12" r="1.5" stroke-width="2"/></svg>
           </div>
           <div>
             <div class="flex items-center space-x-2">
               <h2 class="text-sm sm:text-base font-heading font-bold text-[#140b06]" id="infoTargetAudience">Memuat Profil Pengguna...</h2>
-              <span class="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1]">Aktif</span>
+              <span class="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">AKTIF</span>
             </div>
-            <p class="text-xs text-stone-600 mt-0.5" id="infoPeriod">Periode: -</p>
+            <p class="text-xs text-stone-500 mt-0.5" id="infoPeriod">Periode: -</p>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2 text-xs font-medium text-stone-700 bg-stone-50 border border-stone-200 px-3.5 py-1.5 rounded-xl self-start md:self-auto relative z-10">
+        <div class="flex items-center space-x-2 text-xs font-mono text-stone-600 bg-stone-50 border border-stone-200 px-3 py-1.5 rounded-xl self-start md:self-auto relative z-10">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Framework Naratif: <strong>What • So What • Now What</strong></span>
+          <span>Framework: <strong>What · So What · Now What</strong></span>
         </div>
       </div>
 
       <!-- UCD QUALITY & PIPELINE METRICS BANNER (ISO 9241-210) -->
-      <div class="bg-gradient-to-r from-stone-900 to-[#1c120c] text-white rounded-2xl p-4 sm:p-5 border border-stone-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div class="bg-stone-900 text-white rounded-2xl p-4 sm:p-5 border border-stone-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-center space-x-3.5">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl font-bold shadow-sm">
-            ✓
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
           </div>
           <div>
             <div class="flex items-center space-x-2">
-              <h3 class="text-xs sm:text-sm font-heading font-bold text-white">Evaluasi Kegunaan Sistem (UCD ISO 9241-210)</h3>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Target ≥ 70 Tercapai</span>
+              <h3 class="text-xs sm:text-sm font-heading font-bold text-white">Evaluasi Usability Antarmuka (ISO 9241-210)</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Target ≥ 70 Tercapai</span>
             </div>
-            <p class="text-[11px] text-stone-400 mt-0.5">Pengujian usability terukur • Otomatisasi 2 Jalur (Webhook & Schedule Cron)</p>
+            <p class="text-[11px] text-stone-400 mt-0.5">Pengujian usability terukur • Otomatisasi Dua Jalur (Webhook &amp; Schedule Cron)</p>
           </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+          <div class="bg-stone-800/60 p-2.5 rounded-xl border border-stone-700/50 flex flex-col justify-between">
             <span class="text-[10px] text-stone-400 uppercase font-mono block">Skor SUS</span>
             <span class="text-sm sm:text-base font-heading font-black text-emerald-400" id="badgeAvgSusScore">82.5 / 100</span>
             <span class="text-[9px] text-emerald-300 block font-medium" id="lblSusGrade">Grade A (Acceptable)</span>
           </div>
-          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+          <div class="bg-stone-800/60 p-2.5 rounded-xl border border-stone-700/50 flex flex-col justify-between">
             <span class="text-[10px] text-stone-400 uppercase font-mono block">Time-to-Insight</span>
             <span class="text-sm sm:text-base font-heading font-black text-[#ff8544]">&lt; 3 Menit</span>
             <span class="text-[9px] text-stone-400 block font-medium">Target &lt; 5 Menit</span>
           </div>
-          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+          <div class="bg-stone-800/60 p-2.5 rounded-xl border border-stone-700/50 flex flex-col justify-between">
             <span class="text-[10px] text-stone-400 uppercase font-mono block">Task Success</span>
             <span class="text-sm sm:text-base font-heading font-black text-sky-400">100%</span>
             <span class="text-[9px] text-stone-400 block font-medium">Navigasi Selesai</span>
           </div>
-          <div class="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/60 flex flex-col justify-between">
+          <div class="bg-stone-800/60 p-2.5 rounded-xl border border-stone-700/50 flex flex-col justify-between">
             <span class="text-[10px] text-stone-400 uppercase font-mono block">Pipeline n8n</span>
             <span class="text-xs sm:text-sm font-heading font-bold text-emerald-400 flex items-center justify-center gap-1.5 my-0.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Jalur A Active</span>
             </span>
             <span class="text-[9px] text-stone-400 block font-medium" id="lblN8nStatus">Webhook Ready</span>
@@ -410,10 +459,10 @@
       <!-- 1. LAPISAN ATAS: WHAT? (KEY PERFORMANCE INDICATORS) -->
       <section>
         <div class="flex items-center space-x-2 mb-3.5">
-          <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1] uppercase tracking-wider">
-            Lapisan 1: What?
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-stone-100 text-stone-700 border border-stone-200">
+            Layer 1 · What
           </span>
-          <h3 class="text-sm font-heading font-semibold text-stone-800">Ringkasan Metrik Kunci (Key Performance Indicators)</h3>
+          <h3 class="text-xs font-heading font-semibold text-stone-800">Ringkasan Metrik Kunci (Key Performance Indicators)</h3>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -421,7 +470,7 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium text-stone-500">Total Prospek Masuk</span>
-              <span class="p-1.5 rounded-lg bg-stone-100 text-stone-600 text-xs">📥 Inbound</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono text-stone-600 bg-stone-100 border border-stone-200">Tahap 1</span>
             </div>
             <div class="mt-3">
               <h4 class="text-2xl sm:text-3xl font-heading font-black text-[#140b06]" id="kpiTotalProspects">0</h4>
@@ -431,8 +480,8 @@
 
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-medium text-stone-500">Total Terkonversi (Closing)</span>
-              <span class="p-1.5 rounded-lg bg-[#fff2ea] text-[#ff6210] text-xs font-bold font-mono">🏆 Final</span>
+              <span class="text-xs font-medium text-stone-500">Total Terkonversi</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold text-[#ff6210] bg-orange-50 border border-orange-200">Closing</span>
             </div>
             <div class="mt-3">
               <h4 class="text-2xl sm:text-3xl font-heading font-black text-[#ff6210]" id="kpiTotalConverted">0</h4>
@@ -443,18 +492,18 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium text-stone-500">Conversion Rate (CVR)</span>
-              <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold font-mono">📊 Rasio</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200">Efisiensi</span>
             </div>
             <div class="mt-3">
               <h4 class="text-2xl sm:text-3xl font-heading font-black text-emerald-600" id="kpiConversionRate">0%</h4>
-              <p class="text-[11px] text-stone-400 mt-1">Efisiensi total corong konversi</p>
+              <p class="text-[11px] text-stone-400 mt-1">Rasio efisiensi total corong</p>
             </div>
           </div>
 
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-sm ja-card flex flex-col justify-between">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium text-stone-500">Titik Hambatan Utama</span>
-              <span class="p-1.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold">⚠️ Drop-off</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold text-rose-700 bg-rose-50 border border-rose-200">Bottleneck</span>
             </div>
             <div class="mt-3">
               <h4 class="text-sm sm:text-base font-heading font-bold text-rose-600 truncate" id="kpiBottleneck">-</h4>
@@ -468,10 +517,10 @@
       <!-- 2. LAPISAN TENGAH: SO WHAT? (FUNNEL & CHANNEL VISUALIZATION) -->
       <section class="space-y-4">
         <div class="flex items-center space-x-2">
-          <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#140b06] text-white uppercase tracking-wider">
-            Lapisan 2: So What?
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-stone-100 text-stone-700 border border-stone-200">
+            Layer 2 · So What
           </span>
-          <h3 class="text-sm font-heading font-semibold text-stone-800">Pola Kehilangan Pengguna & Komparasi Saluran</h3>
+          <h3 class="text-xs font-heading font-semibold text-stone-800">Pola Kehilangan Pengguna &amp; Komparasi Saluran</h3>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -482,7 +531,7 @@
                 <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06]">Alur Tahapan Corong (Funnel Stages)</h4>
                 <p class="text-xs text-stone-500">Penurunan volume dari tahap awal hingga retensi akhir</p>
               </div>
-              <span class="text-xs bg-[#fff2ea] text-[#ff6210] border border-[#fbe0c1] px-2.5 py-1 rounded-lg font-heading font-semibold">
+              <span class="text-[10px] font-mono font-medium bg-stone-100 text-stone-600 border border-stone-200 px-2.5 py-1 rounded-lg">
                 ACCRA Model
               </span>
             </div>
@@ -503,7 +552,7 @@
                   <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06]">Performa Saluran (Channels)</h4>
                   <p class="text-xs text-stone-500">Komparasi jumlah prospek vs hasil deal</p>
                 </div>
-                <span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 rounded-full font-heading font-semibold" id="badgeTopChannel">
+                <span class="text-[10px] font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 rounded-full" id="badgeTopChannel">
                   Top: -
                 </span>
               </div>
@@ -536,19 +585,19 @@
       <!-- 3. LAPISAN BAWAH: NOW WHAT? (REKOMENDASI STRATEGIS) -->
       <section class="space-y-4">
         <div class="flex items-center space-x-2">
-          <span class="px-2 py-0.5 rounded text-[11px] font-heading font-bold bg-[#ff6210] text-white uppercase tracking-wider">
-            Lapisan 3: Now What?
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-orange-50 text-[#ff6210] border border-orange-200">
+            Layer 3 · Now What
           </span>
-          <h3 class="text-sm font-heading font-semibold text-stone-800">Rekomendasi Keputusan Strategis & Action Plan</h3>
+          <h3 class="text-xs font-heading font-semibold text-stone-800">Rekomendasi Keputusan Strategis &amp; Action Plan</h3>
         </div>
 
         <div class="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/90 shadow-sm space-y-3.5">
           <div class="flex items-center justify-between">
             <h4 class="text-sm sm:text-base font-heading font-bold text-[#140b06] flex items-center space-x-2">
-              <span>💡</span>
+              <svg class="w-4 h-4 text-[#ff6210]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
               <span>Rencana Tindakan Strategis Berbasis Bottleneck</span>
             </h4>
-            <span class="text-xs text-stone-400 font-medium">Auto-generated</span>
+            <span class="text-[11px] font-mono text-stone-400">Algoritma Rekomendasi</span>
           </div>
 
           <div id="recommendationsList" class="space-y-3">
@@ -565,10 +614,10 @@
   <!-- ============================================================== -->
   <div id="aiFloatingContainer" class="hidden">
     <!-- TRIGGER BUTTON (PILL) -->
-    <button type="button" id="btnToggleAi" class="fixed bottom-6 right-6 z-50 flex items-center space-x-2.5 px-4 py-3 bg-[#140b06] hover:bg-[#221915] text-white rounded-full shadow-2xl border border-stone-800 transition transform hover:scale-105 cursor-pointer">
-      <span class="w-2.5 h-2.5 rounded-full bg-[#ff6210] animate-pulse"></span>
-      <span class="text-xs font-heading font-bold tracking-wide">✨ Tanya Asisten AI</span>
-      <span class="px-1.5 py-0.5 rounded-full bg-[#ff6210]/20 text-[#ff8544] text-[10px] font-mono font-bold">LIVE</span>
+    <button type="button" id="btnToggleAi" class="fixed bottom-6 right-6 z-50 flex items-center space-x-2 px-4 py-2.5 bg-stone-900 hover:bg-black text-white rounded-full shadow-2xl border border-stone-800 transition transform hover:scale-105 cursor-pointer">
+      <svg class="w-4 h-4 text-[#ff6210]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+      <span class="text-xs font-heading font-medium tracking-wide">Asisten Keputusan</span>
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
     </button>
 
     <!-- CHAT MODAL WINDOW -->
@@ -577,12 +626,20 @@
       <!-- MODAL HEADER -->
       <div class="bg-[#140b06] text-white p-4 flex items-center justify-between border-b border-stone-800">
         <div class="flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white text-base font-heading font-black shadow-md shadow-[#ff6210]/20">
-            AI
-          </div>
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="9" fill="#1f140e" stroke="#2d1f15" stroke-width="1"/>
+            <path d="M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24" stroke="url(#ef_brand_grad5)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="ef_brand_grad5" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ff8544"/>
+                <stop offset="1" stop-color="#ff6210"/>
+              </linearGradient>
+            </defs>
+          </svg>
           <div>
             <h4 class="text-xs sm:text-sm font-heading font-bold text-white flex items-center space-x-1.5">
-              <span id="aiHeaderTitle">Asisten Keputusan EduFunnel</span>
+              <span id="aiHeaderTitle">Asisten Keputusan</span>
             </h4>
             <div class="flex items-center space-x-1.5 mt-0.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -591,8 +648,8 @@
           </div>
         </div>
 
-        <button type="button" id="btnCloseAi" class="w-8 h-8 rounded-lg bg-stone-800/80 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition">
-          ✕
+        <button type="button" id="btnCloseAi" class="w-8 h-8 rounded-lg bg-stone-800/80 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
@@ -626,20 +683,28 @@
       <!-- MODAL HEADER -->
       <div class="bg-[#140b06] text-white p-5 flex items-center justify-between border-b border-stone-800">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff6210] to-[#ff8544] flex items-center justify-center text-white text-lg font-heading font-black shadow-md shadow-[#ff6210]/20">
-            SUS
-          </div>
+          <svg class="w-9 h-9 flex-shrink-0" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="9" fill="#1f140e" stroke="#2d1f15" stroke-width="1"/>
+            <path d="M10 17C10 13.134 13.134 10 17 10C20.866 10 24 13.134 24 17C24 20.866 20.866 24 17 24" stroke="url(#ef_brand_grad6)" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M22 15C22 18.866 18.866 22 15 22C11.134 22 8 18.866 8 15C8 11.134 11.134 8 15 8" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="ef_brand_grad6" x1="10" y1="10" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ff8544"/>
+                <stop offset="1" stop-color="#ff6210"/>
+              </linearGradient>
+            </defs>
+          </svg>
           <div>
             <h3 class="text-sm sm:text-base font-heading font-bold text-white flex items-center space-x-2">
               <span>Evaluasi Kegunaan Sistem (ISO 9241-210)</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff6210]/20 text-[#ff8544] border border-[#ff6210]/40">Jalur A Webhook</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-stone-800 text-stone-300 border border-stone-700">Jalur A Webhook</span>
             </h3>
             <p class="text-xs text-stone-400 mt-0.5">Kuesioner baku 10 butir Likert 1–5 • Target Kelayakan: Skor ≥ 70</p>
           </div>
         </div>
 
         <button type="button" id="btnCloseSusModal" class="w-8 h-8 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
@@ -658,16 +723,16 @@
 
           <div class="flex flex-wrap gap-1.5">
             <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-[#fff2ea] hover:bg-[#ffe6d6] text-[#ff6210] border border-[#fbe0c1] text-[11px] font-medium transition cursor-pointer" data-name="Pak Ujang Rahmat" data-role="Owner Grosir Gadget">
-              📱 Pak Ujang (Owner)
+              Pak Ujang (Owner)
             </button>
             <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-[11px] font-medium transition cursor-pointer" data-name="Mas Iqbal" data-role="Operasional & Kurir COD">
-              🛵 Mas Iqbal (Operasional)
+              Mas Iqbal (Operasional)
             </button>
             <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-[11px] font-medium transition cursor-pointer" data-name="Bu Rina" data-role="Admisi PMB Kampus">
-              🎓 Bu Rina (Admisi PMB)
+              Bu Rina (Admisi PMB)
             </button>
             <button type="button" class="btn-sus-preset px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-[11px] font-medium transition cursor-pointer" data-name="Bu Ama" data-role="Dosen Pengampu DIP">
-              👩‍🏫 Bu Ama (Dosen Penguji)
+              Bu Ama (Dosen Penguji)
             </button>
           </div>
 
@@ -719,8 +784,8 @@
         </div>
 
         <button type="button" id="btnSubmitSus" class="px-5 py-2.5 bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center space-x-2 cursor-pointer">
-          <span>🚀</span>
-          <span>Kirim ke Webhook n8n (Jalur A)</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+          <span>Kirim ke Pipeline Webhook (Jalur A)</span>
         </button>
       </div>
 
@@ -735,17 +800,17 @@
       
       <div class="bg-[#140b06] text-white p-5 flex items-center justify-between border-b border-stone-800">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-[#221915] border border-stone-700 flex items-center justify-center text-[#ff6210] text-xl font-bold">
-            ⚡
+          <div class="w-10 h-10 rounded-xl bg-[#221915] border border-stone-700 flex items-center justify-center text-[#ff6210]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           </div>
           <div>
             <h3 class="text-sm font-heading font-bold text-white">Integrasi Webhook n8n Pipeline</h3>
-            <p class="text-xs text-stone-400 mt-0.5">Jalur A (Webhook SUS) & Jalur B (Schedule Cron Alert)</p>
+            <p class="text-xs text-stone-400 mt-0.5">Jalur A (Webhook SUS) &amp; Jalur B (Schedule Cron Alert)</p>
           </div>
         </div>
 
         <button type="button" id="btnCloseN8nModal" class="w-8 h-8 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
-          ✕
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
@@ -762,10 +827,13 @@
         </div>
 
         <div class="bg-stone-100 p-3.5 rounded-xl border border-stone-200 space-y-1.5 text-[11px] text-stone-600">
-          <span class="font-heading font-bold text-stone-800 block">💡 Cara Cepat Pakai n8n Cloud (14 Hari Trial):</span>
-          <p>1. Buat workflow baru di n8n Cloud ➡️ Klik <strong>Import from file</strong> ➡️ Pilih <code>n8n/jalur_a_kuesioner_sus_workflow.json</code>.</p>
-          <p>2. Klik node <strong>Webhook</strong> ➡️ Salin URL-nya ➡️ Tempelkan ke kotak di atas.</p>
-          <p>3. Tiap kali kamu isi form SUS di web ini, notifikasi otomatis langsung masuk ke Telegram/Email kamu!</p>
+          <span class="font-heading font-bold text-stone-800 block flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5 text-[#ff6210]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Panduan Integrasi n8n Cloud (14-Hari Trial):</span>
+          </span>
+          <p>1. Di dashboard n8n Cloud, klik <strong>Import from file...</strong> lalu pilih file <code>n8n/jalur_a_kuesioner_sus_workflow.json</code>.</p>
+          <p>2. Buka node <strong>Webhook</strong>, salin URL Webhook-nya, dan tempelkan ke kolom input di atas.</p>
+          <p>3. Setiap pengisian form evaluasi SUS akan langsung terkirim otomatis ke pipeline n8n.</p>
         </div>
 
         <div class="flex items-center gap-2 pt-2">
@@ -790,6 +858,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=2.4"></script>
+  <script src="app.js?v=2.5"></script>
 </body>
 </html>
