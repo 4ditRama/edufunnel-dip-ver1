@@ -76,9 +76,10 @@
         }
       },
       "id": "b1b2c3d4-4444-4000-8000-000000000004",
-      "name": "Kirim Alert ke Telegram / Email",
+      "name": "Kirim Alert ke Telegram / Email (Opsional)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
+      "disabled": true,
       "position": [
         920,
         280
@@ -112,7 +113,7 @@
       "main": [
         [
           {
-            "node": "Kirim Alert ke Telegram / Email",
+            "node": "Kirim Alert ke Telegram / Email (Opsional)",
             "type": "main",
             "index": 0
           }
