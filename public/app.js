@@ -1048,24 +1048,6 @@ if (btnSubmitSus) {
       n8nWebhookUrl: n8nTargetUrl
     };
 
-    // Forwarding langsung dari client ke n8n Cloud (instan tanpa jeda)
-    if (n8nTargetUrl && n8nTargetUrl.startsWith('http')) {
-      fetch(n8nTargetUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nama: payload.nama,
-          peran: payload.peran,
-          sumber_trafik: payload.sumber_trafik,
-          jawaban: payload.jawaban,
-          sus_score: payload.sus_score,
-          target_met: payload.sus_score >= 70,
-          feedback: payload.feedback,
-          timestamp: new Date().toISOString()
-        })
-      }).catch(e => console.warn('Direct n8n webhook push notice:', e.message));
-    }
-
     try {
       const res = await fetch('/api/webhook/kuesioner-sus', {
         method: 'POST',
