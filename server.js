@@ -138,6 +138,47 @@ app.post('/api/funnel-data/update', (req, res) => {
       baseData.recommendations[0].action = recommendation;
     }
 
+    // Perbarui channel_performance secara dinamis agar selaras dengan top_channel & total volume
+    if (baseData.channel_performance && Array.isArray(baseData.channel_performance)) {
+      const cleanTopName = channel.includes('•') ? channel.split('•')[0].trim() : channel;
+      const matchedIdx = baseData.channel_performance.findIndex(c => 
+        cleanTopName.toLowerCase().includes(c.channel.toLowerCase()) || 
+        c.channel.toLowerCase().includes(cleanTopName.toLowerCase())
+      );
+
+      const topChannelIdx = matchedIdx !== -1 ? matchedIdx : 0;
+      const targetChannel = baseData.channel_performance[topChannelIdx];
+
+      // Berikan porsi terbesar untuk channel terpilih
+      const topLeads = Math.round(prospects * 0.45);
+      const topConverted = Math.min(topLeads, Math.round(converted * 0.50));
+      targetChannel.leads = Math.max(1, topLeads);
+      targetChannel.converted = Math.max(1, topConverted);
+      targetChannel.cvr = ((targetChannel.converted / targetChannel.leads) * 100).toFixed(2) + '%';
+
+      // Distribusikan sisa leads & converted ke channel lain
+      let remainingLeads = Math.max(1, prospects - targetChannel.leads);
+      let remainingConverted = Math.max(0, converted - targetChannel.converted);
+      
+      const otherChannels = baseData.channel_performance.filter((_, idx) => idx !== topChannelIdx);
+      const shares = [0.55, 0.30, 0.15];
+
+      otherChannels.forEach((ch, idx) => {
+        const share = shares[idx] || (1 / otherChannels.length);
+        ch.leads = Math.max(1, Math.round(remainingLeads * share));
+        ch.converted = Math.max(0, Math.round(remainingConverted * share));
+        if (ch.converted > ch.leads) ch.converted = ch.leads;
+        ch.cvr = ((ch.converted / ch.leads) * 100).toFixed(2) + '%';
+      });
+
+      // Urutkan channel_performance sehingga channel terpilih / CVR tertinggi ada di posisi paling atas!
+      baseData.channel_performance.sort((a, b) => {
+        if (a === targetChannel) return -1;
+        if (b === targetChannel) return 1;
+        return parseFloat(b.cvr) - parseFloat(a.cvr);
+      });
+    }
+
     inMemoryFunnelState[persona] = baseData;
     saveFunnelState();
 
