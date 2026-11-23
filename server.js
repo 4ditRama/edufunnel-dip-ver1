@@ -24,6 +24,37 @@ app.get('/api/funnel-data', (req, res) => {
   try {
     const filename = persona === 'gadget' ? 'gadget_data.json' : 'edufunnel_data.json';
     const data = readJsonData(filename);
+
+    // Dynamic overrides untuk simulasi live, testing n8n Jalur B, & pengujian dosen
+    if (req.query.prospects) {
+      data.summary.total_prospects = Number(req.query.prospects);
+    }
+    if (req.query.converted) {
+      data.summary.total_converted = Number(req.query.converted);
+      if (data.summary.total_prospects > 0) {
+        data.summary.overall_conversion_rate = ((data.summary.total_converted / data.summary.total_prospects) * 100).toFixed(2) + '%';
+      }
+    }
+    if (req.query.bottleneck) {
+      data.summary.primary_bottleneck = req.query.bottleneck;
+    }
+    if (req.query.channel) {
+      data.summary.top_channel = req.query.channel;
+    }
+
+    // Preset skenario instan
+    if (req.query.scenario === 'krisis') {
+      data.summary.total_prospects = 310;
+      data.summary.total_converted = 25;
+      data.summary.overall_conversion_rate = '8.06%';
+      data.summary.primary_bottleneck = 'Dilema Piutang & Retur Toko Meningkat';
+    } else if (req.query.scenario === 'peak') {
+      data.summary.total_prospects = 480;
+      data.summary.total_converted = 175;
+      data.summary.overall_conversion_rate = '36.46%';
+      data.summary.primary_bottleneck = 'Kapasitas Pengiriman Kurir Mas Iqbal Terbatas';
+    }
+
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: 'Gagal membaca dataset funnel', details: error.message });
