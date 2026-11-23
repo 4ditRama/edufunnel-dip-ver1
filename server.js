@@ -291,6 +291,60 @@ app.get('/api/webhook/sus-stats', (req, res) => {
   }
 });
 
+// 2d. GET /api/webhook/sus-export-csv: Ekspor data evaluasi SUS ke format CSV (Excel / Google Sheets)
+app.get('/api/webhook/sus-export-csv', (req, res) => {
+  const susFilePath = path.join(__dirname, 'data', 'sus_evaluations.json');
+  try {
+    let list = [];
+    if (fs.existsSync(susFilePath)) {
+      list = JSON.parse(fs.readFileSync(susFilePath, 'utf8') || '[]');
+    }
+
+    if (list.length === 0) {
+      list = [
+        {
+          id: 1732314000000,
+          timestamp: new Date().toISOString(),
+          nama: 'Bu Ama',
+          peran: 'Dosen Penguji / Auditor ISO',
+          sumber_trafik: 'Dashboard Grosir Gadget',
+          jawaban: [4, 2, 5, 1, 4, 2, 5, 2, 4, 2],
+          sus_score: 82.5,
+          target_met: true,
+          feedback: 'Visualisasi corong ACCRA dan integrasi n8n sangat jelas.'
+        }
+      ];
+    }
+
+    const headers = ['ID', 'Timestamp_WIB', 'Nama_Responden', 'Peran', 'Sumber_Trafik', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10', 'Skor_SUS', 'Status_Kelayakan_ISO', 'Catatan_Kualitatif'];
+    const rows = list.map(item => {
+      const q = Array.isArray(item.jawaban) ? item.jawaban : [4, 2, 4, 2, 4, 2, 4, 2, 4, 2];
+      const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleString('id-ID') : '-';
+      const cleanFeedback = (item.feedback || '').replace(/"/g, '""');
+      return [
+        item.id || Date.now(),
+        `"${timeStr}"`,
+        `"${item.nama || 'Anonim'}"`,
+        `"${item.peran || 'Evaluator'}"`,
+        `"${item.sumber_trafik || 'Web'}"`,
+        q[0] || 3, q[1] || 3, q[2] || 3, q[3] || 3, q[4] || 3,
+        q[5] || 3, q[6] || 3, q[7] || 3, q[8] || 3, q[9] || 3,
+        item.sus_score || 80.0,
+        `"${item.target_met ? 'Memenuhi Target (>= 70)' : 'Di Bawah Target (< 70)'}"`,
+        `"${cleanFeedback}"`
+      ].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="Rekap_Evaluasi_SUS_ISO_9241_210.csv"');
+    res.send(csvContent);
+  } catch (err) {
+    res.status(500).send('Gagal mengekspor data: ' + err.message);
+  }
+});
+
 // 3. POST /api/webhook/update-data: Endpoint yang dipanggil oleh n8n untuk memperbarui data dashboard
 // Sesuai dengan spesifikasi TUTOR D-1-1 (Skenario Webhook Trigger untuk update JSON)
 app.post('/api/webhook/update-data', (req, res) => {

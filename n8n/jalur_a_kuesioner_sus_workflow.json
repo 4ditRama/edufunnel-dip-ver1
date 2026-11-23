@@ -74,7 +74,42 @@
       "typeVersion": 1,
       "position": [
         720,
-        300
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1A2B3C4D5E6F7G8H9I_SPREADSHEET_ID_EVALUASI_SUS",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Rekap_SUS_ISO_9241_210",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now.setZone('Asia/Jakarta').toFormat('dd/MM/yyyy HH:mm:ss') }}",
+            "Nama Responden": "={{ $json.nama_responden }}",
+            "Peran": "={{ $json.peran }}",
+            "Skor SUS": "={{ $json.skor_sus }}",
+            "Status Kelayakan": "={{ $json.status_kelayakan }}",
+            "Masukan Kualitatif": "={{ $json.masukan_evaluasi }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-4444-4000-8000-000000000004",
+      "name": "Arsipkan ke Google Sheets (Excel)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        420
       ]
     }
   ],
@@ -95,6 +130,11 @@
         [
           {
             "node": "Kirim Notifikasi Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Arsipkan ke Google Sheets (Excel)",
             "type": "main",
             "index": 0
           }

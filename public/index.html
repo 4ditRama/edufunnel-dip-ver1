@@ -951,10 +951,16 @@
           </div>
         </div>
 
-        <button type="button" id="btnSubmitSus" class="px-5 py-2.5 bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center space-x-2 cursor-pointer">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <span>Kirim ke Webhook n8n (Jalur A)</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <a href="/api/webhook/sus-export-csv" target="_blank" class="px-3.5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 font-heading font-semibold rounded-xl text-xs transition flex items-center space-x-1.5 cursor-pointer" title="Download Master Data Kuesioner format Excel / Spreadsheet CSV">
+            <svg class="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            <span>Rekap Spreadsheet (Excel)</span>
+          </a>
+          <button type="button" id="btnSubmitSus" class="px-5 py-2.5 bg-[#ff6210] hover:bg-[#e55509] text-white font-heading font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center space-x-2 cursor-pointer">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>Kirim ke Webhook n8n (Jalur A)</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -1118,26 +1124,26 @@
 
           <div>
             <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Titik Hambatan Utama (Primary Bottleneck):</label>
-            <input type="text" id="inputEditBottleneck" list="bottleneckList" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff6210]" required>
-            <datalist id="bottleneckList">
-              <option value="Penawaran -> Nego Margin">
-              <option value="Nego Margin -> Deal COD">
-              <option value="Kapasitas Pengiriman Kurir Mas Iqbal Terbatas">
-              <option value="Stok Laptop / HP Tipe Tertentu Habis">
-              <option value="Dilema Piutang & Retur Toko Konsinyasi">
-            </datalist>
+            <select id="inputEditBottleneck" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#ff6210] cursor-pointer" required>
+              <option value="Penawaran -> Nego Margin">1. Penawaran -&gt; Nego Margin (Hambatan Utama)</option>
+              <option value="Respon & Nego -> Deal COD">2. Respon &amp; Nego -&gt; Deal COD (Banyak Tanya tapi Batal)</option>
+              <option value="Deal COD -> Repeat Order">3. Deal COD -&gt; Repeat Order (Toko Jarang Repeat Order)</option>
+              <option value="Kapasitas Pengiriman Kurir Mas Iqbal Terbatas">4. Kapasitas Pengiriman Kurir Mas Iqbal Terbatas</option>
+              <option value="Stok Laptop & HP Tertentu Habis">5. Stok Laptop &amp; HP Tertentu Habis</option>
+              <option value="Dilema Piutang & Retur Toko Meningkat">6. Dilema Piutang &amp; Retur Toko Meningkat</option>
+            </select>
             <span class="text-[10px] text-stone-400 mt-0.5 block">Tahapan corong tempat terjadi drop-off terbesar</span>
           </div>
 
           <div>
             <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Saluran Penjualan Teratas (Top Channel):</label>
-            <input type="text" id="inputEditChannel" list="channelList" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff6210]" required>
-            <datalist id="channelList">
-              <option value="Toko Retail Mall (Agres & Mitra)">
-              <option value="Konter HP Sentra Mall">
-              <option value="Grup WhatsApp Reseller">
-              <option value="Buyer Perorangan / COD Marketplace">
-            </datalist>
+            <select id="inputEditChannel" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#ff6210] cursor-pointer" required>
+              <option value="Toko Retail Mall (Agres & Mitra)">1. Toko Retail Mall (Agres &amp; Mitra) • CVR 29.47%</option>
+              <option value="Konter HP Sentra Mall">2. Konter HP Sentra Mall • CVR 24.00%</option>
+              <option value="Grup WhatsApp Reseller">3. Grup WhatsApp Reseller • CVR 18.00%</option>
+              <option value="Buyer Perorangan / COD Marketplace">4. Buyer Perorangan / COD Marketplace • CVR 15.00%</option>
+              <option value="Direct Sales & Rujukan Rekanan Toko">5. Direct Sales &amp; Rujukan Rekanan Toko</option>
+            </select>
           </div>
 
           <div>
@@ -1176,7 +1182,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=3.1"></script>
+  <script src="app.js?v=3.2"></script>
 </body>
 
 </html>
