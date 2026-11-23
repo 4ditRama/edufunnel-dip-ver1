@@ -636,45 +636,57 @@ async function callGeminiDirect(query, apiKey) {
 Konteks data corong pendaftaran aktif: ${JSON.stringify(funnel)}
 Panduan Menjawab:
 1. Jika pengguna bertanya tentang data pendaftaran PMB, saluran promosi, atau bottleneck, jawab berbasis data di atas secara tajam dan solutif.
-2. Jika pengguna bertanya di luar tema (resep makanan, cemilan, lelucon, obrolan santai, pertanyaan umum), tetap jawab dengan ramah, lezat/lengkap, dan informatif (jangan menolak), lalu ingatkan dengan santai bahwa Anda siap kembali menganalisis corong PMB kapan pun dibutuhkan.
+2. Jika pengguna bertanya di luar tema (resep makanan, cemilan, rekomendasi kuliner, lelucon, obrolan santai, pertanyaan umum), tetap jawab dengan ramah, lezat/lengkap, dan informatif (jangan menolak), lalu ingatkan dengan santai bahwa Anda siap kembali menganalisis corong PMB kapan pun dibutuhkan.
 3. Format teks menggunakan tag HTML: <strong> untuk tebal, <em> untuk miring, <br> untuk baris baru, <li> untuk poin-poin.`
     : `Anda adalah Konsultan Bisnis dan Penjualan B2B untuk usaha grosir gadget Pak Ujang Rahmat dan Mas Iqbal. Tim menyuplai laptop dan HP ke toko-toko retail mall (Agres, dll).
 Konteks data corong penjualan aktif: ${JSON.stringify(funnel)}
 Panduan Menjawab:
 1. Jika pengguna bertanya seputar penjualan HP/laptop, margin, toko rekanan (Agres), atau tugas COD Mas Iqbal, jawab berbasis data secara solutif dan praktis.
-2. Jika pengguna bertanya di luar tema grosir gadget (seperti resep cemilan mac n cheese, rekomendasi makanan, obrolan santai), jawablah pertanyaannya secara ramah, lengkap, dan lezat (jangan menolak), lalu dengan gaya hangat khas Pak Ujang selipkan humor santai bahwa Anda siap lanjut bantu hitung margin dan stok kapan pun siap!
+2. Jika pengguna bertanya di luar tema grosir gadget (seperti rekomendasi tempat makan enak di sekitar Harco Mangga Dua / Agres, kuliner mall, resep cemilan mac n cheese, obrolan santai), jawablah pertanyaannya secara ramah, lezat, informatif, dan lengkap (jangan menolak!), lalu dengan gaya hangat khas Pak Ujang selipkan humor santai bahwa Anda siap lanjut bantu hitung margin dan stok kapan pun siap!
 3. Format teks menggunakan tag HTML: <strong> untuk tebal, <em> untuk miring, <br> untuk baris baru, <li> untuk poin-poin.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: `${systemContext}\n\nPertanyaan Pengguna: "${query}"` }]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 600
-      }
-    })
-  });
+  const candidateModels = ['gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-3.8-flash'];
+  let lastErr = null;
 
-  if (!response.ok) {
-    throw new Error(`Gemini direct status ${response.status}`);
+  for (const model of candidateModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: `${systemContext}\n\nPertanyaan Pengguna: "${query}"` }]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 600
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Gemini ${model} status ${response.status}`);
+      }
+
+      const result = await response.json();
+      let reply = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!reply) throw new Error(`Empty response from ${model}`);
+
+      reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+      return reply;
+    } catch (err) {
+      lastErr = err;
+      console.warn(`Direct model ${model} failed, trying next:`, err.message);
+    }
   }
 
-  const result = await response.json();
-  let reply = result.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!reply) throw new Error('Empty response from Gemini');
-
-  reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-  return reply;
+  throw lastErr || new Error('All direct Gemini models failed');
 }
 
 async function handleAiQuery(query) {
@@ -751,7 +763,16 @@ function generateAiAnswer(q) {
     }
   }
 
-  // 1. Bottleneck / Hambatan / Drop-off
+  // 1. Makanan, Kuliner, Tempat Makan, Resep Santai (Prioritas tinggi agar tidak terbajak kata toko/agres)
+  if (q.includes('makan') || q.includes('lapar') || q.includes('laper') || q.includes('kuliner') || q.includes('harco') || q.includes('mangga dua') || q.includes('warung') || q.includes('cafe') || q.includes('resto') || q.includes('resep') || q.includes('mac') || q.includes('cheese') || q.includes('chesse') || q.includes('keju') || q.includes('cemil') || q.includes('snack') || q.includes('masak')) {
+    if (isEdu) {
+      return `<strong>[Rekomendasi Kuliner & Cemilan Maba PMB]</strong><br><br>Biar fokus menyusun strategi pendaftaran maba tetap terjaga, jangan lupa isi energi dulu!<br>• <strong>Resep Kilat Mac & Cheese:</strong> Rebus 150g makaroni, lelehkan mentega & susu, aduk dengan parutan keju cheddar gurih.<br>• <strong>Tips:</strong> Santap selagi hangat sambil kita lanjut evaluasi saluran promosi kampus ya!`;
+    } else {
+      return `<strong>[Rekomendasi Kuliner Mantap Sekitar Harco Mangga Dua & Mall Agres]</strong><br><br>Wah pas banget Mas Iqbal lagi di area Mangga Dua! Biar gak lemas setelah keliling toko komputer, ini beberapa spot makan legendaris dan enak di sekitarnya:<br><br>1. <strong>Bakmi Bintang Mangga Dua:</strong> Porsinya mantap, kuahnya gurih pas buat ganjal perut kurir.<br>2. <strong>Soto Betawi & Nasi Uduk Mangga Dua Mall:</strong> Dekat jembatan niaga lantai dasar, kuah santan rempahnya juara.<br>3. <strong>Kantin Karyawan & Food Court Harco:</strong> Di lantai basement/dasar, ada pilihan nasi padang, ayam bakar, dan es teh jumbo harga bersahabat.<br><br><em>Perut kenyang, stamina prima, baru kita lanjut negosiasi closing-an laptop sama toko Agres! Mau sekalian cek sisa stok unit?</em>`;
+    }
+  }
+
+  // 2. Bottleneck / Hambatan / Drop-off
   if (q.includes('bottleneck') || q.includes('hambatan') || q.includes('kendala') || q.includes('drop') || q.includes('batal')) {
     if (isEdu) {
       return `<strong>[Analisis Bottleneck PMB]</strong><br><br>Titik kebocoran utama terjadi di tahap <strong>${data.summary.primary_bottleneck}</strong>.<br>• Dari <strong>4.800 calon mahasiswa</strong> yang bertanya/download brosur (<em>Consideration</em>), hanya <strong>1.150 orang</strong> yang membeli voucher formulir (<em>Conversion</em>).<br>• Terjadi kehilangan <strong>76% calon pendaftar</strong> di fase ini.<br><br><strong>Rekomendasi Tindakan:</strong> Sederhanakan formulir pendaftaran online dan kirim pengingat WhatsApp otomatis via n8n kepada pendaftar yang belum menyelesaikan pembayaran voucher.`;
@@ -760,7 +781,7 @@ function generateAiAnswer(q) {
     }
   }
 
-  // 2. Saluran / Channel / Toko / Iklan
+  // 3. Saluran / Channel / Toko / Iklan
   if (q.includes('channel') || q.includes('saluran') || q.includes('loyal') || q.includes('toko') || q.includes('iklan') || q.includes('agres') || q.includes('efektif')) {
     const topChannel = data.channel_performance.reduce((prev, curr) => parseFloat(curr.cvr) > parseFloat(prev.cvr) ? curr : prev, data.channel_performance[0]);
     const maxVolume = data.channel_performance.reduce((prev, curr) => curr.leads > prev.leads ? curr : prev, data.channel_performance[0]);
@@ -772,12 +793,12 @@ function generateAiAnswer(q) {
     }
   }
 
-  // 3. Mas Iqbal / Kurir / Arahan Operasional Lapangan
+  // 4. Mas Iqbal / Kurir / Arahan Operasional Lapangan
   if (q.includes('iqbal') || q.includes('kurir') || q.includes('antar') || q.includes('lapangan') || q.includes('jadwal')) {
     return `<strong>[Arahan Operasional Khusus Mas Iqbal]</strong><br><br>1. <strong>Jadwal Kunjungan Prioritas:</strong> Kunjungi toko rekanan mall (terutama gerai Agres) setiap hari <strong>Selasa dan Jumat</strong> saat etalase mereka sedang kosong.<br>2. <strong>Bawa Sampel Unit:</strong> Selalu bawa unit laptop siap jual yang sudah dicek fisiknya.<br>3. <strong>Siapkan Paket Bundling:</strong> Bawa bonus tas laptop atau mouse saat negosiasi di toko agar pemilik toko langsung deal di tempat!`;
   }
 
-  // 4. Draft Chat WA / Pesan Promosi
+  // 5. Draft Chat WA / Pesan Promosi
   if (q.includes('draft') || q.includes('wa') || q.includes('chat') || q.includes('pesan') || q.includes('teks')) {
     if (isEdu) {
       return `<strong>[Draf Pesan WhatsApp Follow-up PMB]</strong><br><br><em>"Halo Kak [Nama Calon Maba]! Terima kasih sudah berkonsultasi mengenai program studi di kampus kami. Biaya pendaftaran gelombang 1 akan ditutup dalam 3 hari lagi lho. Yuk amankan kuota prodi impianmu di sini: [Link Pendaftaran]. Jika butuh bantuan pengisian berkas, kami siap bantu ya!"</em>`;
@@ -786,29 +807,20 @@ function generateAiAnswer(q) {
     }
   }
 
-  // 5. Rekomendasi / Saran / Tindakan
+  // 6. Rekomendasi / Saran / Tindakan
   if (q.includes('rekomendasi') || q.includes('saran') || q.includes('tindakan') || q.includes('aksi') || q.includes('tips') || q.includes('solusi')) {
     const recs = data.recommendations.map(r => `• <strong>[Prioritas ${r.priority}] ${r.title}:</strong> ${r.action}`).join('<br><br>');
     return `<strong>[Rencana Tindakan Strategis - Now What]</strong><br><br>${recs}`;
   }
 
-  // 6. Konversi / CVR / Angka Ringkasan
+  // 7. Konversi / CVR / Angka Ringkasan
   if (q.includes('konversi') || q.includes('cvr') || q.includes('angka') || q.includes('total') || q.includes('deal') || q.includes('ringkasan')) {
     return `<strong>[Ringkasan Performa Corong]</strong><br><br>• <strong>Total Prospek Masuk:</strong> ${data.summary.total_prospects.toLocaleString('id-ID')} unit/orang<br>• <strong>Total Berhasil Konversi:</strong> ${data.summary.total_converted.toLocaleString('id-ID')} transaksi/maba<br>• <strong>Rasio Konversi Keseluruhan (CVR):</strong> <strong>${data.summary.overall_conversion_rate}</strong><br>• <strong>Saluran Teratas:</strong> ${data.summary.top_channel}<br>• <strong>Status Corong:</strong> Berjalan stabil dan terukur.`;
   }
 
-  // 7. Edukasi Istilah (Funnel, UCD, ACCRA)
+  // 8. Edukasi Istilah (Funnel, UCD, ACCRA)
   if (q.includes('ucd') || q.includes('accra') || q.includes('apa itu') || q.includes('pengertian')) {
     return `<strong>[Edukasi Konsep Desain Interaksi Pengguna - DIP]</strong><br><br>• <strong>UCD (ISO 9241-210):</strong> Pendekatan desain yang menempatkan kebutuhan nyata pengguna (Pak Ujang / Tim PMB) sebagai pusat pengembangan, dievaluasi lewat metrik kepuasan dan efisiensi.<br>• <strong>Model ACCRA:</strong> Alur corong 5 tahap dari <em>Awareness</em> (tahu), <em>Consideration</em> (tanya/menimbang), <em>Conversion</em> (beli/deal), <em>Retention</em> (repeat order/kuliah), hingga <em>Advocacy</em> (rekomendasi).`;
-  }
-
-  // 8. Cemilan, Resep, Makanan Santai
-  if (q.includes('resep') || q.includes('mac') || q.includes('cheese') || q.includes('chesse') || q.includes('keju') || q.includes('makan') || q.includes('cemil') || q.includes('snack') || q.includes('masak') || q.includes('laper') || q.includes('lapar') || q.includes('kuliner')) {
-    if (isEdu) {
-      return `<strong>[Resep Praktis Mac and Cheese ala Mahasiswa PMB]</strong><br><br>1. <strong>Bahan:</strong> 150g makaroni rebus, 2 sdm mentega, 1 gelas susu cair, parutan keju cheddar & mozzarella secukupnya.<br>2. <strong>Cara Cepat:</strong> Lelehkan mentega di teflon, masukkan susu dan keju sampai saus mengental gurih. Masukkan makaroni, aduk rata dengan sejumput garam dan merica hitam.<br><br>Nikmati cemilannya selagi hangat sambil kita lanjut evaluasi saluran promosi kampus ya!`;
-    } else {
-      return `<strong>[Resep Spesial Mac and Cheese Rekomendasi Pak Ujang & Mas Iqbal]</strong><br><br>Biar stamina tetap prima saat muter COD kirim laptop ke toko mall, ini resep simpelnya:<br>• <strong>Bahan:</strong> 200g macaroni rebus, 2 sdm margarin, 1 kotak susu UHT (200ml), keju cheddar parut + sedikit keju quick melt.<br>• <strong>Cara Buat:</strong> Lelehkan margarin di wajan, tuang susu dan masukkan keju sampai meleleh jadi saus creamy kental. Masukkan macaroni, bumbui merica & kaldu jamur secukupnya.<br><br>Mantap disantap hangat sebelum Mas Iqbal berangkat kunjungan ke gerai Agres! Mau lanjut hitung margin stok laptop?`;
-    }
   }
 
   // 9. Default Answer

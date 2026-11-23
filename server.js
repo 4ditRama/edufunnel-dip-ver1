@@ -440,40 +440,53 @@ Panduan Menjawab:
 3. Gunakan format HTML dasar (strong, em, br, li, ul). Jawaban harus hangat, hidup, dan solutif.`;
 
   try {
-    // Model Gemini 3.8 Flash aktif
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              { text: `${systemContext}\n\nPertanyaan Pengguna: "${message}"` }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 600
-        }
-      })
-    });
+    // Model fallback pool: gunakan model cepat & stabil
+    const candidateModels = ['gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-3.8-flash'];
+    let lastErr = null;
 
-    if (!response.ok) {
-      const errBody = await response.text();
-      throw new Error(`Gemini API Error: ${errBody}`);
+    for (const model of candidateModels) {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  { text: `${systemContext}\n\nPertanyaan Pengguna: "${message}"` }
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 600
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errBody = await response.text();
+          throw new Error(`Model ${model} error (Status ${response.status}): ${errBody}`);
+        }
+
+        const result = await response.json();
+        let reply = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!reply) throw new Error(`Empty reply from ${model}`);
+        
+        // Format markdown bold/newlines to HTML
+        reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+        return res.json({ reply, model });
+      } catch (err) {
+        lastErr = err;
+        console.warn(`[GEMINI SERVER] Model ${model} failed, trying next:`, err.message);
+      }
     }
 
-    const result = await response.json();
-    let reply = result.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, saya tidak dapat memproses jawaban saat ini.";
-    
-    // Format markdown bold/newlines to HTML
-    reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    reply = reply.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-
-    res.json({ reply });
+    throw lastErr || new Error('Semua model Gemini sedang sibuk.');
   } catch (error) {
     console.error('Chat endpoint error:', error);
     res.status(500).json({ error: error.message, fallback: true });
