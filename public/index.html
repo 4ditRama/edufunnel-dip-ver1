@@ -1017,6 +1017,13 @@
             <p class="text-[11px] text-stone-500 leading-relaxed">
               Setiap kali form kuesioner SUS 10 butir diisi di web, data langsung diproses ke n8n Cloud untuk validasi batas kelayakan ISO 9241-210 (≥ 70) dan diteruskan seketika ke bot Telegram penguji.
             </p>
+            <div class="pt-1 flex items-center justify-between border-t border-stone-100">
+              <span class="text-[10px] text-stone-500 font-mono">Tujuan: Google Sheets Arsip &amp; Bot Alert</span>
+              <a href="/api/webhook/sus-export-csv" target="_blank" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-[10px] font-heading font-semibold transition flex items-center gap-1 cursor-pointer" title="Download Master Rekap Spreadsheet CSV">
+                <svg class="w-3 h-3 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Unduh Rekap Excel (CSV)</span>
+              </a>
+            </div>
           </div>
 
           <div class="bg-white p-3.5 rounded-2xl border border-stone-200 shadow-sm space-y-1.5">
@@ -1028,8 +1035,15 @@
               <span class="text-[10px] font-semibold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">Senin 08:00 WIB</span>
             </div>
             <p class="text-[11px] text-stone-500 leading-relaxed">
-              Bekerja proaktif secara berkala. Meninjau API corong bisnis; jika terdeteksi hambatan margin atau drop-off melebihi ambang batas, n8n otomatis mengirim alert rekomendasi taktis ke Telegram.
+              Bekerja proaktif secara berkala. Meninjau API corong bisnis; jika terdeteksi hambatan margin atau drop-off melebihi ambang batas, n8n otomatis mengirim email executive digest ke Gmail Pak Ujang &amp; alert taktis ke Telegram Mas Iqbal.
             </p>
+            <div class="pt-1 flex items-center justify-between border-t border-stone-100">
+              <span class="text-[10px] text-stone-500 font-mono">Tujuan: Gmail Pak Ujang &amp; Telegram Mas Iqbal</span>
+              <a href="/api/funnel-data/email-report" target="_blank" class="px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-lg text-[10px] font-heading font-semibold transition flex items-center gap-1 cursor-pointer" title="Lihat pratinjau format email laporan mingguan">
+                <svg class="w-3 h-3 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>Lihat Format Email Pak Ujang</span>
+              </a>
+            </div>
           </div>
         </div>
 

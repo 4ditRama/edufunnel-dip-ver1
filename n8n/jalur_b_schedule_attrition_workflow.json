@@ -69,19 +69,35 @@
     },
     {
       "parameters": {
+        "sendTo": "pakujang.gadget@gmail.com",
+        "subject": "=🚨 [LAPORAN SENIN 08:00 WIB] Evaluasi Bottleneck Corong Grosir - Toko Pak Ujang",
+        "emailType": "text",
+        "message": "=Halo Pak Ujang (Owner Grosir Gadget),\n\nBerikut ringkasan evaluasi otomatis corong penjualan toko Anda untuk periode minggu ini:\n\n• Kasus Bisnis: {{ $json.system_title }}\n• Total Prospek Toko: {{ $json.summary.total_prospects }} toko retail\n• Berhasil Closing: {{ $json.summary.total_converted }} unit (CVR: {{ $json.summary.overall_conversion_rate }})\n• Saluran Penjualan Teratas: {{ $json.summary.top_channel }}\n• Titik Hambatan Utama (Bottleneck): {{ $json.summary.primary_bottleneck }}\n\nRekomendasi Tindakan:\nSegera instruksikan Mas Iqbal untuk kunjungan ke toko rekanan mall (terutama gerai Agres) pada hari restock etalase guna mengoptimalkan margin negosiasi laptop.\n\nLaporan ini dikirim otomatis setiap Senin pukul 08:00 WIB oleh EduFunnel Decision Support System."
+      },
+      "id": "b1b2c3d4-4444-4000-8000-000000000004",
+      "name": "Kirim Email Laporan ke Gmail Pak Ujang (Owner)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        920,
+        200
+      ]
+    },
+    {
+      "parameters": {
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "=⚠️ *PERINGATAN BOTTLENECK CORONG GADGETFLOW!* ⚠️\n\n📌 *Kasus:* {{ $json.system_title }}\n📉 *Titik Hambatan Utama:* *{{ $json.summary.primary_bottleneck }}*\n👥 *Total Prospek:* {{ $json.summary.total_prospects }} toko\n✅ *Berhasil Closing:* {{ $json.summary.total_converted }} unit (CVR: {{ $json.summary.overall_conversion_rate }})\n🏬 *Saluran Teratas:* {{ $json.summary.top_channel }}\n\n💡 *Rekomendasi:* Segera jadwalkan Mas Iqbal untuk kunjungan toko dan optimasi ruang margin negosiasi!\n⏰ *Waktu Evaluasi:* {{ $now.setZone('Asia/Jakarta').toFormat('dd LLL yyyy, HH:mm') }} WIB",
+        "text": "=⚠️ *PERINGATAN BOTTLENECK CORONG GADGETFLOW!* ⚠️\n\n📌 *Kasus:* {{ $json.system_title }}\n📉 *Titik Hambatan Utama:* *{{ $json.summary.primary_bottleneck }}*\n👥 *Total Prospek:* {{ $json.summary.total_prospects }} toko\n✅ *Berhasil Closing:* {{ $json.summary.total_converted }} unit (CVR: {{ $json.summary.overall_conversion_rate }})\n🏬 *Saluran Teratas:* {{ $json.summary.top_channel }}\n\n💡 *Instruksi Lapangan Mas Iqbal:* Segera jadwalkan kunjungan toko ke gerai Agres & optimasi ruang margin bundling!\n⏰ *Waktu Evaluasi:* {{ $now.setZone('Asia/Jakarta').toFormat('dd LLL yyyy, HH:mm') }} WIB",
         "additionalFields": {
           "parse_mode": "Markdown"
         }
       },
-      "id": "b1b2c3d4-4444-4000-8000-000000000004",
-      "name": "Kirim Alert ke Telegram / Email",
+      "id": "b1b2c3d4-5555-4000-8000-000000000005",
+      "name": "Kirim Alert Lapangan ke Telegram Mas Iqbal (Ops)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
       "position": [
         920,
-        280
+        380
       ]
     }
   ],
@@ -112,7 +128,12 @@
       "main": [
         [
           {
-            "node": "Kirim Alert ke Telegram / Email",
+            "node": "Kirim Email Laporan ke Gmail Pak Ujang (Owner)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Kirim Alert Lapangan ke Telegram Mas Iqbal (Ops)",
             "type": "main",
             "index": 0
           }

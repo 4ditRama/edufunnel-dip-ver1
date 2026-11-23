@@ -210,6 +210,99 @@ app.post('/api/funnel-data/reset', (req, res) => {
   });
 });
 
+// 1d. GET /api/funnel-data/email-report: Menampilkan template email laporan mingguan Pak Ujang (Gmail)
+app.get('/api/funnel-data/email-report', (req, res) => {
+  const persona = req.query.persona || 'gadget';
+  const filename = persona === 'gadget' ? 'gadget_data.json' : 'edufunnel_data.json';
+  const data = (inMemoryFunnelState && inMemoryFunnelState[persona]) || readJsonData(filename);
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Laporan Mingguan Corong Bisnis - Pak Ujang Rahmat</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f4; margin: 0; padding: 24px; color: #1c1917; }
+        .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e7e5e4; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+        .email-header { background: #140b06; color: #ffffff; padding: 24px; border-bottom: 3px solid #ff6210; }
+        .email-header h1 { margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #ffffff; }
+        .meta-bar { background: #faf9f6; padding: 12px 24px; border-bottom: 1px solid #e7e5e4; font-size: 11px; color: #78716c; line-height: 1.6; }
+        .email-body { padding: 24px; }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+        .kpi-card { background: #faf9f6; padding: 14px; border-radius: 10px; border: 1px solid #e7e5e4; }
+        .kpi-title { font-size: 10px; text-transform: uppercase; color: #78716c; font-weight: 700; margin-bottom: 4px; }
+        .kpi-value { font-size: 18px; font-weight: 800; color: #ff6210; }
+        .alert-box { background: #fff2ea; border-left: 4px solid #ff6210; padding: 14px; border-radius: 6px; margin: 20px 0; font-size: 13px; line-height: 1.5; }
+        .email-footer { background: #faf9f6; padding: 16px 24px; text-align: center; font-size: 11px; color: #a8a29e; border-top: 1px solid #e7e5e4; }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="email-header">
+          <h1>🚨 [LAPORAN SENIN 08:00 WIB] Evaluasi Corong Grosir Gadget</h1>
+          <p style="margin: 0; font-size: 12px; color: #a8a29e;">Otomatisasi Pipeline n8n Cloud • Standar ISO 9241-210 UCD</p>
+        </div>
+        <div class="meta-bar">
+          <strong>Kepada:</strong> Pak Ujang Rahmat &lt;pakujang.gadget@gmail.com&gt;<br>
+          <strong>Cc:</strong> Mas Iqbal (Operasional Lapangan) &lt;iqbal.ops@gmail.com&gt;<br>
+          <strong>Jadwal Cron:</strong> Setiap Senin pukul 08:00 WIB (Interval: 0 8 * * 1)
+        </div>
+        <div class="email-body">
+          <p style="margin-top: 0; font-size: 13px;">Halo <strong>Pak Ujang</strong>,</p>
+          <p style="font-size: 13px; line-height: 1.5; color: #44403c;">
+            Berikut adalah ringkasan rutin kesehatan corong penjualan toko grosir gadget Anda untuk evaluasi awal pekan ini:
+          </p>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Total Prospek Masuk</div>
+              <div class="kpi-value">${data.summary.total_prospects.toLocaleString('id-ID')} Toko</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Berhasil Closing (Deal)</div>
+              <div class="kpi-value">${data.summary.total_converted.toLocaleString('id-ID')} Unit</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Rasio Konversi (CVR)</div>
+              <div class="kpi-value">${data.summary.overall_conversion_rate}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Saluran Penjualan Teratas</div>
+              <div class="kpi-value" style="font-size: 13px; color: #1c1917;">${data.summary.top_channel}</div>
+            </div>
+          </div>
+
+          <div class="alert-box">
+            <strong style="color: #c2410c;">⚠️ Peringatan Titik Hambatan Utama (Primary Bottleneck):</strong><br>
+            Tahap: <strong>${data.summary.primary_bottleneck}</strong><br>
+            <span style="font-size: 12px; color: #7c2d12; margin-top: 4px; display: block;">
+              Sebagian besar toko retail berhenti saat fase tawar-menawar harga grosir. Ruang margin perlu dioptimasi.
+            </span>
+          </div>
+
+          <h4 style="margin: 16px 0 8px 0; font-size: 13px;">📋 Instruksi Aksi Lapangan untuk Mas Iqbal:</h4>
+          <p style="font-size: 12px; line-height: 1.6; color: #44403c; background: #f5f5f4; padding: 12px; border-radius: 8px;">
+            ${(data.recommendations && data.recommendations[0] && data.recommendations[0].action) || 'Jadwalkan kunjungan rutin toko mall (Agres) setiap restock etalase.'}
+          </p>
+
+          <p style="margin-top: 24px; font-size: 12px; color: #78716c;">
+            Notifikasi tugas operasional juga telah diteruskan ke bot Telegram Mas Iqbal agar unit pengiriman COD dapat segera dipersiapkan.
+          </p>
+        </div>
+        <div class="email-footer">
+          Dikirim otomatis oleh EduFunnel n8n Cloud Pipeline • Serverless Architecture on Vercel
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+});
+
 // 2. POST /api/webhook/simulate: Menerima payload lead dari UI dan meneruskan ke n8n
 app.post('/api/webhook/simulate', (req, res) => {
   const payload = req.body;
