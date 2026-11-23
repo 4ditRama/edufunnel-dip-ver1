@@ -532,8 +532,12 @@
             </button>
           </div>
 
-          <!-- ACTION BUTTONS: SUS & N8N -->
+          <!-- ACTION BUTTONS: EDIT DATA (ADMIN), SUS & N8N -->
           <div class="flex items-center gap-1.5">
+            <button id="btnOpenEditFunnelModal" type="button" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-heading font-semibold shadow-sm transition flex items-center space-x-1.5 cursor-pointer" title="Perbarui data penjualan & corong secara real-time">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span>Update Corong</span>
+            </button>
             <button id="btnOpenSusModal" type="button" class="px-3 py-1.5 bg-[#ff6210] hover:bg-[#e55509] text-white rounded-lg text-xs font-heading font-semibold shadow-sm transition flex items-center space-x-1.5 cursor-pointer">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
               <span>Evaluasi SUS</span>
@@ -1053,6 +1057,117 @@
     </div>
   </div>
 
+  <!-- ============================================================== -->
+  <!-- MODAL: PERBARUI DATA CORONG BISNIS (ADMIN PAK UJANG)           -->
+  <!-- ============================================================== -->
+  <div id="modalEditFunnel" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
+
+      <div class="bg-[#140b06] text-white p-5 flex items-center justify-between border-b border-stone-800">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-heading font-bold text-white">Perbarui Data Corong Penjualan</h3>
+            <p class="text-xs text-stone-400 mt-0.5">Mode Admin Toko • Sinkronisasi Real-Time ke Dashboard & n8n</p>
+          </div>
+        </div>
+
+        <button type="button" id="btnCloseEditFunnelModal" class="w-8 h-8 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 text-xs text-stone-700 bg-[#faf9f6]">
+        <div id="editFunnelAlert" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
+        <!-- QUICK PRESET BUTTONS -->
+        <div>
+          <label class="block text-[11px] font-heading font-semibold text-stone-500 uppercase tracking-wider mb-1.5">Pilih Skenario Cepat (Preset Pengujian):</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="btnPresetNormal" class="p-2 rounded-xl bg-white border border-stone-200 hover:border-[#ff6210] hover:text-[#ff6210] text-center font-heading font-medium transition cursor-pointer">
+              <span class="block font-bold text-xs text-stone-900">Baseline Riil</span>
+              <span class="text-[10px] text-stone-400">240 Prospek • 58 Deal</span>
+            </button>
+            <button type="button" id="btnPresetPeak" class="p-2 rounded-xl bg-white border border-stone-200 hover:border-emerald-500 hover:text-emerald-700 text-center font-heading font-medium transition cursor-pointer">
+              <span class="block font-bold text-xs text-emerald-800">Lonjakan Omzet</span>
+              <span class="text-[10px] text-emerald-600">480 Prospek • 175 Deal</span>
+            </button>
+            <button type="button" id="btnPresetKrisis" class="p-2 rounded-xl bg-white border border-stone-200 hover:border-rose-400 hover:text-rose-700 text-center font-heading font-medium transition cursor-pointer">
+              <span class="block font-bold text-xs text-rose-800">Hambatan Margin</span>
+              <span class="text-[10px] text-rose-600">310 Prospek • 25 Deal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- EDIT FORM -->
+        <form id="formEditFunnel" class="space-y-3.5 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Total Prospek (Toko Retail):</label>
+              <input type="number" id="inputEditProspects" min="1" max="10000" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#ff6210]" required>
+              <span class="text-[10px] text-stone-400 mt-0.5 block">Jumlah toko yang dikirimi list stok HP/Laptop</span>
+            </div>
+            <div>
+              <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Berhasil Closing / Deal (Unit):</label>
+              <input type="number" id="inputEditConverted" min="0" max="10000" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-[#ff6210]" required>
+              <span class="text-[10px] text-stone-400 mt-0.5 block">Toko sepakat dan barang dikirim Mas Iqbal</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Titik Hambatan Utama (Primary Bottleneck):</label>
+            <input type="text" id="inputEditBottleneck" list="bottleneckList" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff6210]" required>
+            <datalist id="bottleneckList">
+              <option value="Penawaran -> Nego Margin">
+              <option value="Nego Margin -> Deal COD">
+              <option value="Kapasitas Pengiriman Kurir Mas Iqbal Terbatas">
+              <option value="Stok Laptop / HP Tipe Tertentu Habis">
+              <option value="Dilema Piutang & Retur Toko Konsinyasi">
+            </datalist>
+            <span class="text-[10px] text-stone-400 mt-0.5 block">Tahapan corong tempat terjadi drop-off terbesar</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Saluran Penjualan Teratas (Top Channel):</label>
+            <input type="text" id="inputEditChannel" list="channelList" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff6210]" required>
+            <datalist id="channelList">
+              <option value="Toko Retail Mall (Agres & Mitra)">
+              <option value="Konter HP Sentra Mall">
+              <option value="Grup WhatsApp Reseller">
+              <option value="Buyer Perorangan / COD Marketplace">
+            </datalist>
+          </div>
+
+          <div>
+            <label class="block text-xs font-heading font-semibold text-stone-800 mb-1">Rekomendasi Tindakan Mas Iqbal (Taktis):</label>
+            <textarea id="inputEditRecommendation" rows="2" class="w-full bg-[#faf9f6] border border-stone-200 rounded-xl p-2.5 text-xs focus:outline-none focus:border-[#ff6210]"></textarea>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-stone-100">
+            <button type="button" id="btnResetFunnelData" class="px-3 py-1.5 text-stone-500 hover:text-stone-800 text-[11px] font-medium transition cursor-pointer">
+              Kembalikan ke Default
+            </button>
+            <button type="submit" id="btnSaveFunnelData" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-heading font-bold rounded-xl text-xs shadow-md transition flex items-center space-x-1.5 cursor-pointer">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Simpan & Terapkan Perubahan</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="bg-blue-50 border border-blue-200/80 rounded-xl p-3 text-[11px] text-blue-800 flex items-start space-x-2">
+          <svg class="w-4 h-4 text-blue-600 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>
+            <strong>Terhubung ke n8n Cloud:</strong> Begitu disimpan, angka terbaru ini langsung terbaca oleh n8n Jalur B saat trigger cron/manual diuji coba.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="bg-white border-t border-stone-200 py-6 text-center text-xs text-stone-500">
     <div class="max-w-7xl mx-auto px-4 space-y-1">
@@ -1061,7 +1176,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=3.0"></script>
+  <script src="app.js?v=3.1"></script>
 </body>
 
 </html>

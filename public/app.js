@@ -943,6 +943,159 @@ document.querySelectorAll('.btn-sus-preset').forEach(btn => {
   });
 });
 
+// ==========================================
+// MODAL: PERBARUI DATA CORONG (ADMIN PAK UJANG)
+// ==========================================
+const btnOpenEditFunnelModal = document.getElementById('btnOpenEditFunnelModal');
+const modalEditFunnel = document.getElementById('modalEditFunnel');
+const btnCloseEditFunnelModal = document.getElementById('btnCloseEditFunnelModal');
+const formEditFunnel = document.getElementById('formEditFunnel');
+
+const inputEditProspects = document.getElementById('inputEditProspects');
+const inputEditConverted = document.getElementById('inputEditConverted');
+const inputEditBottleneck = document.getElementById('inputEditBottleneck');
+const inputEditChannel = document.getElementById('inputEditChannel');
+const inputEditRecommendation = document.getElementById('inputEditRecommendation');
+
+const btnPresetNormal = document.getElementById('btnPresetNormal');
+const btnPresetPeak = document.getElementById('btnPresetPeak');
+const btnPresetKrisis = document.getElementById('btnPresetKrisis');
+const btnResetFunnelData = document.getElementById('btnResetFunnelData');
+const editFunnelAlert = document.getElementById('editFunnelAlert');
+
+function showEditFunnelAlert(msg, type = "success") {
+  if (!editFunnelAlert) return;
+  editFunnelAlert.className = type === "success"
+    ? "p-3 rounded-xl text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 block"
+    : "p-3 rounded-xl text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200 block";
+  editFunnelAlert.textContent = msg;
+  setTimeout(() => editFunnelAlert.classList.add('hidden'), 4000);
+}
+
+function populateEditFunnelModal() {
+  if (!currentFunnelData || !currentFunnelData.summary) return;
+  if (inputEditProspects) inputEditProspects.value = currentFunnelData.summary.total_prospects || 240;
+  if (inputEditConverted) inputEditConverted.value = currentFunnelData.summary.total_converted || 58;
+  if (inputEditBottleneck) inputEditBottleneck.value = currentFunnelData.summary.primary_bottleneck || "Penawaran -> Nego Margin";
+  if (inputEditChannel) inputEditChannel.value = currentFunnelData.summary.top_channel || "Toko Retail Mall (Agres & Mitra)";
+  if (inputEditRecommendation) {
+    inputEditRecommendation.value = (currentFunnelData.recommendations && currentFunnelData.recommendations[0] && currentFunnelData.recommendations[0].action)
+      || "Jadwalkan Mas Iqbal kunjungan toko rutin dan optimasi margin bundling.";
+  }
+}
+
+if (btnOpenEditFunnelModal && modalEditFunnel) {
+  btnOpenEditFunnelModal.addEventListener('click', () => {
+    populateEditFunnelModal();
+    modalEditFunnel.classList.remove('hidden');
+  });
+}
+
+if (btnCloseEditFunnelModal && modalEditFunnel) {
+  btnCloseEditFunnelModal.addEventListener('click', () => {
+    modalEditFunnel.classList.add('hidden');
+  });
+}
+
+// Preset Buttons
+if (btnPresetNormal) {
+  btnPresetNormal.addEventListener('click', () => {
+    if (inputEditProspects) inputEditProspects.value = 240;
+    if (inputEditConverted) inputEditConverted.value = 58;
+    if (inputEditBottleneck) inputEditBottleneck.value = "Penawaran -> Nego Margin";
+    if (inputEditChannel) inputEditChannel.value = "Toko Retail Mall (Agres & Mitra)";
+    if (inputEditRecommendation) inputEditRecommendation.value = "Follow-up khusus toko retail mall (Agres & Mitra) dengan margin negosiasi laptop bundling.";
+  });
+}
+
+if (btnPresetPeak) {
+  btnPresetPeak.addEventListener('click', () => {
+    if (inputEditProspects) inputEditProspects.value = 480;
+    if (inputEditConverted) inputEditConverted.value = 175;
+    if (inputEditBottleneck) inputEditBottleneck.value = "Kapasitas Pengiriman Kurir Mas Iqbal Terbatas";
+    if (inputEditChannel) inputEditChannel.value = "Toko Retail Mall (Agres & Mitra)";
+    if (inputEditRecommendation) inputEditRecommendation.value = "Tambah armada transport Mas Iqbal atau sewa kurir motor tambahan untuk handle 175 unit COD!";
+  });
+}
+
+if (btnPresetKrisis) {
+  btnPresetKrisis.addEventListener('click', () => {
+    if (inputEditProspects) inputEditProspects.value = 310;
+    if (inputEditConverted) inputEditConverted.value = 25;
+    if (inputEditBottleneck) inputEditBottleneck.value = "Dilema Piutang & Retur Toko Meningkat";
+    if (inputEditChannel) inputEditChannel.value = "Grup WhatsApp Reseller";
+    if (inputEditRecommendation) inputEditRecommendation.value = "Stop kirim konsinyasi tanpa DP; utamakan pembayaran cash keras saat barang tiba di toko.";
+  });
+}
+
+// Submit Form Update Funnel
+if (formEditFunnel) {
+  formEditFunnel.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btnSubmit = formEditFunnel.querySelector('button[type="submit"]');
+    const originalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = `<span>⏳</span><span>Menyimpan ke Cloud...</span>`;
+
+    const payload = {
+      persona: currentPersona || 'gadget',
+      total_prospects: Number(inputEditProspects.value),
+      total_converted: Number(inputEditConverted.value),
+      primary_bottleneck: inputEditBottleneck.value.trim(),
+      top_channel: inputEditChannel.value.trim(),
+      recommendation: inputEditRecommendation ? inputEditRecommendation.value.trim() : ''
+    };
+
+    try {
+      const res = await fetch('/api/funnel-data/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+
+      if (result.status === 'success') {
+        currentFunnelData = result.data;
+        renderDashboard(result.data);
+        showEditFunnelAlert("✓ Data corong berhasil diperbarui & tersinkronisasi ke pipeline n8n!", "success");
+        setTimeout(() => {
+          if (modalEditFunnel) modalEditFunnel.classList.add('hidden');
+        }, 1200);
+      } else {
+        throw new Error(result.error || 'Gagal menyimpan');
+      }
+    } catch (err) {
+      showEditFunnelAlert("Gagal menyimpan perubahan: " + err.message, "error");
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = originalText;
+    }
+  });
+}
+
+// Reset Funnel Data
+if (btnResetFunnelData) {
+  btnResetFunnelData.addEventListener('click', async () => {
+    if (!confirm('Kembalikan data corong ke nilai default awal?')) return;
+    try {
+      const res = await fetch('/api/funnel-data/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persona: currentPersona || 'gadget' })
+      });
+      const result = await res.json();
+      if (result.status === 'success') {
+        currentFunnelData = result.data;
+        renderDashboard(result.data);
+        populateEditFunnelModal();
+        showEditFunnelAlert("✓ Data dikembalikan ke nilai default pabrik.", "success");
+      }
+    } catch (err) {
+      showEditFunnelAlert("Gagal reset data: " + err.message, "error");
+    }
+  });
+}
+
 // Modal Open & Close Event Listeners
 if (btnOpenSusModal && modalSusEvaluation) {
   btnOpenSusModal.addEventListener('click', () => {

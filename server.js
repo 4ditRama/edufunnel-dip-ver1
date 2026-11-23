@@ -18,14 +18,45 @@ function readJsonData(filename) {
   return JSON.parse(raw);
 }
 
-// 1. GET /api/funnel-data: Ambil data funnel berdasarkan persona
+// In-Memory & Ephemeral Persistence untuk update admin Pak Ujang
+const TMP_FUNNEL_FILE = path.join(process.platform === 'win32' ? path.join(__dirname, 'data') : '/tmp', 'custom_funnel_state.json');
+
+let inMemoryFunnelState = {
+  gadget: null,
+  edufunnel: null
+};
+
+// Coba muat state yang tersimpan sebelumnya jika ada
+try {
+  if (fs.existsSync(TMP_FUNNEL_FILE)) {
+    const rawState = fs.readFileSync(TMP_FUNNEL_FILE, 'utf8');
+    inMemoryFunnelState = JSON.parse(rawState);
+  }
+} catch (e) {
+  console.warn('[FUNNEL STATE] Belum ada state tersimpan:', e.message);
+}
+
+function saveFunnelState() {
+  try {
+    fs.writeFileSync(TMP_FUNNEL_FILE, JSON.stringify(inMemoryFunnelState, null, 2), 'utf8');
+  } catch (e) {
+    console.warn('[FUNNEL STATE] Gagal menulis ke file cache:', e.message);
+  }
+}
+
+// 1. GET /api/funnel-data: Ambil data funnel berdasarkan persona (Mendukung data dinamis admin)
 app.get('/api/funnel-data', (req, res) => {
   const persona = req.query.persona || 'edufunnel';
   try {
-    const filename = persona === 'gadget' ? 'gadget_data.json' : 'edufunnel_data.json';
-    const data = readJsonData(filename);
+    let data;
+    if (inMemoryFunnelState[persona]) {
+      data = JSON.parse(JSON.stringify(inMemoryFunnelState[persona]));
+    } else {
+      const filename = persona === 'gadget' ? 'gadget_data.json' : 'edufunnel_data.json';
+      data = readJsonData(filename);
+    }
 
-    // Dynamic overrides untuk simulasi live, testing n8n Jalur B, & pengujian dosen
+    // Dynamic overrides via query parameters untuk pengujian cepat
     if (req.query.prospects) {
       data.summary.total_prospects = Number(req.query.prospects);
     }
@@ -59,6 +90,83 @@ app.get('/api/funnel-data', (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Gagal membaca dataset funnel', details: error.message });
   }
+});
+
+// 1b. POST /api/funnel-data/update: Endpoint Admin untuk memperbarui data corong langsung dari Web Dashboard
+app.post('/api/funnel-data/update', (req, res) => {
+  const { persona = 'gadget', total_prospects, total_converted, primary_bottleneck, top_channel, recommendation } = req.body;
+
+  try {
+    const filename = persona === 'gadget' ? 'gadget_data.json' : 'edufunnel_data.json';
+    const baseData = readJsonData(filename);
+
+    const prospects = Number(total_prospects) || baseData.summary.total_prospects;
+    const converted = Number(total_converted) || baseData.summary.total_converted;
+    const cvr = prospects > 0 ? ((converted / prospects) * 100).toFixed(2) + '%' : '0.00%';
+    const bottleneck = primary_bottleneck || baseData.summary.primary_bottleneck;
+    const channel = top_channel || baseData.summary.top_channel;
+
+    baseData.summary.total_prospects = prospects;
+    baseData.summary.total_converted = converted;
+    baseData.summary.overall_conversion_rate = cvr;
+    baseData.summary.primary_bottleneck = bottleneck;
+    baseData.summary.top_channel = channel;
+    baseData.period = `Diperbarui Admin (${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })})`;
+
+    // Perbarui proporsi tahapan corong secara realistis berdasarkan angka baru
+    if (baseData.funnel_stages && baseData.funnel_stages.length >= 5) {
+      baseData.funnel_stages[0].count = prospects;
+      baseData.funnel_stages[0].percentage = 100.0;
+      
+      const stage2 = Math.round(prospects * 0.48);
+      baseData.funnel_stages[1].count = stage2;
+      baseData.funnel_stages[1].percentage = Number(((stage2 / prospects) * 100).toFixed(1));
+
+      baseData.funnel_stages[2].count = converted;
+      baseData.funnel_stages[2].percentage = Number(((converted / prospects) * 100).toFixed(1));
+
+      const stage4 = Math.round(converted * 0.55);
+      baseData.funnel_stages[3].count = stage4;
+      baseData.funnel_stages[3].percentage = Number(((stage4 / prospects) * 100).toFixed(1));
+
+      const stage5 = Math.round(converted * 0.22);
+      baseData.funnel_stages[4].count = stage5;
+      baseData.funnel_stages[4].percentage = Number(((stage5 / prospects) * 100).toFixed(1));
+    }
+
+    if (recommendation && baseData.recommendations && baseData.recommendations[0]) {
+      baseData.recommendations[0].action = recommendation;
+    }
+
+    inMemoryFunnelState[persona] = baseData;
+    saveFunnelState();
+
+    console.log(`[FUNNEL UPDATED] Persona: ${persona}, Prospek: ${prospects}, Closing: ${converted}, Bottleneck: ${bottleneck}`);
+
+    res.json({
+      status: 'success',
+      message: `Data corong ${persona === 'gadget' ? 'Pak Ujang (B2B Gadget)' : 'EduFunnel'} berhasil diperbarui dan tersinkronisasi ke pipeline!`,
+      data: baseData
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal memperbarui data funnel', details: error.message });
+  }
+});
+
+// 1c. POST /api/funnel-data/reset: Mengembalikan ke data awal bawaan
+app.post('/api/funnel-data/reset', (req, res) => {
+  const { persona = 'gadget' } = req.body;
+  inMemoryFunnelState[persona] = null;
+  saveFunnelState();
+
+  const filename = persona === 'gadget' ? 'gadget_data.json' : 'edufunnel_data.json';
+  const defaultData = readJsonData(filename);
+
+  res.json({
+    status: 'success',
+    message: `Data corong ${persona} telah direset ke nilai awal pabrik.`,
+    data: defaultData
+  });
 });
 
 // 2. POST /api/webhook/simulate: Menerima payload lead dari UI dan meneruskan ke n8n
